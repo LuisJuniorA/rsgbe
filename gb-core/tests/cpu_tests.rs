@@ -40,3 +40,16 @@ fn test_cpu_ld_bc_d16() {
     );
     assert_eq!(cpu.registers.c, 0x34, "Register C should hold the low byte");
 }
+
+#[test]
+#[should_panic(expected = "Illegal opcode 0xD3 encountered")]
+fn test_cpu_illegal_opcode_d3() {
+    let mut rom = vec![0x00; 0x0100];
+
+    rom.extend_from_slice(&[0xD3]);
+
+    let mut bus = Bus::new(rom);
+    let mut cpu = Cpu::new();
+
+    cpu.step(&mut bus);
+}

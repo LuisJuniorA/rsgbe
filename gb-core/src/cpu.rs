@@ -33,15 +33,15 @@ const FLAG_N: u8 = 1 << 6; // 0b0100_0000
 const FLAG_H: u8 = 1 << 5; // 0b0010_0000
 const FLAG_C: u8 = 1 << 4; // 0b0001_0000
 
-enum Flag_Op {
+enum FlagOp {
     Set,
     Unset,
     Untouched,
 }
 
-impl From<bool> for Flag_Op {
+impl From<bool> for FlagOp {
     fn from(value: bool) -> Self {
-        if value { Flag_Op::Set } else { Flag_Op::Unset }
+        if value { FlagOp::Set } else { FlagOp::Unset }
     }
 }
 
@@ -93,8 +93,11 @@ impl Cpu {
                 let a = self.get_reg8(Reg8::A);
                 let carry = (a & 0x80) == 1;
 
-                self.set_flags(Flag_Op::Unset, Flag_Op::Unset, Flag_Op::Unset, carry.into());
+                self.set_flags(FlagOp::Unset, FlagOp::Unset, FlagOp::Unset, carry.into());
                 4
+            }
+            v @ (0xD3 | 0xDB | 0xDD | 0xE3 | 0xE4 | 0xEB | 0xEC | 0xED | 0xF4 | 0xFC | 0xFD) => {
+                panic!("Illegal opcode {:#04X} encountered", v);
             }
             _ => 4,
         }
@@ -159,9 +162,9 @@ impl Cpu {
         // C: Untouched
         self.set_flags(
             (result == 0).into(),
-            Flag_Op::Unset,
+            FlagOp::Unset,
             ((val & 0x0F) == 0x0F).into(),
-            Flag_Op::Untouched,
+            FlagOp::Untouched,
         );
     }
 
@@ -181,9 +184,9 @@ impl Cpu {
         // C: Untouched
         self.set_flags(
             (result == 0).into(),
-            Flag_Op::Set,
+            FlagOp::Set,
             ((val & 0x0F) == 0x0F).into(),
-            Flag_Op::Untouched,
+            FlagOp::Untouched,
         );
     }
 
@@ -230,29 +233,29 @@ impl Cpu {
         }
     }
 
-    pub fn set_flags(&mut self, z: Flag_Op, n: Flag_Op, h: Flag_Op, c: Flag_Op) {
+    pub fn set_flags(&mut self, z: FlagOp, n: FlagOp, h: FlagOp, c: FlagOp) {
         match z {
-            Flag_Op::Set => self.registers.f |= FLAG_Z,
-            Flag_Op::Unset => self.registers.f &= !FLAG_Z,
-            Flag_Op::Untouched => {}
+            FlagOp::Set => self.registers.f |= FLAG_Z,
+            FlagOp::Unset => self.registers.f &= !FLAG_Z,
+            FlagOp::Untouched => {}
         }
 
         match n {
-            Flag_Op::Set => self.registers.f |= FLAG_N,
-            Flag_Op::Unset => self.registers.f &= !FLAG_N,
-            Flag_Op::Untouched => {}
+            FlagOp::Set => self.registers.f |= FLAG_N,
+            FlagOp::Unset => self.registers.f &= !FLAG_N,
+            FlagOp::Untouched => {}
         }
 
         match h {
-            Flag_Op::Set => self.registers.f |= FLAG_H,
-            Flag_Op::Unset => self.registers.f &= !FLAG_H,
-            Flag_Op::Untouched => {}
+            FlagOp::Set => self.registers.f |= FLAG_H,
+            FlagOp::Unset => self.registers.f &= !FLAG_H,
+            FlagOp::Untouched => {}
         }
 
         match c {
-            Flag_Op::Set => self.registers.f |= FLAG_C,
-            Flag_Op::Unset => self.registers.f &= !FLAG_C,
-            Flag_Op::Untouched => {}
+            FlagOp::Set => self.registers.f |= FLAG_C,
+            FlagOp::Unset => self.registers.f &= !FLAG_C,
+            FlagOp::Untouched => {}
         }
     }
 }
