@@ -7,20 +7,23 @@ pub struct Cpu {
     pub sp: u16,              // Stack Pointer
 }
 
+#[derive(Clone, Copy)]
 enum AddrSource {
+    AF,
     BC,
     DE,
     HL,
     HLIncrement, // Pour LD A, [HL+]
     HLDecrement, // Pour LD A, [HL-]
 }
-
+#[derive(Clone, Copy)]
 pub enum Reg8 {
     A,
     B,
     C,
     D,
     E,
+    F,
     H,
     L,
 }
@@ -41,23 +44,41 @@ impl Cpu {
     }
 
     // LD [HL], A = bus.write_byte(hl, A)
-    pub fn execute(&mut self, bus: &mut Bus, opcode: u8) {
+    pub fn execute(&mut self, bus: &mut Bus, opcode: u8) -> u8 {
         match opcode {
-            0x00 => {}
+            0x00 => 4,
             0x01 => {
                 let n16 = self.fetch_u16(bus);
                 self.registers.set_bc(n16);
+                12
             }
             0x02 => {
                 self.ld_mem_r(bus, AddrSource::BC, Reg8::A);
+                8
             }
-
-            _ => {}
+            0x03 => {
+                self.inc_u16(AddrSource::BC);
+                8
+            }
+            0x04 => {
+                self.inc_u8(Reg8::B);
+                4
+            }
+            0x05 => {
+                self.dec_u8(Reg8::B);
+                4
+            }
+            0x06 => {
+                self.dec_u8(Reg8::B);
+                8
+            }
+            _ => 4,
         }
     }
 
     fn get_addr_from_source(&mut self, source: AddrSource) -> u16 {
         match source {
+            AddrSource::AF => self.registers.get_af(),
             AddrSource::BC => self.registers.get_bc(),
             AddrSource::DE => self.registers.get_de(),
             AddrSource::HL => self.registers.get_hl(),
@@ -71,6 +92,16 @@ impl Cpu {
                 self.registers.set_hl(addr.wrapping_sub(1));
                 addr
             }
+        }
+    }
+
+    fn set_addr_from_source(&mut self, dest: AddrSource, to: u16) {
+        match dest {
+            AddrSource::AF => self.registers.set_af(to),
+            AddrSource::BC => self.registers.set_bc(to),
+            AddrSource::DE => self.registers.set_de(to),
+            AddrSource::HL => self.registers.set_hl(to),
+            _ => {}
         }
     }
 
@@ -93,6 +124,23 @@ impl Cpu {
         bus.write_byte(addr, val);
     }
 
+    fn inc_u8(&mut self, addr: Reg8) {
+        let to = self.get_reg8(addr).wrapping_add(1);
+        self.set_reg8(addr, to);
+    }
+
+    fn inc_u16(&mut self, addr: AddrSource) {
+        let to = self.get_addr_from_source(addr).wrapping_add(1);
+        self.set_addr_from_source(addr, to);
+    }
+
+    fn dec_u8(&mut self, addr: Reg8) {}
+
+    fn dec_u16(&mut self, addr: AddrSource) {
+        let to = self.get_addr_from_source(addr).wrapping_sub(1);
+        self.set_addr_from_source(addr, to);
+    }
+
     fn fetch_u8(&mut self, bus: &Bus) -> u8 {
         let value = bus.read_byte(self.pc);
         self.pc = self.pc.wrapping_add(1);
@@ -112,6 +160,7 @@ impl Cpu {
             Reg8::C => self.registers.c,
             Reg8::D => self.registers.d,
             Reg8::E => self.registers.e,
+            Reg8::F => self.registers.f,
             Reg8::H => self.registers.h,
             Reg8::L => self.registers.l,
         }
@@ -124,6 +173,7 @@ impl Cpu {
             Reg8::C => self.registers.c = val,
             Reg8::D => self.registers.d = val,
             Reg8::E => self.registers.e = val,
+            Reg8::F => self.registers.f = val,
             Reg8::H => self.registers.h = val,
             Reg8::L => self.registers.l = val,
         }
