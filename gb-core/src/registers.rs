@@ -10,6 +10,9 @@ pub struct Registers {
 }
 
 impl Registers {
+    pub fn get_af(&self) -> u16 {
+        (self.a as u16) << 8 | (self.f as u16)
+    }
     pub fn get_bc(&self) -> u16 {
         (self.b as u16) << 8 | (self.c as u16)
     }
@@ -20,6 +23,16 @@ impl Registers {
 
     pub fn get_hl(&self) -> u16 {
         (self.h as u16) << 8 | (self.l as u16)
+    }
+
+    pub fn set_af(&mut self, to: u16) {
+        self.a = (to >> 8) as u8;
+        self.f = to as u8;
+    }
+
+    pub fn set_bc(&mut self, to: u16) {
+        self.b = (to >> 8) as u8;
+        self.c = to as u8;
     }
 
     pub fn set_de(&mut self, to: u16) {
