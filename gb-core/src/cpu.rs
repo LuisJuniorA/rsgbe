@@ -101,6 +101,10 @@ impl Cpu {
                 self.write_u16(bus, addr, self.sp);
                 20
             }
+            0x09 /* ADD HL, BC */ => {
+                self.add_u16(bus, AddrSource::HL, AddrSource::BC);
+                8
+            }
             v @ (0xD3 | 0xDB | 0xDD | 0xE3 | 0xE4 | 0xEB | 0xEC | 0xED | 0xF4 | 0xFC | 0xFD) => {
                 panic!("Illegal opcode {:#04X} encountered", v);
             }
@@ -218,6 +222,26 @@ impl Cpu {
 
         bus.write_byte(addr, low);
         bus.write_byte(addr.wrapping_add(1), high);
+    }
+
+    fn add_u16(&mut self, bus: &mut Bus, dest: AddrSource, source: AddrSource) {
+        let val1 = self.get_addr_from_source(dest);
+        let val2 = self.get_addr_from_source(source);
+
+        let (res, carry) = val1.overflowing_add(val2);
+
+        // 16-bit Half-Carry: Check if the lower 12 bits overflowed
+        let half_carry = (val1 & 0x0FFF) + (val2 & 0x0FFF) > 0x0FFF;
+
+        self.set_addr_from_source(dest, res);
+
+        // Flags: Z: Untouched, N: 0, H: carry from bit 11, C: carry from bit 15
+        self.set_flags(
+            FlagOp::Untouched,
+            FlagOp::Unset,
+            half_carry.into(),
+            carry.into(),
+        );
     }
 
     fn get_reg8(&self, reg: Reg8) -> u8 {
