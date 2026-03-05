@@ -63,36 +63,37 @@ impl Cpu {
     // LD [HL], A = bus.write_byte(hl, A)
     pub fn execute(&mut self, bus: &mut Bus, opcode: u8) -> u8 {
         match opcode {
-            0x00 => 4,
-            0x01 => {
+            0x00 /* NOP */ => 4,
+            0x01 /* LD BC, n16 */ => {
                 let n16 = self.fetch_u16(bus);
                 self.registers.set_bc(n16);
                 12
             }
-            0x02 => {
+            0x02 /* LD [BC], A */ => {
                 self.ld_mem_r(bus, AddrSource::BC, Reg8::A);
                 8
             }
-            0x03 => {
+            0x03 /* INC BC */ => {
                 self.inc_u16(AddrSource::BC);
                 8
             }
-            0x04 => {
+            0x04 /* INC B */ => {
                 self.inc_u8(Reg8::B);
                 4
             }
-            0x05 => {
+            0x05 /* DEC B */ => {
                 self.dec_u8(Reg8::B);
                 4
             }
-            0x06 => {
+            0x06 /* LD B, n8 */ => {
                 self.dec_u8(Reg8::B);
                 8
             }
-            0x07 => {
+            0x07 /* RLCA */ => {
                 let a = self.get_reg8(Reg8::A);
-                let carry = (a & 0x80) == 1;
-
+                let carry = (a & 0x80) != 0;
+                let result = a.rotate_left(1);
+                self.set_reg8(Reg8::A, result);
                 self.set_flags(FlagOp::Unset, FlagOp::Unset, FlagOp::Unset, carry.into());
                 4
             }
@@ -103,6 +104,10 @@ impl Cpu {
             }
             0x09 /* ADD HL, BC */ => {
                 self.add_u16(bus, AddrSource::HL, AddrSource::BC);
+                8
+            }
+            0x0A /* LD A, [BC] */ => {
+                self.ld_r_mem(bus, Reg8::A, AddrSource::BC);
                 8
             }
             v @ (0xD3 | 0xDB | 0xDD | 0xE3 | 0xE4 | 0xEB | 0xEC | 0xED | 0xF4 | 0xFC | 0xFD) => {
