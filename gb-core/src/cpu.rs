@@ -1,13 +1,20 @@
 use crate::memory::Bus;
 use crate::registers::Registers;
 
-struct Cpu {
+pub struct Cpu {
     registers: Registers, // Register
     pc: u16,              // Program Counter
     sp: u16,              // Stack Pointer
 }
 
 impl Cpu {
+    pub fn new() -> Self {
+        Cpu {
+            registers: Registers::new(),
+            pc: 0x100,
+            sp: 0xFFE,
+        }
+    }
     pub fn step(&mut self, bus: &mut Bus) {
         let opcode = bus.read_byte(self.pc);
         self.pc = self.pc.wrapping_add(1);
@@ -23,6 +30,7 @@ impl Cpu {
                 let n16 = self.fetch_u16(bus);
                 self.registers.set_bc(n16);
             }
+            0x02 => {}
 
             _ => {}
         }

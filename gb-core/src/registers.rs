@@ -10,6 +10,18 @@ pub struct Registers {
 }
 
 impl Registers {
+    pub fn new() -> Self {
+        Registers {
+            a: 0x01,
+            f: 0xB0,
+            b: 0x00,
+            c: 0x13,
+            d: 0x00,
+            e: 0xD8,
+            h: 0x01,
+            l: 0x4d,
+        }
+    }
     pub fn get_af(&self) -> u16 {
         (self.a as u16) << 8 | (self.f as u16)
     }
