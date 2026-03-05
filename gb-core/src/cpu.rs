@@ -2,9 +2,9 @@ use crate::memory::Bus;
 use crate::registers::Registers;
 
 pub struct Cpu {
-    registers: Registers, // Register
-    pc: u16,              // Program Counter
-    sp: u16,              // Stack Pointer
+    pub registers: Registers, // Register
+    pub pc: u16,              // Program Counter
+    pub sp: u16,              // Stack Pointer
 }
 
 enum AddrSource {
