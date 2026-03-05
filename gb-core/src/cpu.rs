@@ -96,6 +96,11 @@ impl Cpu {
                 self.set_flags(FlagOp::Unset, FlagOp::Unset, FlagOp::Unset, carry.into());
                 4
             }
+            0x08 /* LD [a16], SP */ => {
+                let addr = self.fetch_u16(bus);
+                self.write_u16(bus, addr, self.sp);
+                20
+            }
             v @ (0xD3 | 0xDB | 0xDD | 0xE3 | 0xE4 | 0xEB | 0xEC | 0xED | 0xF4 | 0xFC | 0xFD) => {
                 panic!("Illegal opcode {:#04X} encountered", v);
             }
@@ -205,6 +210,14 @@ impl Cpu {
         let low = self.fetch_u8(bus) as u16;
         let high = self.fetch_u8(bus) as u16;
         (high << 8) | low
+    }
+
+    fn write_u16(&mut self, bus: &mut Bus, addr: u16, val: u16) {
+        let low = (val & 0xFF) as u8;
+        let high = (val >> 8) as u8;
+
+        bus.write_byte(addr, low);
+        bus.write_byte(addr.wrapping_add(1), high);
     }
 
     fn get_reg8(&self, reg: Reg8) -> u8 {
