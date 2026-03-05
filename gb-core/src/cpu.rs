@@ -28,6 +28,23 @@ pub enum Reg8 {
     L,
 }
 
+const FLAG_Z: u8 = 1 << 7; // 0b1000_0000
+const FLAG_N: u8 = 1 << 6; // 0b0100_0000
+const FLAG_H: u8 = 1 << 5; // 0b0010_0000
+const FLAG_C: u8 = 1 << 4; // 0b0001_0000
+
+enum Flag_Op {
+    Set,
+    Unset,
+    Untouched,
+}
+
+impl From<bool> for Flag_Op {
+    fn from(value: bool) -> Self {
+        if value { Flag_Op::Set } else { Flag_Op::Unset }
+    }
+}
+
 impl Cpu {
     pub fn new() -> Self {
         Cpu {
@@ -71,6 +88,13 @@ impl Cpu {
             0x06 => {
                 self.dec_u8(Reg8::B);
                 8
+            }
+            0x07 => {
+                let a = self.get_reg8(Reg8::A);
+                let carry = (a & 0x80) == 1;
+
+                self.set_flags(Flag_Op::Unset, Flag_Op::Unset, Flag_Op::Unset, carry.into());
+                4
             }
             _ => 4,
         }
@@ -125,8 +149,20 @@ impl Cpu {
     }
 
     fn inc_u8(&mut self, addr: Reg8) {
-        let to = self.get_reg8(addr).wrapping_add(1);
-        self.set_reg8(addr, to);
+        let val = self.get_reg8(addr);
+        let result = val.wrapping_add(1);
+        self.set_reg8(addr, result);
+
+        // Z: Set if result is 0
+        // N: Reset (0)
+        // H: Set if carry from bit 3 (lower nibble was 0x0F)
+        // C: Untouched
+        self.set_flags(
+            (result == 0).into(),
+            Flag_Op::Unset,
+            ((val & 0x0F) == 0x0F).into(),
+            Flag_Op::Untouched,
+        );
     }
 
     fn inc_u16(&mut self, addr: AddrSource) {
@@ -134,7 +170,22 @@ impl Cpu {
         self.set_addr_from_source(addr, to);
     }
 
-    fn dec_u8(&mut self, addr: Reg8) {}
+    fn dec_u8(&mut self, addr: Reg8) {
+        let val = self.get_reg8(addr);
+        let result = val.wrapping_sub(1);
+        self.set_reg8(addr, result);
+
+        // Z: Set if result is 0
+        // N: Set (1)
+        // H: Set if carry from bit 3 (lower nibble was 0x0F)
+        // C: Untouched
+        self.set_flags(
+            (result == 0).into(),
+            Flag_Op::Set,
+            ((val & 0x0F) == 0x0F).into(),
+            Flag_Op::Untouched,
+        );
+    }
 
     fn dec_u16(&mut self, addr: AddrSource) {
         let to = self.get_addr_from_source(addr).wrapping_sub(1);
@@ -176,6 +227,32 @@ impl Cpu {
             Reg8::F => self.registers.f = val,
             Reg8::H => self.registers.h = val,
             Reg8::L => self.registers.l = val,
+        }
+    }
+
+    pub fn set_flags(&mut self, z: Flag_Op, n: Flag_Op, h: Flag_Op, c: Flag_Op) {
+        match z {
+            Flag_Op::Set => self.registers.f |= FLAG_Z,
+            Flag_Op::Unset => self.registers.f &= !FLAG_Z,
+            Flag_Op::Untouched => {}
+        }
+
+        match n {
+            Flag_Op::Set => self.registers.f |= FLAG_N,
+            Flag_Op::Unset => self.registers.f &= !FLAG_N,
+            Flag_Op::Untouched => {}
+        }
+
+        match h {
+            Flag_Op::Set => self.registers.f |= FLAG_H,
+            Flag_Op::Unset => self.registers.f &= !FLAG_H,
+            Flag_Op::Untouched => {}
+        }
+
+        match c {
+            Flag_Op::Set => self.registers.f |= FLAG_C,
+            Flag_Op::Unset => self.registers.f &= !FLAG_C,
+            Flag_Op::Untouched => {}
         }
     }
 }
