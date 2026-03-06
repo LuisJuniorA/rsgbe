@@ -231,7 +231,6 @@ fn test_0x11_ld_de_n16() {
 }
 
 #[test]
-#[ignore]
 fn test_0x12_ld_de_mem_a() {
     let (mut cpu, mut bus) = setup_test!(&[0x12]);
     let old_pc = cpu.pc;
