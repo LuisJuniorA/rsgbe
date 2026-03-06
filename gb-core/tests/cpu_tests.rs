@@ -494,9 +494,18 @@ fn test_0x27_daa() {
 }
 
 #[test]
-#[ignore]
 fn test_0x28_jr_z_e8() {
-    todo!()
+    let (mut cpu, mut bus) = setup_test!(&[0x28, 0x05]);
+    cpu.registers.f = 0x80;
+
+    let old_pc = cpu.pc;
+    cpu.step(&mut bus);
+
+    assert_eq!(
+        cpu.pc - old_pc,
+        7,
+        "JR Z forward failed (jump should have happened)"
+    );
 }
 
 #[test]

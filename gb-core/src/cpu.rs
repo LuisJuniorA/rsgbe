@@ -267,7 +267,9 @@ impl Cpu {
 
                 4
             }
-
+            0x28 /*  JR Z, e8  */ => {
+                self.jp_rel(bus, Some(self.registers.f & FLAG_Z), false)
+            }
 
             v @ (0xD3 | 0xDB | 0xDD | 0xE3 | 0xE4 | 0xEB | 0xEC | 0xED | 0xF4 | 0xFC | 0xFD) => {
                 panic!("Illegal opcode {:#04X} encountered", v);
