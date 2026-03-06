@@ -4,3 +4,9 @@ members = [
     "gb-core",
     "gb-wasm"
 ]
+
+[workspace.package]
+authors = ["Luis-Junior Araujo Da Costa", "David Maniliuc"]
+license = "MIT"
+edition = "2024"
+version = "0.1.0"
