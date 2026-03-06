@@ -235,6 +235,11 @@ impl Cpu {
                 self.dec_u8(Reg8::H);
                 4
             }
+            0x26 /* LD H, n8 */ => {
+                let n8 = self.fetch_u8(bus);
+                self.registers.h = n8;
+                8
+            }
 
 
             v @ (0xD3 | 0xDB | 0xDD | 0xE3 | 0xE4 | 0xEB | 0xEC | 0xED | 0xF4 | 0xFC | 0xFD) => {
