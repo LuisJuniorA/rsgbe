@@ -205,7 +205,7 @@ impl Cpu {
             0x1F /* RRA */ => {
                 let a = self.get_reg8(Reg8::A);
                 let carry = (a & 0x01) != 0;
-                let result = (a >> 1) | ((self.registers.f & FLAG_C) >> 4);
+                let result = (a >> 1) | ((self.registers.f & FLAG_C) << 3);
                 self.set_reg8(Reg8::A, result);
                 self.set_flags(FlagOp::Unset, FlagOp::Unset, FlagOp::Unset, carry.into());
                 4
@@ -467,7 +467,7 @@ impl Cpu {
             Reg8::C => self.registers.c = val,
             Reg8::D => self.registers.d = val,
             Reg8::E => self.registers.e = val,
-            Reg8::F => self.registers.f = val,
+            Reg8::F => self.registers.f = val & 0xF0,
             Reg8::H => self.registers.h = val,
             Reg8::L => self.registers.l = val,
         }
