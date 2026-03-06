@@ -385,7 +385,6 @@ fn test_0x20_jr_nz_e8() {
 }
 
 #[test]
-#[ignore]
 fn test_0x21_ld_hl_n16() {
     let (mut cpu, mut bus) = setup_test!(&[0x21, 0x00, 0xD0]);
     let old_pc = cpu.pc;
