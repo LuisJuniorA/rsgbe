@@ -1105,3 +1105,80 @@ fn test_0x63_ld_h_e() {
     assert_eq!(cpu.pc - old_pc, 1);
     assert_eq!(cpu.registers.h, 0x44);
 }
+
+#[test]
+#[should_panic(expected = "Illegal opcode 0xD3 encountered")]
+fn test_0xd3_illegal_opcode() {
+    let (mut cpu, mut bus) = setup_test!(&[0xD3]);
+    cpu.step(&mut bus);
+}
+
+#[test]
+#[should_panic(expected = "Illegal opcode 0xDB encountered")]
+fn test_0xdb_illegal_opcode() {
+    let (mut cpu, mut bus) = setup_test!(&[0xDB]);
+    cpu.step(&mut bus);
+}
+
+#[test]
+#[should_panic(expected = "Illegal opcode 0xDD encountered")]
+fn test_0xdd_illegal_opcode() {
+    let (mut cpu, mut bus) = setup_test!(&[0xDD]);
+    cpu.step(&mut bus);
+}
+
+#[test]
+#[should_panic(expected = "Illegal opcode 0xE3 encountered")]
+fn test_0xe3_illegal_opcode() {
+    let (mut cpu, mut bus) = setup_test!(&[0xE3]);
+    cpu.step(&mut bus);
+}
+
+#[test]
+#[should_panic(expected = "Illegal opcode 0xE4 encountered")]
+fn test_0xe4_illegal_opcode() {
+    let (mut cpu, mut bus) = setup_test!(&[0xE4]);
+    cpu.step(&mut bus);
+}
+
+#[test]
+#[should_panic(expected = "Illegal opcode 0xEB encountered")]
+fn test_0xeb_illegal_opcode() {
+    let (mut cpu, mut bus) = setup_test!(&[0xEB]);
+    cpu.step(&mut bus);
+}
+
+#[test]
+#[should_panic(expected = "Illegal opcode 0xEC encountered")]
+fn test_0xec_illegal_opcode() {
+    let (mut cpu, mut bus) = setup_test!(&[0xEC]);
+    cpu.step(&mut bus);
+}
+
+#[test]
+#[should_panic(expected = "Illegal opcode 0xED encountered")]
+fn test_0xed_illegal_opcode() {
+    let (mut cpu, mut bus) = setup_test!(&[0xED]);
+    cpu.step(&mut bus);
+}
+
+#[test]
+#[should_panic(expected = "Illegal opcode 0xF4 encountered")]
+fn test_0xf4_illegal_opcode() {
+    let (mut cpu, mut bus) = setup_test!(&[0xF4]);
+    cpu.step(&mut bus);
+}
+
+#[test]
+#[should_panic(expected = "Illegal opcode 0xFC encountered")]
+fn test_0xfc_illegal_opcode() {
+    let (mut cpu, mut bus) = setup_test!(&[0xFC]);
+    cpu.step(&mut bus);
+}
+
+#[test]
+#[should_panic(expected = "Illegal opcode 0xFD encountered")]
+fn test_0xfd_illegal_opcode() {
+    let (mut cpu, mut bus) = setup_test!(&[0xFD]);
+    cpu.step(&mut bus);
+}
