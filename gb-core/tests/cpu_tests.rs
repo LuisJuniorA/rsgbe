@@ -571,9 +571,21 @@ fn test_0x2e_ld_l_n8() {
 }
 
 #[test]
-#[ignore]
 fn test_0x2f_cpl() {
-    todo!()
+    let (mut cpu, mut bus) = setup_test!(&[0x2f]);
+
+    cpu.registers.a = 0xAA;
+    cpu.registers.f = 0x00;
+
+    cpu.step(&mut bus);
+
+    assert_eq!(cpu.registers.a, 0x55, "CPL failed: incorrect bitflip");
+
+    assert_eq!(
+        cpu.registers.f & 0x60,
+        0x60,
+        "CPL must set N and H flags to 1"
+    );
 }
 
 #[test]
