@@ -227,6 +227,10 @@ impl Cpu {
                 self.inc_u16(AddrSource::HL);
                 8
             }
+            0x24 /* INC H */ => {
+                self.inc_u8(Reg8::H);
+                4
+            }
 
 
             v @ (0xD3 | 0xDB | 0xDD | 0xE3 | 0xE4 | 0xEB | 0xEC | 0xED | 0xF4 | 0xFC | 0xFD) => {
