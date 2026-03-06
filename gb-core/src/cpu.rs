@@ -240,6 +240,34 @@ impl Cpu {
                 self.registers.h = n8;
                 8
             }
+            0x27 /* DAA */ => {
+                let mut adjust: u8 = 0;
+                let mut new_carry = (self.registers.f & FLAG_C) != 0;
+
+                if (self.registers.f & FLAG_N) != 0 {
+                    if (self.registers.f & FLAG_H) != 0 {
+                        adjust = adjust.wrapping_add(0x06);
+                    }
+                    if (self.registers.f & FLAG_C) != 0 {
+                        adjust = adjust.wrapping_add(0x60);
+                    }
+                    self.registers.a = self.registers.a.wrapping_sub(adjust);
+                } else {
+                    if (self.registers.f & FLAG_H) != 0 || ((self.registers.a) & 0x0F) > 0x09 {
+                        adjust = adjust.wrapping_add(0x06);
+                    }
+                    if (self.registers.f & FLAG_C) != 0 || (self.registers.a) > 0x99 {
+                        adjust = adjust.wrapping_add(0x60);
+                        new_carry = true;
+                    }
+                    self.registers.a = self.registers.a.wrapping_add(adjust);
+                }
+
+                let z = self.registers.a == 0;
+                self.set_flags(z.into(), FlagOp::Untouched, FlagOp::Unset, new_carry.into());
+
+                4
+            }
 
 
             v @ (0xD3 | 0xDB | 0xDD | 0xE3 | 0xE4 | 0xEB | 0xEC | 0xED | 0xF4 | 0xFC | 0xFD) => {

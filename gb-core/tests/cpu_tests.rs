@@ -445,9 +445,52 @@ fn test_0x26_ld_h_n8() {
 }
 
 #[test]
-#[ignore]
 fn test_0x27_daa() {
-    todo!()
+    {
+        let (mut cpu, mut bus) = setup_test!(&[0x27]);
+        let old_pc = cpu.pc;
+        cpu.registers.a = 0x0B;
+        cpu.registers.f = 0;
+
+        cpu.step(&mut bus);
+
+        assert_eq!(cpu.pc - old_pc, 1);
+        assert_eq!(cpu.registers.a, 0x11);
+        assert_flags!(cpu, false, false, false, false);
+    }
+
+    {
+        let (mut cpu, mut bus) = setup_test!(&[0x27]);
+        cpu.registers.a = 0xC0;
+        cpu.registers.f = 0;
+
+        cpu.step(&mut bus);
+
+        assert_eq!(cpu.registers.a, 0x20);
+        assert_flags!(cpu, false, false, false, true);
+    }
+
+    {
+        let (mut cpu, mut bus) = setup_test!(&[0x27]);
+        cpu.registers.a = 0x1F;
+        cpu.registers.f = FLAG_N | FLAG_H;
+
+        cpu.step(&mut bus);
+
+        assert_eq!(cpu.registers.a, 0x19);
+        assert_flags!(cpu, false, true, false, false);
+    }
+
+    {
+        let (mut cpu, mut bus) = setup_test!(&[0x27]);
+        cpu.registers.a = 0x00;
+        cpu.registers.f = 0;
+
+        cpu.step(&mut bus);
+
+        assert_eq!(cpu.registers.a, 0x00);
+        assert_flags!(cpu, true, false, false, false);
+    }
 }
 
 #[test]
