@@ -346,7 +346,6 @@ fn test_0x1c_inc_e() {
 }
 
 #[test]
-#[ignore]
 fn test_0x1d_dec_e() {
     let (mut cpu, mut bus) = setup_test!(&[0x1D]);
     let old_pc = cpu.pc;
