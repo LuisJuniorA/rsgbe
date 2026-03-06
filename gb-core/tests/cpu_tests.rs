@@ -394,7 +394,6 @@ fn test_0x21_ld_hl_n16() {
 }
 
 #[test]
-#[ignore]
 fn test_0x22_ld_hl_inc_mem_a() {
     let (mut cpu, mut bus) = setup_test!(&[0x22]);
     let old_pc = cpu.pc;
