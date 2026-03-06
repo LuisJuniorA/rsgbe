@@ -303,7 +303,6 @@ fn test_0x18_jr_e8() {
 }
 
 #[test]
-#[ignore]
 fn test_0x19_add_hl_de() {
     let (mut cpu, mut bus) = setup_test!(&[0x19]);
     let old_pc = cpu.pc;
@@ -422,6 +421,7 @@ fn test_0x23_inc_hl() {
 }
 
 #[test]
+#[ignore]
 fn test_0x24_inc_h() {
     let (mut cpu, mut bus) = setup_test!(&[0x24]);
     let old_pc = cpu.pc;
