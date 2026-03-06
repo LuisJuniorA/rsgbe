@@ -222,7 +222,6 @@ fn test_0x10_stop_n8() {
 }
 
 #[test]
-#[ignore]
 fn test_0x11_ld_de_n16() {
     let (mut cpu, mut bus) = setup_test!(&[0x11, 0x00, 0x80]);
     let old_pc = cpu.pc;
