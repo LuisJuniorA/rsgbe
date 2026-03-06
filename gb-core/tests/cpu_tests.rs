@@ -193,7 +193,6 @@ fn test_0x0d_dec_c() {
 }
 
 #[test]
-#[ignore]
 fn test_0x0e_ld_c_n8() {
     let (mut cpu, mut bus) = setup_test!(&[0x0E, 0x12]);
     let old_pc = cpu.pc;

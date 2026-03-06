@@ -123,6 +123,11 @@ impl Cpu {
                 self.dec_u8(Reg8::C);
                 4
             }
+            0x0E /* LD C, n8 */ => {
+                let n8 = self.fetch_u8(bus);
+                self.registers.c = n8;
+                8
+            }
             v @ (0xD3 | 0xDB | 0xDD | 0xE3 | 0xE4 | 0xEB | 0xEC | 0xED | 0xF4 | 0xFC | 0xFD) => {
                 panic!("Illegal opcode {:#04X} encountered", v);
             }
