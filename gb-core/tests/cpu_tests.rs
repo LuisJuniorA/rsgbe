@@ -388,7 +388,11 @@ fn test_0x1f_rra() {
     assert_flags!(cpu, false, false, false, true);
 }
 
-// test_0x20_jr_nz_e8 (SKIP)
+#[test]
+#[ignore]
+fn test_0x20_jr_nz_e8() {
+    todo!()
+}
 
 #[test]
 #[ignore]
@@ -455,8 +459,17 @@ fn test_0x26_ld_h_n8() {
     assert_eq!(cpu.registers.h, 0xFE);
 }
 
-// test_0x27_daa (SKIP)
-// test_0x28_jr_z_e8 (SKIP)
+#[test]
+#[ignore]
+fn test_0x27_daa() {
+    todo!()
+}
+
+#[test]
+#[ignore]
+fn test_0x28_jr_z_e8() {
+    todo!()
+}
 
 #[test]
 #[ignore]
@@ -526,8 +539,17 @@ fn test_0x2e_ld_l_n8() {
     assert_eq!(cpu.registers.l, 0x55);
 }
 
-// test_0x2f_cpl (SKIP)
-// test_0x30_jr_nc_e8 (SKIP)
+#[test]
+#[ignore]
+fn test_0x2f_cpl() {
+    todo!()
+}
+
+#[test]
+#[ignore]
+fn test_0x30_jr_nc_e8() {
+    todo!()
+}
 
 #[test]
 #[ignore]
@@ -600,8 +622,17 @@ fn test_0x36_ld_hl_mem_n8() {
     assert_eq!(bus.read_byte(0xC000), 0x12);
 }
 
-// test_0x37_scf (SKIP)
-// test_0x38_jr_c_e8 (SKIP)
+#[test]
+#[ignore]
+fn test_0x37_scf() {
+    todo!()
+}
+
+#[test]
+#[ignore]
+fn test_0x38_jr_c_e8() {
+    todo!()
+}
 
 #[test]
 #[ignore]
@@ -672,7 +703,11 @@ fn test_0x3e_ld_a_n8() {
     assert_eq!(cpu.registers.a, 0x42);
 }
 
-// test_0x3f_ccf (SKIP)
+#[test]
+#[ignore]
+fn test_0x3f_ccf() {
+    todo!()
+}
 
 #[test]
 #[ignore]
