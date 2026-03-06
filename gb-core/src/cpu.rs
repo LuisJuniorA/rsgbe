@@ -1,3 +1,4 @@
+use crate::cpu::AddrSource::HL;
 use crate::memory::Bus;
 use crate::registers::Registers;
 
@@ -220,6 +221,10 @@ impl Cpu {
             }
             0x22 /* LD [HL+], A */ => {
                 self.ld_mem_r(bus, AddrSource::HLIncrement, Reg8::A);
+                8
+            }
+            0x23 /* INC HL */ => {
+                self.inc_u16(AddrSource::HL);
                 8
             }
 
