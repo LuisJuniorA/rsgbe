@@ -28,10 +28,10 @@ pub enum Reg8 {
     L,
 }
 
-const FLAG_Z: u8 = 1 << 7; // 0b1000_0000
-const FLAG_N: u8 = 1 << 6; // 0b0100_0000
-const FLAG_H: u8 = 1 << 5; // 0b0010_0000
-const FLAG_C: u8 = 1 << 4; // 0b0001_0000
+pub const FLAG_Z: u8 = 1 << 7; // 0b1000_0000
+pub const FLAG_N: u8 = 1 << 6; // 0b0100_0000
+pub const FLAG_H: u8 = 1 << 5; // 0b0010_0000
+pub const FLAG_C: u8 = 1 << 4; // 0b0001_0000
 
 enum FlagOp {
     Set,
@@ -86,7 +86,8 @@ impl Cpu {
                 4
             }
             0x06 /* LD B, n8 */ => {
-                self.dec_u8(Reg8::B);
+                let n8 = self.fetch_u8(bus);
+                self.registers.b = n8;
                 8
             }
             0x07 /* RLCA */ => {
@@ -144,11 +145,6 @@ impl Cpu {
             AddrSource::HL => self.registers.set_hl(to),
             _ => {}
         }
-    }
-
-    // LD R, R
-    fn ld_r_r(&mut self, to: &mut u8, from: u8) {
-        *to = from;
     }
 
     // LD R, [ADDR]
