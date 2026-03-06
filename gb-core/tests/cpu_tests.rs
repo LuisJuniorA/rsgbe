@@ -376,9 +376,12 @@ fn test_0x1f_rra() {
 }
 
 #[test]
-#[ignore]
 fn test_0x20_jr_nz_e8() {
-    todo!()
+    let (mut cpu, mut bus) = setup_test!(&[0x20, 0x05]);
+    cpu.registers.f = 0;
+    let old_pc = cpu.pc;
+    cpu.step(&mut bus);
+    assert_eq!(cpu.pc - old_pc, 7, "JR forward failed");
 }
 
 #[test]

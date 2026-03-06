@@ -175,7 +175,7 @@ impl Cpu {
                 4
             }
             0x18 /* JR e8 */ => {
-                self.jp_rel(bus, None)
+                self.jp_rel(bus, None, false)
             }
             0x19 /* ADD HL, DE */ => {
                 self.add_u16(AddrSource::HL, AddrSource::DE);
@@ -210,6 +210,10 @@ impl Cpu {
                 self.set_flags(FlagOp::Unset, FlagOp::Unset, FlagOp::Unset, carry.into());
                 4
             }
+            0x20 /*  JR NZ, e8 */ => {
+                self.jp_rel(bus, Some(self.registers.f & FLAG_Z), true)
+            }
+
 
             v @ (0xD3 | 0xDB | 0xDD | 0xE3 | 0xE4 | 0xEB | 0xEC | 0xED | 0xF4 | 0xFC | 0xFD) => {
                 panic!("Illegal opcode {:#04X} encountered", v);
@@ -345,11 +349,10 @@ impl Cpu {
         );
     }
 
-    fn jp_rel(&mut self, bus: &Bus, flag: Option<u8>) -> u8 {
+    fn jp_rel(&mut self, bus: &Bus, flag: Option<u8>, not: bool) -> u8 {
         let e8 = self.fetch_u8(bus);
         let flag_value = flag.unwrap_or(1);
-
-        if flag_value != 0 {
+        if (flag_value != 0) ^ not {
             let offset = e8 as i8 as i16;
             self.pc = self.pc.wrapping_add_signed(offset);
             12
