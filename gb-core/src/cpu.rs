@@ -13,8 +13,8 @@ enum AddrSource {
     BC,
     DE,
     HL,
-    HLIncrement, // Pour LD A, [HL+]
-    HLDecrement, // Pour LD A, [HL-]
+    HLIncrement, // For LD A, [HL+]
+    HLDecrement, // For LD A, [HL-]
 }
 #[derive(Clone, Copy)]
 pub enum Reg8 {
@@ -109,6 +109,10 @@ impl Cpu {
             }
             0x0A /* LD A, [BC] */ => {
                 self.ld_r_mem(bus, Reg8::A, AddrSource::BC);
+                8
+            }
+            0x0B /* DEC BC */ => {
+                self.dec_u16(AddrSource::BC);
                 8
             }
             v @ (0xD3 | 0xDB | 0xDD | 0xE3 | 0xE4 | 0xEB | 0xEC | 0xED | 0xF4 | 0xFC | 0xFD) => {

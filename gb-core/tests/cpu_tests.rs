@@ -161,7 +161,6 @@ fn test_0x0a_ld_a_bc_mem() {
 }
 
 #[test]
-#[ignore]
 fn test_0x0b_dec_bc() {
     let (mut cpu, mut bus) = setup_test!(&[0x0B]);
     let old_pc = cpu.pc;
