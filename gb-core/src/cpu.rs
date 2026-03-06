@@ -1,12 +1,6 @@
 use crate::memory::Bus;
 use crate::registers::Registers;
 
-pub struct Cpu {
-    pub registers: Registers, // Register
-    pub pc: u16,              // Program Counter
-    pub sp: u16,              // Stack Pointer
-}
-
 #[derive(Clone, Copy)]
 enum AddrSource {
     AF,
@@ -44,6 +38,11 @@ impl From<bool> for FlagOp {
         if value { FlagOp::Set } else { FlagOp::Unset }
     }
 }
+pub struct Cpu {
+    pub registers: Registers, // Register
+    pub pc: u16,              // Program Counter
+    pub sp: u16,              // Stack Pointer
+}
 
 impl Cpu {
     pub fn new() -> Self {
@@ -53,11 +52,11 @@ impl Cpu {
             sp: 0xFFE,
         }
     }
-    pub fn step(&mut self, bus: &mut Bus) {
+    pub fn step(&mut self, bus: &mut Bus) -> u8 {
         let opcode = bus.read_byte(self.pc);
         self.pc = self.pc.wrapping_add(1);
 
-        self.execute(bus, opcode);
+        self.execute(bus, opcode)
     }
 
     // LD [HL], A = bus.write_byte(hl, A)
