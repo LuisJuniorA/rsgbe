@@ -426,7 +426,6 @@ fn test_0x24_inc_h() {
 }
 
 #[test]
-#[ignore]
 fn test_0x25_dec_h() {
     let (mut cpu, mut bus) = setup_test!(&[0x25]);
     let old_pc = cpu.pc;
