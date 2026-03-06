@@ -104,7 +104,7 @@ impl Cpu {
                 20
             }
             0x09 /* ADD HL, BC */ => {
-                self.add_u16(bus, AddrSource::HL, AddrSource::BC);
+                self.add_u16(AddrSource::HL, AddrSource::BC);
                 8
             }
             0x0A /* LD A, [BC] */ => {
@@ -174,6 +174,9 @@ impl Cpu {
                 self.set_reg8(Reg8::A, result);
                 self.set_flags(FlagOp::Unset, FlagOp::Unset, FlagOp::Unset, carry.into());
                 4
+            }
+            0x18 /* JR e8 */ => {
+                self.jp_rel(bus, None)
             }
 
             v @ (0xD3 | 0xDB | 0xDD | 0xE3 | 0xE4 | 0xEB | 0xEC | 0xED | 0xF4 | 0xFC | 0xFD) => {
@@ -290,7 +293,7 @@ impl Cpu {
         bus.write_byte(addr.wrapping_add(1), high);
     }
 
-    fn add_u16(&mut self, bus: &mut Bus, dest: AddrSource, source: AddrSource) {
+    fn add_u16(&mut self, dest: AddrSource, source: AddrSource) {
         let val1 = self.get_addr_from_source(dest);
         let val2 = self.get_addr_from_source(source);
 
@@ -308,6 +311,19 @@ impl Cpu {
             half_carry.into(),
             carry.into(),
         );
+    }
+
+    fn jp_rel(&mut self, bus: &Bus, flag: Option<u8>) -> u8 {
+        let e8 = self.fetch_u8(bus);
+        let flag_value = flag.unwrap_or(1);
+
+        if flag_value != 0 {
+            let offset = e8 as i8 as i16;
+            self.pc = self.pc.wrapping_add_signed(offset);
+            12
+        } else {
+            8
+        }
     }
 
     fn get_reg8(&self, reg: Reg8) -> u8 {
@@ -336,7 +352,7 @@ impl Cpu {
         }
     }
 
-    pub fn set_flags(&mut self, z: FlagOp, n: FlagOp, h: FlagOp, c: FlagOp) {
+    fn set_flags(&mut self, z: FlagOp, n: FlagOp, h: FlagOp, c: FlagOp) {
         match z {
             FlagOp::Set => self.registers.f |= FLAG_Z,
             FlagOp::Unset => self.registers.f &= !FLAG_Z,

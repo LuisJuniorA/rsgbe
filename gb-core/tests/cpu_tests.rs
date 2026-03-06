@@ -294,7 +294,13 @@ fn test_0x17_rla() {
     assert_flags!(cpu, false, false, false, true);
 }
 
-// test_0x18_jr_e8 (SKIP)
+#[test]
+fn test_0x18_jr_e8() {
+    let (mut cpu, mut bus) = setup_test!(&[0x18, 0x05]);
+    let old_pc = cpu.pc;
+    cpu.step(&mut bus);
+    assert_eq!(cpu.pc - old_pc, 7, "JR forward failed");
+}
 
 #[test]
 #[ignore]
