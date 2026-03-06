@@ -128,6 +128,14 @@ impl Cpu {
                 self.registers.c = n8;
                 8
             }
+            0x0F /* RRCA */ => {
+                let a = self.get_reg8(Reg8::A);
+                let carry = (a & 0x01) != 0;
+                let result = a.rotate_right(1);
+                self.set_reg8(Reg8::A, result);
+                self.set_flags(FlagOp::Unset, FlagOp::Unset, FlagOp::Unset, carry.into());
+                4
+            }
             v @ (0xD3 | 0xDB | 0xDD | 0xE3 | 0xE4 | 0xEB | 0xEC | 0xED | 0xF4 | 0xFC | 0xFD) => {
                 panic!("Illegal opcode {:#04X} encountered", v);
             }

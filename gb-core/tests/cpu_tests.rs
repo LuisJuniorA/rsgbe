@@ -202,7 +202,6 @@ fn test_0x0e_ld_c_n8() {
 }
 
 #[test]
-#[ignore]
 fn test_0x0f_rrca() {
     let (mut cpu, mut bus) = setup_test!(&[0x0F]);
     let old_pc = cpu.pc;
