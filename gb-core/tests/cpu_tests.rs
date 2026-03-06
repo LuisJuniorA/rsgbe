@@ -509,7 +509,6 @@ fn test_0x28_jr_z_e8() {
 }
 
 #[test]
-#[ignore]
 fn test_0x29_add_hl_hl() {
     let (mut cpu, mut bus) = setup_test!(&[0x29]);
     let old_pc = cpu.pc;
