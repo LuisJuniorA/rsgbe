@@ -520,7 +520,6 @@ fn test_0x29_add_hl_hl() {
 }
 
 #[test]
-#[ignore]
 fn test_0x2a_ld_a_hl_inc_mem() {
     let (mut cpu, mut bus) = setup_test!(&[0x2A]);
     let old_pc = cpu.pc;
