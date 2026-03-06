@@ -283,7 +283,6 @@ fn test_0x16_ld_d_n8() {
 }
 
 #[test]
-#[ignore]
 fn test_0x17_rla() {
     let (mut cpu, mut bus) = setup_test!(&[0x17]);
     let old_pc = cpu.pc;

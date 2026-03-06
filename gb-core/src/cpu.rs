@@ -141,24 +141,24 @@ impl Cpu {
                 unreachable!();
                 4
             }
-            0x11 /*LD DE, n16*/ => {
+            0x11 /* LD DE, n16 */ => {
                 let n16 = self.fetch_u16(bus);
                 self.registers.set_de(n16);
                 12
             }
-            0x12 /*LD [DE], A*/ => {
+            0x12 /* LD [DE], A */ => {
                 self.ld_mem_r(bus, AddrSource::DE, Reg8::A);
                 8
             }
-            0x13 /*INC DE*/ => {
+            0x13 /* INC DE */ => {
                 self.inc_u16(AddrSource::DE);
                 8
             }
-            0x14 /*INC D*/ => {
+            0x14 /* INC D */ => {
                 self.inc_u8(Reg8::D);
                 4
             }
-            0x15 /*DEC D*/ => {
+            0x15 /* DEC D */ => {
                 self.dec_u8(Reg8::D);
                 4
             }
@@ -166,6 +166,14 @@ impl Cpu {
                 let n8 = self.fetch_u8(bus);
                 self.registers.d = n8;
                 8
+            }
+            0x17 /* RLA */ => {
+                let a = self.get_reg8(Reg8::A);
+                let carry = (a & 0x80) != 0;
+                let result = (a << 1) | ((self.registers.f & FLAG_C) >> 4);
+                self.set_reg8(Reg8::A, result);
+                self.set_flags(FlagOp::Unset, FlagOp::Unset, FlagOp::Unset, carry.into());
+                4
             }
 
             v @ (0xD3 | 0xDB | 0xDD | 0xE3 | 0xE4 | 0xEB | 0xEC | 0xED | 0xF4 | 0xFC | 0xFD) => {
