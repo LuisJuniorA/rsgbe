@@ -150,9 +150,13 @@ impl Cpu {
                 self.ld_mem_r(bus, AddrSource::DE, Reg8::A);
                 8
             }
-            0x13 /**/ => {
+            0x13 /*INC DE*/ => {
                 self.inc_u16(AddrSource::DE);
                 8
+            }
+            0x14 /*INC D*/ => {
+                self.inc_u8(Reg8::D);
+                4
             }
 
             v @ (0xD3 | 0xDB | 0xDD | 0xE3 | 0xE4 | 0xEB | 0xEC | 0xED | 0xF4 | 0xFC | 0xFD) => {
