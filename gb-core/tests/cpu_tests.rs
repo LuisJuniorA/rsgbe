@@ -542,7 +542,6 @@ fn test_0x2b_dec_hl() {
 }
 
 #[test]
-#[ignore]
 fn test_0x2c_inc_l() {
     let (mut cpu, mut bus) = setup_test!(&[0x2C]);
     let old_pc = cpu.pc;
