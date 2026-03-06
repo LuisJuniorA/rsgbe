@@ -316,7 +316,6 @@ fn test_0x19_add_hl_de() {
 }
 
 #[test]
-#[ignore]
 fn test_0x1a_ld_a_de_mem() {
     let (mut cpu, mut bus) = setup_test!(&[0x1A]);
     let old_pc = cpu.pc;
