@@ -213,7 +213,7 @@ fn test_0x0f_rrca() {
 }
 
 #[test]
-#[ignore]
+#[should_panic(expected = "WIP")]
 fn test_0x10_stop_n8() {
     let (mut cpu, mut bus) = setup_test!(&[0x10, 0x00]);
     let old_pc = cpu.pc;
