@@ -837,6 +837,15 @@ test_ld!(
 test_ld!(
     #[ignore]
     r8_r8,
+    test_0x49_ld_c_c,
+    0x49,
+    c,
+    c,
+    4
+);
+test_ld!(
+    #[ignore]
+    r8_r8,
     test_0x4a_ld_c_d,
     0x4A,
     c,
