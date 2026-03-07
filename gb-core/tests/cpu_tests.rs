@@ -1019,3 +1019,93 @@ test_ld!(
     e,
     4
 );
+test_ld!(
+    #[ignore]
+    r8_r8,
+    test_0x64_ld_h_h,
+    0x63,
+    h,
+    h,
+    4
+);
+test_ld!(
+    #[ignore]
+    r8_r8,
+    test_0x65_ld_h_l,
+    0x63,
+    h,
+    l,
+    4
+);
+test_ld!(
+    #[ignore]
+    r8_r8,
+    test_0x67_ld_b_a,
+    0x67,
+    b,
+    a,
+    4
+);
+test_ld!(
+    #[ignore]
+    r8_r8,
+    test_0x68_ld_c_b,
+    0x68,
+    c,
+    b,
+    4
+);
+test_ld!(
+    #[ignore]
+    r8_r8,
+    test_0x69_ld_c_c,
+    0x69,
+    c,
+    c,
+    4
+);
+test_ld!(
+    #[ignore]
+    r8_r8,
+    test_0x6a_ld_c_d,
+    0x6A,
+    c,
+    d,
+    4
+);
+test_ld!(
+    #[ignore]
+    r8_r8,
+    test_0x6b_ld_c_e,
+    0x6B,
+    c,
+    e,
+    4
+);
+test_ld!(
+    #[ignore]
+    r8_r8,
+    test_0x6c_ld_c_h,
+    0x6C,
+    c,
+    h,
+    4
+);
+test_ld!(
+    #[ignore]
+    r8_r8,
+    test_0x6d_ld_c_l,
+    0x6D,
+    c,
+    l,
+    4
+);
+test_ld!(
+    #[ignore]
+    r8_r8,
+    test_0x6f_ld_c_a,
+    0x6F,
+    c,
+    a,
+    4
+);
