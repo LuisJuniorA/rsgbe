@@ -1023,7 +1023,7 @@ test_ld!(
     #[ignore]
     r8_r8,
     test_0x64_ld_h_h,
-    0x63,
+    0x64,
     h,
     h,
     4
@@ -1032,7 +1032,7 @@ test_ld!(
     #[ignore]
     r8_r8,
     test_0x65_ld_h_l,
-    0x63,
+    0x65,
     h,
     l,
     4
@@ -1040,72 +1040,72 @@ test_ld!(
 test_ld!(
     #[ignore]
     r8_r8,
-    test_0x67_ld_b_a,
+    test_0x67_ld_h_a,
     0x67,
-    b,
+    h,
     a,
     4
 );
 test_ld!(
     #[ignore]
     r8_r8,
-    test_0x68_ld_c_b,
+    test_0x68_ld_l_b,
     0x68,
-    c,
+    l,
     b,
     4
 );
 test_ld!(
     #[ignore]
     r8_r8,
-    test_0x69_ld_c_c,
+    test_0x69_ld_l_c,
     0x69,
-    c,
+    l,
     c,
     4
 );
 test_ld!(
     #[ignore]
     r8_r8,
-    test_0x6a_ld_c_d,
+    test_0x6a_ld_l_d,
     0x6A,
-    c,
+    l,
     d,
     4
 );
 test_ld!(
     #[ignore]
     r8_r8,
-    test_0x6b_ld_c_e,
+    test_0x6b_ld_l_e,
     0x6B,
-    c,
+    l,
     e,
     4
 );
 test_ld!(
     #[ignore]
     r8_r8,
-    test_0x6c_ld_c_h,
+    test_0x6c_ld_l_h,
     0x6C,
-    c,
+    l,
     h,
     4
 );
 test_ld!(
     #[ignore]
     r8_r8,
-    test_0x6d_ld_c_l,
+    test_0x6d_ld_l_l,
     0x6D,
-    c,
+    l,
     l,
     4
 );
 test_ld!(
     #[ignore]
     r8_r8,
-    test_0x6f_ld_c_a,
+    test_0x6f_ld_l_a,
     0x6F,
-    c,
+    l,
     a,
     4
 );
