@@ -122,16 +122,35 @@ macro_rules! test_ld {
     };
 }
 
-macro_rules! test_mem_write {
-    ($(#[$attr:meta])* $name:ident, $opcode:expr, $addr_reg:ident, $cycles:expr) => {
-        $(#[$attr])* #[test]
+macro_rules! test_mem_write_r8 {
+    ($name:ident, $opcode:expr, $addr_reg:ident, $src_reg:ident, $cycles:expr) => {
+        #[test]
         fn $name() {
             let (mut cpu, mut bus) = setup_test!(&[$opcode]);
-            let addr = 0xC000;
-            set_r16!(cpu, $addr_reg, addr);
-            cpu.registers.a = 0xDE;
+
+            // On utilise des valeurs qui forment des adresses dans la WRAM (0xC000+)
+            cpu.registers.a = 0xAA;
+            cpu.registers.b = 0xC0; // Pour BC -> 0xC022
+            cpu.registers.c = 0x22;
+            cpu.registers.d = 0xC1; // Pour DE -> 0xC144
+            cpu.registers.e = 0x44;
+            cpu.registers.h = 0xC2; // Pour HL -> 0xC200
+            cpu.registers.l = 0x00;
+            cpu.sp = 0xD000;
+
+            let addr = get_r16!(cpu, $addr_reg);
+            let expected_val = cpu.registers.$src_reg;
+
             let t = cpu.step(&mut bus);
-            assert_eq!(bus.read_byte(addr), 0xDE);
+
+            assert_eq!(
+                bus.read_byte(addr),
+                expected_val,
+                "Échec: le contenu de {} n'a pas été écrit à l'adresse [{}] ({:04X})",
+                stringify!($src_reg),
+                stringify!($addr_reg),
+                addr
+            );
             assert_eq!(t, $cycles);
         }
     };
@@ -229,7 +248,7 @@ fn test_0x00_nop() {
 }
 
 test_ld!(r16_n16, test_0x01_ld_bc_n16, 0x01, bc, 0x1234, 12);
-test_mem_write!(test_0x02_ld_bc_a, 0x02, bc, 8);
+test_mem_write_r8!(test_0x02_ld_bc_a, 0x02, bc, a, 8);
 test_inc_dec!(r16, test_0x03_inc_bc, 0x03, bc, 0x00FF, 0x0100, 8);
 test_inc_dec!(
     r8,
@@ -332,7 +351,7 @@ fn test_0x10_stop_n8() {
 }
 
 test_ld!(r16_n16, test_0x11_ld_de_n16, 0x11, de, 0x8000, 12);
-test_mem_write!(test_0x12_ld_de_a, 0x12, de, 8);
+test_mem_write_r8!(test_0x12_ld_de_a, 0x12, de, a, 8);
 test_inc_dec!(r16, test_0x13_inc_de, 0x13, de, 0xFFFF, 0x0000, 8);
 test_inc_dec!(
     r8,
@@ -754,429 +773,74 @@ fn test_0x3f_ccf() {
     assert_eq!(cpu.registers.f & FLAG_C, 0);
 }
 
-test_ld!(
-    #[ignore]
-    r8_r8,
-    test_0x40_ld_b_b,
-    0x40,
-    b,
-    b,
-    4
-);
-test_ld!(
-    #[ignore]
-    r8_r8,
-    test_0x41_ld_b_c,
-    0x41,
-    b,
-    c,
-    4
-);
-test_ld!(
-    #[ignore]
-    r8_r8,
-    test_0x42_ld_b_d,
-    0x42,
-    b,
-    d,
-    4
-);
-test_ld!(
-    #[ignore]
-    r8_r8,
-    test_0x43_ld_b_e,
-    0x43,
-    b,
-    e,
-    4
-);
-test_ld!(
-    #[ignore]
-    r8_r8,
-    test_0x44_ld_b_h,
-    0x44,
-    b,
-    h,
-    4
-);
-test_ld!(
-    #[ignore]
-    r8_r8,
-    test_0x45_ld_b_l,
-    0x45,
-    b,
-    l,
-    4
-);
-test_ld!(
-    #[ignore]
-    r8_hl_mem,
-    test_0x46_ld_b_hl,
-    0x46,
-    b,
-    8
-);
-test_ld!(
-    #[ignore]
-    r8_r8,
-    test_0x47_ld_b_a,
-    0x47,
-    b,
-    a,
-    4
-);
-test_ld!(
-    #[ignore]
-    r8_r8,
-    test_0x48_ld_c_b,
-    0x48,
-    c,
-    b,
-    4
-);
-test_ld!(
-    #[ignore]
-    r8_r8,
-    test_0x49_ld_c_c,
-    0x49,
-    c,
-    c,
-    4
-);
-test_ld!(
-    #[ignore]
-    r8_r8,
-    test_0x4a_ld_c_d,
-    0x4A,
-    c,
-    d,
-    4
-);
-test_ld!(
-    #[ignore]
-    r8_r8,
-    test_0x4b_ld_c_e,
-    0x4B,
-    c,
-    e,
-    4
-);
-test_ld!(
-    #[ignore]
-    r8_r8,
-    test_0x4c_ld_c_h,
-    0x4C,
-    c,
-    h,
-    4
-);
-test_ld!(
-    #[ignore]
-    r8_r8,
-    test_0x4d_ld_c_l,
-    0x4D,
-    c,
-    l,
-    4
-);
-test_ld!(
-    #[ignore]
-    r8_hl_mem,
-    test_0x4e_ld_c_hl,
-    0x4E,
-    c,
-    8
-);
-test_ld!(
-    #[ignore]
-    r8_r8,
-    test_0x4f_ld_c_a,
-    0x4F,
-    c,
-    a,
-    4
-);
-test_ld!(
-    #[ignore]
-    r8_r8,
-    test_0x50_ld_d_b,
-    0x50,
-    d,
-    b,
-    4
-);
-test_ld!(
-    #[ignore]
-    r8_r8,
-    test_0x51_ld_d_c,
-    0x51,
-    d,
-    c,
-    4
-);
-test_ld!(
-    #[ignore]
-    r8_r8,
-    test_0x52_ld_d_d,
-    0x52,
-    d,
-    d,
-    4
-);
-test_ld!(
-    #[ignore]
-    r8_r8,
-    test_0x53_ld_d_e,
-    0x53,
-    d,
-    e,
-    4
-);
-test_ld!(
-    #[ignore]
-    r8_r8,
-    test_0x54_ld_d_h,
-    0x54,
-    d,
-    h,
-    4
-);
-test_ld!(
-    #[ignore]
-    r8_r8,
-    test_0x55_ld_d_l,
-    0x55,
-    d,
-    l,
-    4
-);
-test_ld!(
-    #[ignore]
-    r8_hl_mem,
-    test_0x56_ld_d_hl,
-    0x56,
-    d,
-    8
-);
-test_ld!(
-    #[ignore]
-    r8_r8,
-    test_0x57_ld_d_a,
-    0x57,
-    d,
-    a,
-    4
-);
-test_ld!(
-    #[ignore]
-    r8_r8,
-    test_0x58_ld_e_b,
-    0x58,
-    e,
-    b,
-    4
-);
-test_ld!(
-    #[ignore]
-    r8_r8,
-    test_0x59_ld_e_c,
-    0x59,
-    e,
-    c,
-    4
-);
-test_ld!(
-    #[ignore]
-    r8_r8,
-    test_0x5a_ld_e_d,
-    0x5A,
-    e,
-    d,
-    4
-);
-test_ld!(
-    #[ignore]
-    r8_r8,
-    test_0x5b_ld_e_e,
-    0x5B,
-    e,
-    e,
-    4
-);
-test_ld!(
-    #[ignore]
-    r8_r8,
-    test_0x5c_ld_e_h,
-    0x5C,
-    e,
-    h,
-    4
-);
-test_ld!(
-    #[ignore]
-    r8_r8,
-    test_0x5d_ld_e_l,
-    0x5D,
-    e,
-    l,
-    4
-);
-test_ld!(
-    #[ignore]
-    r8_hl_mem,
-    test_0x5e_ld_e_hl,
-    0x5E,
-    e,
-    8
-);
-test_ld!(
-    #[ignore]
-    r8_r8,
-    test_0x5f_ld_e_a,
-    0x5F,
-    e,
-    a,
-    4
-);
-test_ld!(
-    #[ignore]
-    r8_r8,
-    test_0x60_ld_h_b,
-    0x60,
-    h,
-    b,
-    4
-);
-test_ld!(
-    #[ignore]
-    r8_r8,
-    test_0x61_ld_h_c,
-    0x61,
-    h,
-    c,
-    4
-);
-test_ld!(
-    #[ignore]
-    r8_r8,
-    test_0x62_ld_h_d,
-    0x62,
-    h,
-    d,
-    4
-);
-test_ld!(
-    #[ignore]
-    r8_r8,
-    test_0x63_ld_h_e,
-    0x63,
-    h,
-    e,
-    4
-);
-test_ld!(
-    #[ignore]
-    r8_r8,
-    test_0x64_ld_h_h,
-    0x64,
-    h,
-    h,
-    4
-);
-test_ld!(
-    #[ignore]
-    r8_r8,
-    test_0x65_ld_h_l,
-    0x65,
-    h,
-    l,
-    4
-);
-test_ld!(
-    #[ignore]
-    r8_hl_mem,
-    test_0x66_ld_h_hl,
-    0x66,
-    h,
-    8
-);
-test_ld!(
-    #[ignore]
-    r8_r8,
-    test_0x67_ld_h_a,
-    0x67,
-    h,
-    a,
-    4
-);
-test_ld!(
-    #[ignore]
-    r8_r8,
-    test_0x68_ld_l_b,
-    0x68,
-    l,
-    b,
-    4
-);
-test_ld!(
-    #[ignore]
-    r8_r8,
-    test_0x69_ld_l_c,
-    0x69,
-    l,
-    c,
-    4
-);
-test_ld!(
-    #[ignore]
-    r8_r8,
-    test_0x6a_ld_l_d,
-    0x6A,
-    l,
-    d,
-    4
-);
-test_ld!(
-    #[ignore]
-    r8_r8,
-    test_0x6b_ld_l_e,
-    0x6B,
-    l,
-    e,
-    4
-);
-test_ld!(
-    #[ignore]
-    r8_r8,
-    test_0x6c_ld_l_h,
-    0x6C,
-    l,
-    h,
-    4
-);
-test_ld!(
-    #[ignore]
-    r8_r8,
-    test_0x6d_ld_l_l,
-    0x6D,
-    l,
-    l,
-    4
-);
-test_ld!(
-    #[ignore]
-    r8_hl_mem,
-    test_0x6e_ld_l_hl,
-    0x6E,
-    l,
-    8
-);
-test_ld!(
-    #[ignore]
-    r8_r8,
-    test_0x6f_ld_l_a,
-    0x6F,
-    l,
-    a,
-    4
-);
+test_ld!(r8_r8, test_0x40_ld_b_b, 0x40, b, b, 4);
+test_ld!(r8_r8, test_0x41_ld_b_c, 0x41, b, c, 4);
+test_ld!(r8_r8, test_0x42_ld_b_d, 0x42, b, d, 4);
+test_ld!(r8_r8, test_0x43_ld_b_e, 0x43, b, e, 4);
+test_ld!(r8_r8, test_0x44_ld_b_h, 0x44, b, h, 4);
+test_ld!(r8_r8, test_0x45_ld_b_l, 0x45, b, l, 4);
+test_ld!(r8_hl_mem, test_0x46_ld_b_hl, 0x46, b, 8);
+test_ld!(r8_r8, test_0x47_ld_b_a, 0x47, b, a, 4);
+test_ld!(r8_r8, test_0x48_ld_c_b, 0x48, c, b, 4);
+test_ld!(r8_r8, test_0x49_ld_c_c, 0x49, c, c, 4);
+test_ld!(r8_r8, test_0x4a_ld_c_d, 0x4A, c, d, 4);
+test_ld!(r8_r8, test_0x4b_ld_c_e, 0x4B, c, e, 4);
+test_ld!(r8_r8, test_0x4c_ld_c_h, 0x4C, c, h, 4);
+test_ld!(r8_r8, test_0x4d_ld_c_l, 0x4D, c, l, 4);
+test_ld!(r8_hl_mem, test_0x4e_ld_c_hl, 0x4E, c, 8);
+test_ld!(r8_r8, test_0x4f_ld_c_a, 0x4F, c, a, 4);
+test_ld!(r8_r8, test_0x50_ld_d_b, 0x50, d, b, 4);
+test_ld!(r8_r8, test_0x51_ld_d_c, 0x51, d, c, 4);
+test_ld!(r8_r8, test_0x52_ld_d_d, 0x52, d, d, 4);
+test_ld!(r8_r8, test_0x53_ld_d_e, 0x53, d, e, 4);
+test_ld!(r8_r8, test_0x54_ld_d_h, 0x54, d, h, 4);
+test_ld!(r8_r8, test_0x55_ld_d_l, 0x55, d, l, 4);
+test_ld!(r8_hl_mem, test_0x56_ld_d_hl, 0x56, d, 8);
+test_ld!(r8_r8, test_0x57_ld_d_a, 0x57, d, a, 4);
+test_ld!(r8_r8, test_0x58_ld_e_b, 0x58, e, b, 4);
+test_ld!(r8_r8, test_0x59_ld_e_c, 0x59, e, c, 4);
+test_ld!(r8_r8, test_0x5a_ld_e_d, 0x5A, e, d, 4);
+test_ld!(r8_r8, test_0x5b_ld_e_e, 0x5B, e, e, 4);
+test_ld!(r8_r8, test_0x5c_ld_e_h, 0x5C, e, h, 4);
+test_ld!(r8_r8, test_0x5d_ld_e_l, 0x5D, e, l, 4);
+test_ld!(r8_hl_mem, test_0x5e_ld_e_hl, 0x5E, e, 8);
+test_ld!(r8_r8, test_0x5f_ld_e_a, 0x5F, e, a, 4);
+test_ld!(r8_r8, test_0x60_ld_h_b, 0x60, h, b, 4);
+test_ld!(r8_r8, test_0x61_ld_h_c, 0x61, h, c, 4);
+test_ld!(r8_r8, test_0x62_ld_h_d, 0x62, h, d, 4);
+test_ld!(r8_r8, test_0x63_ld_h_e, 0x63, h, e, 4);
+test_ld!(r8_r8, test_0x64_ld_h_h, 0x64, h, h, 4);
+test_ld!(r8_r8, test_0x65_ld_h_l, 0x65, h, l, 4);
+test_ld!(r8_hl_mem, test_0x66_ld_h_hl, 0x66, h, 8);
+test_ld!(r8_r8, test_0x67_ld_h_a, 0x67, h, a, 4);
+test_ld!(r8_r8, test_0x68_ld_l_b, 0x68, l, b, 4);
+test_ld!(r8_r8, test_0x69_ld_l_c, 0x69, l, c, 4);
+test_ld!(r8_r8, test_0x6a_ld_l_d, 0x6A, l, d, 4);
+test_ld!(r8_r8, test_0x6b_ld_l_e, 0x6B, l, e, 4);
+test_ld!(r8_r8, test_0x6c_ld_l_h, 0x6C, l, h, 4);
+test_ld!(r8_r8, test_0x6d_ld_l_l, 0x6D, l, l, 4);
+test_ld!(r8_hl_mem, test_0x6e_ld_l_hl, 0x6E, l, 8);
+test_ld!(r8_r8, test_0x6f_ld_l_a, 0x6F, l, a, 4);
+test_mem_write_r8!(test_0x70_ld_hl_mem_b, 0x70, hl, b, 8);
+test_mem_write_r8!(test_0x71_ld_hl_mem_c, 0x71, hl, c, 8);
+test_mem_write_r8!(test_0x72_ld_hl_mem_d, 0x72, hl, d, 8);
+test_mem_write_r8!(test_0x73_ld_hl_mem_e, 0x73, hl, e, 8);
+test_mem_write_r8!(test_0x74_ld_hl_mem_h, 0x74, hl, h, 8);
+test_mem_write_r8!(test_0x75_ld_hl_mem_l, 0x75, hl, l, 8);
+
+#[test]
+#[should_panic(expected = "WIP")]
+fn test_0x76_halt() {
+    let (mut cpu, mut bus) = setup_test!(&[0x76]);
+    cpu.step(&mut bus);
+}
+
+test_mem_write_r8!(test_0x77_ld_hl_mem_a, 0x77, hl, a, 8);
+test_ld!(r8_r8, test_0x78_ld_a_b, 0x78, a, b, 4);
+test_ld!(r8_r8, test_0x79_ld_a_c, 0x79, a, c, 4);
+test_ld!(r8_r8, test_0x7a_ld_a_d, 0x7A, a, d, 4);
+test_ld!(r8_r8, test_0x7b_ld_a_e, 0x7B, a, e, 4);
+test_ld!(r8_r8, test_0x7c_ld_a_h, 0x7C, a, h, 4);
+test_ld!(r8_r8, test_0x7d_ld_a_l, 0x7D, a, l, 4);
+test_ld!(r8_hl_mem, test_0x7e_ld_a_hl, 0x7E, a, 8);
+test_ld!(r8_r8, test_0x7f_ld_a_a, 0x7F, a, a, 4);
