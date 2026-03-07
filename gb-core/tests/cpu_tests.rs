@@ -106,6 +106,20 @@ macro_rules! test_ld {
             assert_eq!(t, $cycles);
         }
     };
+    ($(#[$attr:meta])* r8_hl_mem, $name:ident, $opcode:expr, $dst:ident, $cycles:expr) => {
+        $(#[$attr])* #[test]
+        fn $name() {
+            let (mut cpu, mut bus) = setup_test!(&[$opcode]);
+            let addr = 0xC000;
+            set_r16!(cpu, hl, addr);
+            bus.write_byte(addr, 0x88);
+
+            let t = cpu.step(&mut bus);
+
+            assert_eq!(cpu.registers.$dst, 0x88);
+            assert_eq!(t, $cycles);
+        }
+    };
 }
 
 macro_rules! test_mem_write {
@@ -796,6 +810,14 @@ test_ld!(
 );
 test_ld!(
     #[ignore]
+    r8_hl_mem,
+    test_0x46_ld_b_hl,
+    0x46,
+    b,
+    8
+);
+test_ld!(
+    #[ignore]
     r8_r8,
     test_0x47_ld_b_a,
     0x47,
@@ -847,6 +869,14 @@ test_ld!(
     c,
     l,
     4
+);
+test_ld!(
+    #[ignore]
+    r8_hl_mem,
+    test_0x4e_ld_c_hl,
+    0x4E,
+    c,
+    8
 );
 test_ld!(
     #[ignore]
@@ -913,6 +943,14 @@ test_ld!(
 );
 test_ld!(
     #[ignore]
+    r8_hl_mem,
+    test_0x56_ld_d_hl,
+    0x56,
+    d,
+    8
+);
+test_ld!(
+    #[ignore]
     r8_r8,
     test_0x57_ld_d_a,
     0x57,
@@ -973,6 +1011,14 @@ test_ld!(
     e,
     l,
     4
+);
+test_ld!(
+    #[ignore]
+    r8_hl_mem,
+    test_0x5e_ld_e_hl,
+    0x5E,
+    e,
+    8
 );
 test_ld!(
     #[ignore]
@@ -1039,6 +1085,14 @@ test_ld!(
 );
 test_ld!(
     #[ignore]
+    r8_hl_mem,
+    test_0x66_ld_h_hl,
+    0x66,
+    h,
+    8
+);
+test_ld!(
+    #[ignore]
     r8_r8,
     test_0x67_ld_h_a,
     0x67,
@@ -1099,6 +1153,14 @@ test_ld!(
     l,
     l,
     4
+);
+test_ld!(
+    #[ignore]
+    r8_hl_mem,
+    test_0x6e_ld_l_hl,
+    0x6E,
+    l,
+    8
 );
 test_ld!(
     #[ignore]
