@@ -326,6 +326,12 @@ impl Cpu {
                 self.dec_mem(bus, addr);
                 12
             }
+            0x36 /* LD [HL], n8 */ => {
+                let n8 = self.fetch_u8(bus);
+                let addr = self.get_addr_from_source(AddrSource::HL);
+                bus.write_byte(addr, n8);
+                12
+            }
 
             v @ (0xD3 | 0xDB | 0xDD | 0xE3 | 0xE4 | 0xEB | 0xEC | 0xED | 0xF4 | 0xFC | 0xFD) => {
                 panic!("Illegal opcode {:#04X} encountered", v);
