@@ -321,6 +321,11 @@ impl Cpu {
                 self.inc_mem(bus, addr);
                 12
             }
+            0x35 /* DEC [HL] */ => {
+                let addr = self.registers.get_hl();
+                self.dec_mem(bus, addr);
+                12
+            }
 
             v @ (0xD3 | 0xDB | 0xDD | 0xE3 | 0xE4 | 0xEB | 0xEC | 0xED | 0xF4 | 0xFC | 0xFD) => {
                 panic!("Illegal opcode {:#04X} encountered", v);
@@ -465,6 +470,19 @@ impl Cpu {
             (result == 0).into(),
             FlagOp::Unset,
             ((val & 0x0F) == 0x0F).into(),
+            FlagOp::Untouched,
+        );
+    }
+
+    fn dec_mem(&mut self, bus: &mut Bus, addr: u16) {
+        let val = bus.read_byte(addr);
+        let result = val.wrapping_sub(1);
+        bus.write_byte(addr, result);
+
+        self.set_flags(
+            (result == 0).into(),
+            FlagOp::Set,
+            ((val & 0x0F) == 0).into(),
             FlagOp::Untouched,
         );
     }
