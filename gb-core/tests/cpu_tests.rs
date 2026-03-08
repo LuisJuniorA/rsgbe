@@ -587,16 +587,7 @@ fn test_0x32_ld_hl_dec_mem_a() {
     assert_eq!(cpu.registers.get_hl(), 0xC004);
 }
 
-test_inc_dec!(
-    #[ignore]
-    r16,
-    test_0x33_inc_sp,
-    0x33,
-    sp,
-    0xFFFF,
-    0x0000,
-    8
-);
+test_inc_dec!(r16, test_0x33_inc_sp, 0x33, sp, 0xFFFF, 0x0000, 8);
 
 #[test]
 #[ignore]
