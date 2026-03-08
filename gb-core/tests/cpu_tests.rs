@@ -573,24 +573,8 @@ fn test_0x2f_cpl() {
     assert_flags!(cpu, false, true, true, false);
 }
 
-test_jr!(
-    #[ignore]
-    test_0x30_jr_nc_jump,
-    0x30,
-    FLAG_C,
-    false,
-    0x0A,
-    true
-);
-test_jr!(
-    #[ignore]
-    test_0x30_jr_nc_no_jump,
-    0x30,
-    FLAG_C,
-    true,
-    0x0A,
-    false
-);
+test_jr!(test_0x30_jr_nc_jump, 0x30, FLAG_C, false, 0x0A, true);
+test_jr!(test_0x30_jr_nc_no_jump, 0x30, FLAG_C, true, 0x0A, false);
 test_ld!(
     #[ignore]
     r16_n16,
