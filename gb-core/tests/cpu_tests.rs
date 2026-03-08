@@ -128,13 +128,12 @@ macro_rules! test_mem_write_r8 {
         fn $name() {
             let (mut cpu, mut bus) = setup_test!(&[$opcode]);
 
-            // On utilise des valeurs qui forment des adresses dans la WRAM (0xC000+)
             cpu.registers.a = 0xAA;
-            cpu.registers.b = 0xC0; // Pour BC -> 0xC022
+            cpu.registers.b = 0xC0;
             cpu.registers.c = 0x22;
-            cpu.registers.d = 0xC1; // Pour DE -> 0xC144
+            cpu.registers.d = 0xC1;
             cpu.registers.e = 0x44;
-            cpu.registers.h = 0xC2; // Pour HL -> 0xC200
+            cpu.registers.h = 0xC2;
             cpu.registers.l = 0x00;
             cpu.sp = 0xD000;
 
@@ -146,7 +145,7 @@ macro_rules! test_mem_write_r8 {
             assert_eq!(
                 bus.read_byte(addr),
                 expected_val,
-                "Échec: le contenu de {} n'a pas été écrit à l'adresse [{}] ({:04X})",
+                "Error: {} was not written to [{}] ({:04X})",
                 stringify!($src_reg),
                 stringify!($addr_reg),
                 addr
@@ -243,6 +242,46 @@ macro_rules! test_add {
             assert_eq!(get_r16!(cpu, hl), $expected);
             assert_flags!(cpu, old_z != 0, false, $h, $c);
             assert_eq!(t, 8);
+        }
+    };
+}
+
+macro_rules! test_adc {
+    // --- FORMAT 8-BIT (r8 + r8 + Carry) ---
+    ($(#[$attr:meta])* r8_r8, $name:ident, $opcode:expr, $reg_dest:ident, $reg_source:ident, $val_dest:expr, $val_src:expr, $init_c:expr, $expected:expr, $z:expr, $n:expr, $h:expr, $c:expr, $cycles:expr) => {
+        $(#[$attr])* #[test]
+        fn $name() {
+            let (mut cpu, mut bus) = setup_test!(&[$opcode]);
+            cpu.registers.$reg_dest = $val_dest;
+            if stringify!($reg_dest) != stringify!($reg_source) {
+                cpu.registers.$reg_source = $val_src;
+            }
+
+            if $init_c { cpu.registers.f |= FLAG_C; } else { cpu.registers.f &= !FLAG_C; }
+
+            let t = cpu.step(&mut bus);
+            assert_eq!(cpu.registers.$reg_dest, $expected);
+            assert_flags!(cpu, $z, $n, $h, $c);
+            assert_eq!(t, $cycles);
+        }
+    };
+
+    // --- FORMAT 8-BIT MEMORY (r8 + [HL] + Carry) ---
+    ($(#[$attr:meta])* r8_hl_mem, $name:ident, $opcode:expr, $val_a:expr, $val_mem:expr, $init_c:expr, $expected:expr, $z:expr, $n:expr, $h:expr, $c:expr, $cycles:expr) => {
+        $(#[$attr])* #[test]
+        fn $name() {
+            let (mut cpu, mut bus) = setup_test!(&[$opcode]);
+            let addr = 0xC000;
+            set_r16!(cpu, hl, addr);
+            bus.write_byte(addr, $val_mem);
+            cpu.registers.a = $val_a;
+
+            if $init_c { cpu.registers.f |= FLAG_C; } else { cpu.registers.f &= !FLAG_C; }
+
+            let t = cpu.step(&mut bus);
+            assert_eq!(cpu.registers.a, $expected);
+            assert_flags!(cpu, $z, $n, $h, $c);
+            assert_eq!(t, $cycles);
         }
     };
 }
@@ -1000,6 +1039,140 @@ test_add!(
     0x10,
     0x10,
     0x20,
+    false,
+    false,
+    false,
+    false,
+    4
+);
+test_adc!(
+    #[ignore]
+    r8_r8,
+    test_0x88_adc_a_b,
+    0x88,
+    a,
+    b,
+    0x10,
+    0x20,
+    false,
+    0x30,
+    false,
+    false,
+    false,
+    false,
+    4
+);
+test_adc!(
+    #[ignore]
+    r8_r8,
+    test_0x89_adc_a_c,
+    0x89,
+    a,
+    c,
+    0x10,
+    0x20,
+    true,
+    0x31,
+    false,
+    false,
+    false,
+    false,
+    4
+);
+test_adc!(
+    #[ignore]
+    r8_r8,
+    test_0x8a_adc_a_d,
+    0x8A,
+    a,
+    d,
+    0x00,
+    0x00,
+    false,
+    0x00,
+    true,
+    false,
+    false,
+    false,
+    4
+);
+test_adc!(
+    #[ignore]
+    r8_r8,
+    test_0x8b_adc_a_e,
+    0x8B,
+    a,
+    e,
+    0x0F,
+    0x00,
+    true,
+    0x10,
+    false,
+    false,
+    true,
+    false,
+    4
+);
+test_adc!(
+    #[ignore]
+    r8_r8,
+    test_0x8c_adc_a_h,
+    0x8C,
+    a,
+    h,
+    0xFF,
+    0x00,
+    true,
+    0x00,
+    true,
+    false,
+    true,
+    true,
+    4
+);
+test_adc!(
+    #[ignore]
+    r8_r8,
+    test_0x8d_adc_a_l,
+    0x8D,
+    a,
+    l,
+    0x80,
+    0x7F,
+    true,
+    0x00,
+    true,
+    false,
+    true,
+    true,
+    4
+);
+test_adc!(
+    #[ignore]
+    r8_hl_mem,
+    test_0x8e_adc_a_hl_mem,
+    0x8E,
+    0x05,
+    0x05,
+    true,
+    0x0B,
+    false,
+    false,
+    false,
+    false,
+    8
+);
+test_adc!(
+    #[ignore]
+    r8_r8,
+    test_0x8f_adc_a_a,
+    0x8F,
+    a,
+    a,
+    0x40,
+    0x40,
+    true,
+    0x81,
     false,
     false,
     false,
