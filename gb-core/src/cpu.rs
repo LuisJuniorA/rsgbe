@@ -316,6 +316,11 @@ impl Cpu {
                 self.sp = self.sp.wrapping_add(1);
                 8
             }
+            0x34 /* INC [HL] */ => {
+                let addr = self.registers.get_hl();
+                self.inc_mem(bus, addr);
+                12
+            }
 
             v @ (0xD3 | 0xDB | 0xDD | 0xE3 | 0xE4 | 0xEB | 0xEC | 0xED | 0xF4 | 0xFC | 0xFD) => {
                 panic!("Illegal opcode {:#04X} encountered", v);
@@ -448,6 +453,19 @@ impl Cpu {
             FlagOp::Unset,
             half_carry.into(),
             carry.into(),
+        );
+    }
+
+    fn inc_mem(&mut self, bus: &mut Bus, addr: u16) {
+        let val = bus.read_byte(addr);
+        let result = val.wrapping_add(1);
+        bus.write_byte(addr, result);
+
+        self.set_flags(
+            (result == 0).into(),
+            FlagOp::Unset,
+            ((val & 0x0F) == 0x0F).into(),
+            FlagOp::Untouched,
         );
     }
 

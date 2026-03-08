@@ -590,7 +590,6 @@ fn test_0x32_ld_hl_dec_mem_a() {
 test_inc_dec!(r16, test_0x33_inc_sp, 0x33, sp, 0xFFFF, 0x0000, 8);
 
 #[test]
-#[ignore]
 fn test_0x34_inc_hl_mem() {
     let (mut cpu, mut bus) = setup_test!(&[0x34]);
     cpu.registers.set_hl(0xC000);
