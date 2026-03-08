@@ -575,15 +575,7 @@ fn test_0x2f_cpl() {
 
 test_jr!(test_0x30_jr_nc_jump, 0x30, FLAG_C, false, 0x0A, true);
 test_jr!(test_0x30_jr_nc_no_jump, 0x30, FLAG_C, true, 0x0A, false);
-test_ld!(
-    #[ignore]
-    r16_n16,
-    test_0x31_ld_sp_n16,
-    0x31,
-    sp,
-    0xDFFF,
-    12
-);
+test_ld!(r16_n16, test_0x31_ld_sp_n16, 0x31, sp, 0xDFFF, 12);
 
 #[test]
 #[ignore]
