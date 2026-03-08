@@ -308,6 +308,10 @@ impl Cpu {
                 self.sp = n16;
                 12
             }
+            0x32 /* LD [HL-], A */ => {
+                self.ld_mem_r(bus, AddrSource::HLDecrement, Reg8::A);
+                8
+            }
 
             v @ (0xD3 | 0xDB | 0xDD | 0xE3 | 0xE4 | 0xEB | 0xEC | 0xED | 0xF4 | 0xFC | 0xFD) => {
                 panic!("Illegal opcode {:#04X} encountered", v);
