@@ -638,16 +638,7 @@ test_add_hl!(
     false
 );
 test_mem_read!(test_0x3a_ld_a_hld, 0x3A, hl, 8);
-test_inc_dec!(
-    #[ignore]
-    r16,
-    test_0x3b_dec_sp,
-    0x3B,
-    sp,
-    0x0000,
-    0xFFFF,
-    8
-);
+test_inc_dec!(r16, test_0x3b_dec_sp, 0x3B, sp, 0x0000, 0xFFFF, 8);
 test_inc_dec!(
     #[ignore]
     r8,
