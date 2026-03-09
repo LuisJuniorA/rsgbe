@@ -123,8 +123,8 @@ macro_rules! test_ld {
 }
 
 macro_rules! test_mem_write_r8 {
-    ($name:ident, $opcode:expr, $addr_reg:ident, $src_reg:ident, $cycles:expr) => {
-        #[test]
+    ($(#[$attr:meta])* $name:ident, $opcode:expr, $addr_reg:ident, $src_reg:ident, $cycles:expr) => {
+        $(#[$attr])* #[test]
         fn $name() {
             let (mut cpu, mut bus) = setup_test!(&[$opcode]);
 
@@ -558,6 +558,33 @@ macro_rules! test_ret_cond {
                 assert_eq!(cpu.sp, 0xFFFC, "SP should remain unchanged");
                 assert_eq!(t, 8, "Cycle count should be 8 for an untaken conditional return");
             }
+        }
+    };
+}
+
+macro_rules! test_pop {
+    ($(#[$attr:meta])* $name:ident, $opcode:expr, $reg:ident, $val:expr) => {
+        $(#[$attr])* #[test]
+        fn $name() {
+            let (mut cpu, mut bus) = setup_test!(&[$opcode]);
+
+            cpu.sp = 0xD000;
+            bus.write_byte(0xD000, ($val & 0xFF) as u8);
+            bus.write_byte(0xD001, (($val >> 8) & 0xFF) as u8);
+
+            let t = cpu.step(&mut bus);
+
+            assert_eq!(
+                get_r16!(cpu, $reg),
+                $val & (if stringify!($reg) == "af" {
+                    0xFFF0
+                } else {
+                    0xFFFF
+                })
+            );
+
+            assert_eq!(cpu.sp, 0xD002);
+            assert_eq!(t, 12);
         }
     };
 }
@@ -1857,3 +1884,25 @@ test_cp!(
 );
 test_ret_cond!(test_0xc0_ret_nz_jump, 0xC0, FLAG_Z, false, true);
 test_ret_cond!(test_0xc0_ret_nz_no_jump, 0xC0, FLAG_Z, true, false);
+test_pop!(test_0xc1_pop_bc, 0xC1, bc, 0x1234);
+test_pop!(
+    #[ignore]
+    test_0xd1_pop_de,
+    0xD1,
+    de,
+    0x5678
+);
+test_pop!(
+    #[ignore]
+    test_0xe1_pop_hl,
+    0xE1,
+    hl,
+    0x9ABC
+);
+test_pop!(
+    #[ignore]
+    test_0xf1_pop_af,
+    0xF1,
+    af,
+    0x42F0
+);

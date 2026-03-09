@@ -426,7 +426,11 @@ impl Cpu {
                 if let Operand8::MemHL = source_op { 8 } else { 4 }
             }
             0xC0 => {
-                self.ret(bus, Some(self.registers.f & FLAG_Z), true) 
+                self.ret(bus, Some(self.registers.f & FLAG_Z), true)
+            }
+            0xC1 => {
+                self.pop(bus, AddrSource::BC);
+                12
             }
 
             v @ (0xD3 | 0xDB | 0xDD | 0xE3 | 0xE4 | 0xEB | 0xEC | 0xED | 0xF4 | 0xFC | 0xFD) => {
@@ -751,6 +755,11 @@ impl Cpu {
                 16
             }
         }
+    }
+
+    fn pop(&mut self, bus: &Bus, addr: AddrSource) {
+        let value = Self::fetch_u16(bus, &mut self.sp);
+        self.set_addr_from_source(addr, value);
     }
 
     fn and_u8(&mut self, dest: Reg8, val: u8) {
