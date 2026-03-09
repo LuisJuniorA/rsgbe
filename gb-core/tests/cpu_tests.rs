@@ -625,15 +625,7 @@ fn test_0x37_scf() {
     assert_flags!(cpu, false, false, false, true);
 }
 
-test_jr!(
-    #[ignore]
-    test_0x38_jr_c_jump,
-    0x38,
-    FLAG_C,
-    true,
-    0x0A,
-    true
-);
+test_jr!(test_0x38_jr_c_jump, 0x38, FLAG_C, true, 0x0A, true);
 test_jr!(
     #[ignore]
     test_0x38_jr_c_no_jump,
