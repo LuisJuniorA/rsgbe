@@ -652,7 +652,6 @@ test_inc_dec!(
     4
 );
 test_inc_dec!(
-    #[ignore]
     r8,
     test_0x3d_dec_a,
     0x3D,
