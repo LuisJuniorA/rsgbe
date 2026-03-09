@@ -663,15 +663,7 @@ test_inc_dec!(
     true,
     4
 );
-test_ld!(
-    #[ignore]
-    r8_n8,
-    test_0x3e_ld_a_n8,
-    0x3E,
-    a,
-    0x42,
-    8
-);
+test_ld!(r8_n8, test_0x3e_ld_a_n8, 0x3E, a, 0x42, 8);
 
 #[test]
 #[ignore]
