@@ -305,7 +305,7 @@ impl Cpu {
                 self.set_flags(FlagOp::Untouched, FlagOp::Set, FlagOp::Set, FlagOp::Untouched);
                 4
             }
-            v @ (0x40..=0x75 | 0x77..=0x7F) => {
+            v @ (0x40..=0x75 | 0x77..=0x7F) /* LD r8, r8 */ => {
                 let (op_src, op_dest) = self.decode_opcode(v);
 
                 match (op_src, op_dest) {
