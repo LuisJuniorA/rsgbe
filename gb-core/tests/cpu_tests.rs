@@ -285,6 +285,79 @@ macro_rules! test_adc {
         }
     };
 }
+macro_rules! test_sub {
+    // --- FORMAT 8-BIT (r8 - r8) ---
+    ($(#[$attr:meta])* r8_r8, $name:ident, $opcode:expr, $reg_source:ident, $val_a:expr, $val_src:expr, $expected:expr, $z:expr, $h:expr, $c:expr, $cycles:expr) => {
+        $(#[$attr])* #[test]
+        fn $name() {
+            let (mut cpu, mut bus) = setup_test!(&[$opcode]);
+            cpu.registers.a = $val_a;
+            if stringify!($reg_source) != "a" {
+                cpu.registers.$reg_source = $val_src;
+            }
+            let t = cpu.step(&mut bus);
+            assert_eq!(cpu.registers.a, $expected);
+            assert_flags!(cpu, $z, true, $h, $c);
+            assert_eq!(t, $cycles);
+        }
+    };
+
+    // --- FORMAT 8-BIT MEMORY (r8 - [HL]) ---
+    ($(#[$attr:meta])* r8_hl_mem, $name:ident, $opcode:expr, $val_a:expr, $val_mem:expr, $expected:expr, $z:expr, $h:expr, $c:expr, $cycles:expr) => {
+        $(#[$attr])* #[test]
+        fn $name() {
+            let (mut cpu, mut bus) = setup_test!(&[$opcode]);
+            let addr = 0xC000;
+            set_r16!(cpu, hl, addr);
+            bus.write_byte(addr, $val_mem);
+            cpu.registers.a = $val_a;
+            let t = cpu.step(&mut bus);
+            assert_eq!(cpu.registers.a, $expected);
+            assert_flags!(cpu, $z, true, $h, $c);
+            assert_eq!(t, $cycles);
+        }
+    };
+}
+
+macro_rules! test_sbc {
+    // --- FORMAT 8-BIT (r8 - r8 - Carry) ---
+    ($(#[$attr:meta])* r8_r8, $name:ident, $opcode:expr, $reg_source:ident, $val_a:expr, $val_src:expr, $init_c:expr, $expected:expr, $z:expr, $h:expr, $c:expr, $cycles:expr) => {
+        $(#[$attr])* #[test]
+        fn $name() {
+            let (mut cpu, mut bus) = setup_test!(&[$opcode]);
+            cpu.registers.a = $val_a;
+            if stringify!($reg_source) != "a" {
+                cpu.registers.$reg_source = $val_src;
+            }
+
+            if $init_c { cpu.registers.f |= FLAG_C; } else { cpu.registers.f &= !FLAG_C; }
+
+            let t = cpu.step(&mut bus);
+            assert_eq!(cpu.registers.a, $expected);
+            assert_flags!(cpu, $z, true, $h, $c);
+            assert_eq!(t, $cycles);
+        }
+    };
+
+    // --- FORMAT 8-BIT MEMORY (r8 - [HL] - Carry) ---
+    ($(#[$attr:meta])* r8_hl_mem, $name:ident, $opcode:expr, $val_a:expr, $val_mem:expr, $init_c:expr, $expected:expr, $z:expr, $h:expr, $c:expr, $cycles:expr) => {
+        $(#[$attr])* #[test]
+        fn $name() {
+            let (mut cpu, mut bus) = setup_test!(&[$opcode]);
+            let addr = 0xC000;
+            set_r16!(cpu, hl, addr);
+            bus.write_byte(addr, $val_mem);
+            cpu.registers.a = $val_a;
+
+            if $init_c { cpu.registers.f |= FLAG_C; } else { cpu.registers.f &= !FLAG_C; }
+
+            let t = cpu.step(&mut bus);
+            assert_eq!(cpu.registers.a, $expected);
+            assert_flags!(cpu, $z, true, $h, $c);
+            assert_eq!(t, $cycles);
+        }
+    };
+}
 
 macro_rules! test_jr {
     ($(#[$attr:meta])* $name:ident, $opcode:expr, $offset:expr, $expected_pc_offset:expr) => {
@@ -1175,6 +1248,117 @@ test_adc!(
     0x81,
     false,
     false,
+    false,
+    false,
+    4
+);
+test_sub!(
+    #[ignore]
+    r8_r8,
+    test_0x90_sub_a_b,
+    0x90,
+    b,
+    0x0A,
+    0x03,
+    0x07,
+    false,
+    false,
+    false,
+    4
+);
+test_sub!(
+    #[ignore]
+    r8_r8,
+    test_0x91_sub_a_c,
+    0x91,
+    c,
+    0x10,
+    0x01,
+    0x0F,
+    false,
+    true,
+    false,
+    4
+);
+test_sub!(
+    #[ignore]
+    r8_r8,
+    test_0x92_sub_a_d,
+    0x92,
+    d,
+    0x00,
+    0x01,
+    0xFF,
+    false,
+    true,
+    true,
+    4
+);
+test_sub!(
+    #[ignore]
+    r8_r8,
+    test_0x93_sub_a_e,
+    0x93,
+    e,
+    0x05,
+    0x05,
+    0x00,
+    true,
+    false,
+    false,
+    4
+);
+test_sub!(
+    #[ignore]
+    r8_r8,
+    test_0x94_sub_a_h,
+    0x94,
+    h,
+    0x0A,
+    0x03,
+    0x07,
+    false,
+    false,
+    false,
+    4
+);
+test_sub!(
+    #[ignore]
+    r8_r8,
+    test_0x95_sub_a_l,
+    0x95,
+    l,
+    0x0A,
+    0x03,
+    0x07,
+    false,
+    false,
+    false,
+    4
+);
+test_sub!(
+    #[ignore]
+    r8_hl_mem,
+    test_0x96_sub_a_hl,
+    0x96,
+    0x0A,
+    0x03,
+    0x07,
+    false,
+    false,
+    false,
+    8
+);
+test_sub!(
+    #[ignore]
+    r8_r8,
+    test_0x97_sub_a_a,
+    0x97,
+    a,
+    0x42,
+    0x42,
+    0x00,
+    true,
     false,
     false,
     4
