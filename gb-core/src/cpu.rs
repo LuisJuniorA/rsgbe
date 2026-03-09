@@ -460,6 +460,9 @@ impl Cpu {
             0xC9 /* RET */ => {
                 self.ret(bus, None, false)
             }
+            0xCA /* JP Z, a16 */ => {
+                self.jp_abs(bus, Some(self.registers.f & FLAG_Z), false)
+            }
 
             v @ (0xD3 | 0xDB | 0xDD | 0xE3 | 0xE4 | 0xEB | 0xEC | 0xED | 0xF4 | 0xFC | 0xFD) => {
                 panic!("Illegal opcode {:#04X} encountered", v);

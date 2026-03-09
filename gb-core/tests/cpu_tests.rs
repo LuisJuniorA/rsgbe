@@ -2028,15 +2028,7 @@ test_rst!(test_0xc7_rst_00, 0xC7, 0x0000);
 test_ret!(test_0xc8_ret_z_taken, 0xC8, FLAG_Z, true, true);
 test_ret!(test_0xc8_ret_z_not_taken, 0xC8, FLAG_Z, false, false);
 test_ret!(test_0xc9_ret, 0xC9);
-test_jp!(
-    #[ignore]
-    test_0xca_jp_z_jump,
-    0xCA,
-    FLAG_Z,
-    true,
-    0x4000,
-    true
-);
+test_jp!(test_0xca_jp_z_jump, 0xCA, FLAG_Z, true, 0x4000, true);
 test_jp!(
     #[ignore]
     test_0xca_jp_z_no_jump,
