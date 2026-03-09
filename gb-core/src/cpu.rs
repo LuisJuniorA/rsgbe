@@ -103,7 +103,8 @@ impl Cpu {
                 20
             }
             0x09 /* ADD HL, BC */ => {
-                self.add_u16(AddrSource::HL, AddrSource::BC);
+                let src = self.get_addr_from_source(AddrSource::BC);
+                self.add_u16(AddrSource::HL, src);
                 8
             }
             0x0A /* LD A, [BC] */ => {
@@ -178,7 +179,8 @@ impl Cpu {
                 self.jp_rel(bus, None, false)
             }
             0x19 /* ADD HL, DE */ => {
-                self.add_u16(AddrSource::HL, AddrSource::DE);
+                let src = self.get_addr_from_source(AddrSource::DE);
+                self.add_u16(AddrSource::HL, src);
                 8
             }
             0x1A /* LD A, [DE] */ => {
@@ -271,7 +273,8 @@ impl Cpu {
                 self.jp_rel(bus, Some(self.registers.f & FLAG_Z), false)
             }
             0x29 /*  ADD HL, HL  */ => {
-                self.add_u16(AddrSource::HL, AddrSource::HL);
+                let src = self.get_addr_from_source(AddrSource::HL);
+                self.add_u16(AddrSource::HL, src);
                 8
             }
             0x2A /*  LD A, [HL+] */ => {
@@ -338,6 +341,10 @@ impl Cpu {
             }
             0x38 /*  JR C, e8  */ => {
                 self.jp_rel(bus, Some(self.registers.f & FLAG_C), false)
+            }
+            0x39 /*  ADD HL, SP */ => {
+                self.add_u16(AddrSource::HL, self.sp);
+                8
             }
 
             v @ (0xD3 | 0xDB | 0xDD | 0xE3 | 0xE4 | 0xEB | 0xEC | 0xED | 0xF4 | 0xFC | 0xFD) => {
@@ -454,14 +461,13 @@ impl Cpu {
         bus.write_byte(addr.wrapping_add(1), high);
     }
 
-    fn add_u16(&mut self, dest: AddrSource, source: AddrSource) {
-        let val1 = self.get_addr_from_source(dest);
-        let val2 = self.get_addr_from_source(source);
+    fn add_u16(&mut self, dest: AddrSource, source: u16) {
+        let val = self.get_addr_from_source(dest);
 
-        let (res, carry) = val1.overflowing_add(val2);
+        let (res, carry) = val.overflowing_add(source);
 
         // 16-bit Half-Carry: Check if the lower 12 bits overflowed
-        let half_carry = (val1 & 0x0FFF) + (val2 & 0x0FFF) > 0x0FFF;
+        let half_carry = (val & 0x0FFF) + (source & 0x0FFF) > 0x0FFF;
 
         self.set_addr_from_source(dest, res);
 
