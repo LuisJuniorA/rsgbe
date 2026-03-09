@@ -666,7 +666,6 @@ test_inc_dec!(
 test_ld!(r8_n8, test_0x3e_ld_a_n8, 0x3E, a, 0x42, 8);
 
 #[test]
-#[ignore]
 fn test_0x3f_ccf() {
     let (mut cpu, mut bus) = setup_test!(&[0x3F]);
     cpu.registers.f = FLAG_C;
