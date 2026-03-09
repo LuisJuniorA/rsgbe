@@ -241,6 +241,18 @@ macro_rules! test_add {
             assert_eq!(t, 8);
         }
     };
+
+    ($(#[$attr:meta])* r8_n8, $name:ident, $opcode:expr, $val_a:expr, $imm:expr, $expected:expr, $z:expr, $n:expr, $h:expr, $c:expr, $cycles:expr) => {
+        $(#[$attr])* #[test]
+        fn $name() {
+            let (mut cpu, mut bus) = setup_test!(&[$opcode, $imm]);
+            cpu.registers.a = $val_a;
+            let t = cpu.step(&mut bus);
+            assert_eq!(cpu.registers.a, $expected);
+            assert_flags!(cpu, $z, $n, $h, $c);
+            assert_eq!(t, $cycles);
+        }
+    };
 }
 
 macro_rules! test_adc {
@@ -1972,6 +1984,19 @@ test_jp!(test_0xc3_jp_a16, 0xC3, 0xABCD);
 test_call!(test_0xc4_call_nz_jump, 0xC4, FLAG_Z, false, 0x1234, true);
 test_call!(test_0xc4_call_nz_no_jump, 0xC4, FLAG_Z, true, 0x1234, false);
 test_push!(test_0xc5_push_bc, 0xC5, bc, 0x1234);
+test_add!(
+    r8_n8,
+    test_0xc6_add_a_n8,
+    0xC6,
+    0x10,
+    0x20,
+    0x30,
+    false,
+    false,
+    false,
+    false,
+    8
+);
 test_jp!(
     #[ignore]
     test_0xca_jp_z_jump,
