@@ -432,7 +432,9 @@ impl Cpu {
                 self.pop(bus, AddrSource::BC);
                 12
             }
-
+            0xC2 => {
+                self.jp_abs(bus, Some(self.registers.f & FLAG_Z), true)
+            }
             v @ (0xD3 | 0xDB | 0xDD | 0xE3 | 0xE4 | 0xEB | 0xEC | 0xED | 0xF4 | 0xFC | 0xFD) => {
                 panic!("Illegal opcode {:#04X} encountered", v);
             }
@@ -601,6 +603,18 @@ impl Cpu {
             12
         } else {
             8
+        }
+    }
+
+    fn jp_abs(&mut self, bus: &Bus, flag: Option<u8>, not: bool) -> u8 {
+        let a16 = Self::fetch_u16(bus, &mut self.pc);
+        let flag_value = flag.unwrap_or(1);
+        if (flag_value != 0) ^ not {
+            let offset = a16 as i16;
+            self.pc = a16;
+            16
+        } else {
+            12
         }
     }
 

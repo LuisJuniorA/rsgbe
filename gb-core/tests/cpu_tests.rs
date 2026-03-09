@@ -529,6 +529,35 @@ macro_rules! test_jr {
     };
 }
 
+macro_rules! test_jp {
+    // JP a16
+    ($(#[$attr:meta])* $name:ident, $opcode:expr, $dest:expr) => {
+        $(#[$attr])* #[test]
+        fn $name() {
+            let (mut cpu, mut bus) = setup_test!(&[$opcode, ($dest & 0xFF) as u8, ($dest >> 8) as u8]);
+            let t = cpu.step(&mut bus);
+            assert_eq!(cpu.pc, $dest);
+            assert_eq!(t, 16);
+        }
+    };
+    // JP cond, a16
+    ($(#[$attr:meta])* $name:ident, $opcode:expr, $cond_flag:expr, $cond_state:expr, $dest:expr, $should_jump:expr) => {
+        $(#[$attr])* #[test]
+        fn $name() {
+            let (mut cpu, mut bus) = setup_test!(&[$opcode, ($dest & 0xFF) as u8, ($dest >> 8) as u8]);
+            if $cond_state { cpu.registers.f |= $cond_flag; } else { cpu.registers.f &= !$cond_flag; }
+            let t = cpu.step(&mut bus);
+            if $should_jump {
+                assert_eq!(cpu.pc, $dest);
+                assert_eq!(t, 16);
+            } else {
+                assert_eq!(cpu.pc, 0x0103);
+                assert_eq!(t, 12);
+            }
+        }
+    };
+}
+
 macro_rules! test_ret_cond {
     ($(#[$attr:meta])* $name:ident, $opcode:expr, $cond_flag:expr, $cond_state:expr, $should_jump:expr) => {
         $(#[$attr])* #[test]
@@ -1905,4 +1934,66 @@ test_pop!(
     0xF1,
     af,
     0x42F0
+);
+test_jp!(test_0xc2_jp_nz_jump, 0xC2, FLAG_Z, false, 0x1234, true);
+test_jp!(test_0xc2_jp_nz_no_jump, 0xC2, FLAG_Z, true, 0x1234, false);
+test_jp!(
+    #[ignore]
+    test_0xc3_jp_a16,
+    0xC3,
+    0xABCD
+);
+test_jp!(
+    #[ignore]
+    test_0xca_jp_z_jump,
+    0xCA,
+    FLAG_Z,
+    true,
+    0x4000,
+    true
+);
+test_jp!(
+    #[ignore]
+    test_0xca_jp_z_no_jump,
+    0xCA,
+    FLAG_Z,
+    false,
+    0x4000,
+    false
+);
+test_jp!(
+    #[ignore]
+    test_0xd2_jp_nc_jump,
+    0xD2,
+    FLAG_C,
+    false,
+    0x5000,
+    true
+);
+test_jp!(
+    #[ignore]
+    test_0xd2_jp_nc_no_jump,
+    0xD2,
+    FLAG_C,
+    true,
+    0x5000,
+    false
+);
+test_jp!(
+    #[ignore]
+    test_0xda_jp_c_jump,
+    0xDA,
+    FLAG_C,
+    true,
+    0x6000,
+    true
+);
+test_jp!(
+    #[ignore]
+    test_0xda_jp_c_no_jump,
+    0xDA,
+    FLAG_C,
+    false,
+    0x6000,
+    false
 );
