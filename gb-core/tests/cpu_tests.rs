@@ -2036,30 +2036,9 @@ fn test_prefix() {
     let (mut cpu, mut bus) = setup_test!(&[0xCB]);
     cpu.step(&mut bus);
 }
-test_call!(
-    #[ignore]
-    test_0xcc_call_z_jump,
-    0xCC,
-    FLAG_Z,
-    true,
-    0x5678,
-    true
-);
-test_call!(
-    #[ignore]
-    test_0xcc_call_z_no_jump,
-    0xCC,
-    FLAG_Z,
-    false,
-    0x5678,
-    false
-);
-test_call!(
-    #[ignore]
-    test_0xcd_call_a16,
-    0xCD,
-    0xABCD
-);
+test_call!(test_0xcc_call_z_jump, 0xCC, FLAG_Z, true, 0x5678, true);
+test_call!(test_0xcc_call_z_no_jump, 0xCC, FLAG_Z, false, 0x5678, false);
+test_call!(test_0xcd_call_a16, 0xCD, 0xABCD);
 test_jp!(
     #[ignore]
     test_0xd2_jp_nc_jump,
