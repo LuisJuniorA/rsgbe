@@ -22,6 +22,11 @@ pub enum Reg8 {
     L,
 }
 
+enum Operand8 {
+    Reg(Reg8),
+    MemHL,
+}
+
 pub const FLAG_Z: u8 = 1 << 7; // 0b1000_0000
 pub const FLAG_N: u8 = 1 << 6; // 0b0100_0000
 pub const FLAG_H: u8 = 1 << 5; // 0b0010_0000
@@ -372,6 +377,31 @@ impl Cpu {
                 self.set_flags(FlagOp::Untouched, FlagOp::Unset, FlagOp::Unset, new_c.into());
                 4
             }
+            v @ (0x40..=0x75 | 0x77..=0x7F) /* LD r8, r8 */ => {
+                let (op_src, op_dest) = self.decode_opcode(v);
+
+                match (op_src, op_dest) {
+                    (Operand8::Reg(s), Operand8::Reg(d)) => {
+                        let val = self.get_reg8(s);
+                        self.set_reg8(d, val);
+                        4
+                    }
+                    (Operand8::MemHL, Operand8::Reg(d)) => {
+                        self.ld_r_mem(bus, d, AddrSource::HL);
+                        8
+                    }
+                    (Operand8::Reg(src), Operand8::MemHL) => {
+                        self.ld_mem_r(bus, AddrSource::HL, src);
+                        8
+                    }
+                    // (MemHL, MemHL) does not exist. (It is HALT 0x76)
+                    _ => unreachable!(),
+                }
+            }
+            0x76 /* HALT */ => {
+                todo!("WIP");
+                unreachable!();
+           }
 
             v @ (0xD3 | 0xDB | 0xDD | 0xE3 | 0xE4 | 0xEB | 0xEC | 0xED | 0xF4 | 0xFC | 0xFD) => {
                 panic!("Illegal opcode {:#04X} encountered", v);
@@ -593,6 +623,41 @@ impl Cpu {
             FlagOp::Set => self.registers.f |= FLAG_C,
             FlagOp::Unset => self.registers.f &= !FLAG_C,
             FlagOp::Untouched => {}
+        }
+    }
+
+    fn decode_opcode(&self, opcode: u8) -> (Operand8, Operand8) {
+        // Most 8-bit load instructions (0x40 to 0x7F) follow a specific bit pattern:
+        // Bit layout: 01_DDD_SSS
+        // - "01" (bits 7-6): Opcode group identifier for "LD r, r"
+        // - "DDD" (bits 5-3): Destination register index
+        // - "SSS" (bits 2-0): Source register index
+        //
+        // Register mapping: 000=B, 001=C, 010=D, 011=E, 100=H, 101=L, 110=(HL), 111=A
+        // Note: 0x76 (01 110 110) is a special case: it is decoded as HALT instead of LD (HL), (HL).
+
+        // Extract destination bits (5, 4, 3) and shift them to the right
+        let dest_bits = (opcode & 0b00111000) >> 3;
+
+        // Extract source bits (2, 1, 0)
+        let source_bits = opcode & 0b00000111;
+
+        // Map bit patterns to Operand8 types (registers or memory)
+        // Returns (source, destination) to match the expected function signature
+        (self.decode_bits(source_bits), self.decode_bits(dest_bits))
+    }
+
+    fn decode_bits(&self, bits: u8) -> Operand8 {
+        match bits {
+            0b000 => Operand8::Reg(Reg8::B),
+            0b001 => Operand8::Reg(Reg8::C),
+            0b010 => Operand8::Reg(Reg8::D),
+            0b011 => Operand8::Reg(Reg8::E),
+            0b100 => Operand8::Reg(Reg8::H),
+            0b101 => Operand8::Reg(Reg8::L),
+            0b110 => Operand8::MemHL,
+            0b111 => Operand8::Reg(Reg8::A),
+            _ => unreachable!(),
         }
     }
 }
