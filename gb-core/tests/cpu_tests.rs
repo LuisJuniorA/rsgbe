@@ -618,7 +618,6 @@ fn test_0x36_ld_hl_mem_n8() {
 }
 
 #[test]
-#[ignore]
 fn test_0x37_scf() {
     let (mut cpu, mut bus) = setup_test!(&[0x37]);
     cpu.registers.f = FLAG_N | FLAG_H;

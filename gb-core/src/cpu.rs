@@ -332,6 +332,10 @@ impl Cpu {
                 bus.write_byte(addr, n8);
                 12
             }
+            0x37 /* SCF */ => {
+                self.set_flags(FlagOp::Untouched, FlagOp::Unset, FlagOp::Unset, FlagOp::Set);
+                4
+            }
 
             v @ (0xD3 | 0xDB | 0xDD | 0xE3 | 0xE4 | 0xEB | 0xEC | 0xED | 0xF4 | 0xFC | 0xFD) => {
                 panic!("Illegal opcode {:#04X} encountered", v);
