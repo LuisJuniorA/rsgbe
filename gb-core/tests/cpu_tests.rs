@@ -291,6 +291,21 @@ macro_rules! test_adc {
             assert_eq!(t, $cycles);
         }
     };
+
+    ($(#[$attr:meta])* r8_n8, $name:ident, $opcode:expr, $val_a:expr, $imm:expr, $init_c:expr, $expected:expr, $z:expr, $n:expr, $h:expr, $c:expr, $cycles:expr) => {
+        $(#[$attr])* #[test]
+        fn $name() {
+            let (mut cpu, mut bus) = setup_test!(&[$opcode, $imm]);
+            cpu.registers.a = $val_a;
+
+            if $init_c { cpu.registers.f |= FLAG_C; } else { cpu.registers.f &= !FLAG_C; }
+
+            let t = cpu.step(&mut bus);
+            assert_eq!(cpu.registers.a, $expected);
+            assert_flags!(cpu, $z, $n, $h, $c);
+            assert_eq!(t, $cycles);
+        }
+    };
 }
 macro_rules! test_sub {
     ($(#[$attr:meta])* r8_r8, $name:ident, $opcode:expr, $reg_source:ident, $val_a:expr, $val_src:expr, $expected:expr, $z:expr, $h:expr, $c:expr, $cycles:expr) => {
@@ -2039,6 +2054,62 @@ fn test_prefix() {
 test_call!(test_0xcc_call_z_jump, 0xCC, FLAG_Z, true, 0x5678, true);
 test_call!(test_0xcc_call_z_no_jump, 0xCC, FLAG_Z, false, 0x5678, false);
 test_call!(test_0xcd_call_a16, 0xCD, 0xABCD);
+test_adc!(
+    r8_n8,
+    test_0xce_adc_simple,
+    0xCE,
+    0x10,
+    0x01,
+    false,
+    0x11,
+    false,
+    false,
+    false,
+    false,
+    8
+);
+test_adc!(
+    r8_n8,
+    test_0xce_adc_with_carry,
+    0xCE,
+    0x10,
+    0x01,
+    true,
+    0x12,
+    false,
+    false,
+    false,
+    false,
+    8
+);
+test_adc!(
+    r8_n8,
+    test_0xce_adc_half_carry,
+    0xCE,
+    0x0F,
+    0x00,
+    true,
+    0x10,
+    false,
+    false,
+    true,
+    false,
+    8
+);
+test_adc!(
+    r8_n8,
+    test_0xce_adc_zero_and_carry,
+    0xCE,
+    0xFF,
+    0x00,
+    true,
+    0x00,
+    true,
+    false,
+    true,
+    true,
+    8
+);
 test_jp!(
     #[ignore]
     test_0xd2_jp_nc_jump,
