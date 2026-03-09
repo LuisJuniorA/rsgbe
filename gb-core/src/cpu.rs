@@ -69,7 +69,7 @@ impl Cpu {
         match opcode {
             0x00 /* NOP */ => 4,
             0x01 /* LD BC, n16 */ => {
-                let n16 = self.fetch_u16(bus);
+                let n16 = Self::fetch_u16(bus, &mut self.pc);
                 self.registers.set_bc(n16);
                 12
             }
@@ -90,7 +90,7 @@ impl Cpu {
                 4
             }
             0x06 /* LD B, n8 */ => {
-                let n8 = self.fetch_u8(bus);
+                let n8 = Self::fetch_u8(bus, &mut self.pc);
                 self.registers.b = n8;
                 8
             }
@@ -103,7 +103,7 @@ impl Cpu {
                 4
             }
             0x08 /* LD [a16], SP */ => {
-                let addr = self.fetch_u16(bus);
+                let addr = Self::fetch_u16(bus, &mut self.pc);
                 self.write_u16(bus, addr, self.sp);
                 20
             }
@@ -129,7 +129,7 @@ impl Cpu {
                 4
             }
             0x0E /* LD C, n8 */ => {
-                let n8 = self.fetch_u8(bus);
+                let n8 = Self::fetch_u8(bus, &mut self.pc);
                 self.registers.c = n8;
                 8
             }
@@ -147,7 +147,7 @@ impl Cpu {
                 4
             }
             0x11 /* LD DE, n16 */ => {
-                let n16 = self.fetch_u16(bus);
+                let n16 = Self::fetch_u16(bus, &mut self.pc);
                 self.registers.set_de(n16);
                 12
             }
@@ -168,7 +168,7 @@ impl Cpu {
                 4
             }
             0x16 /* LD D, n8 */ => {
-                let n8 = self.fetch_u8(bus);
+                let n8 = Self::fetch_u8(bus, &mut self.pc);
                 self.registers.d = n8;
                 8
             }
@@ -205,7 +205,7 @@ impl Cpu {
                 4
             }
             0x1E /* LD E, n8 */ => {
-                let n8 = self.fetch_u8(bus);
+                let n8 = Self::fetch_u8(bus, &mut self.pc);
                 self.registers.e = n8;
                 8
             }
@@ -217,11 +217,11 @@ impl Cpu {
                 self.set_flags(FlagOp::Unset, FlagOp::Unset, FlagOp::Unset, carry.into());
                 4
             }
-            0x20 /*  JR NZ, e8 */ => {
+            0x20 /* JR NZ, e8 */ => {
                 self.jp_rel(bus, Some(self.registers.f & FLAG_Z), true)
             }
             0x21 /* LD HL, n16 */ => {
-                let n16 = self.fetch_u16(bus);
+                let n16 = Self::fetch_u16(bus, &mut self.pc);
                 self.registers.set_hl(n16);
                 12
             }
@@ -242,7 +242,7 @@ impl Cpu {
                 4
             }
             0x26 /* LD H, n8 */ => {
-                let n8 = self.fetch_u8(bus);
+                let n8 = Self::fetch_u8(bus, &mut self.pc);
                 self.registers.h = n8;
                 8
             }
@@ -274,15 +274,15 @@ impl Cpu {
 
                 4
             }
-            0x28 /*  JR Z, e8  */ => {
+            0x28 /* JR Z, e8  */ => {
                 self.jp_rel(bus, Some(self.registers.f & FLAG_Z), false)
             }
-            0x29 /*  ADD HL, HL  */ => {
+            0x29 /* ADD HL, HL  */ => {
                 let src = self.get_addr_from_source(AddrSource::HL);
                 self.add_u16(AddrSource::HL, src);
                 8
             }
-            0x2A /*  LD A, [HL+] */ => {
+            0x2A /* LD A, [HL+] */ => {
                 self.ld_r_mem(bus, Reg8::A, AddrSource::HLIncrement);
                 8
             }
@@ -299,7 +299,7 @@ impl Cpu {
                 4
             }
             0x2E /* LD L, n8 */ => {
-                let n8 = self.fetch_u8(bus);
+                let n8 = Self::fetch_u8(bus, &mut self.pc);
                 self.registers.l = n8;
                 8
             }
@@ -308,11 +308,11 @@ impl Cpu {
                 self.set_flags(FlagOp::Untouched, FlagOp::Set, FlagOp::Set, FlagOp::Untouched);
                 4
             }
-            0x30 /*  JR NC, e8 */ => {
+            0x30 /* JR NC, e8 */ => {
                 self.jp_rel(bus, Some(self.registers.f & FLAG_C), true)
             }
             0x31 /* LD SP, n16 */ => {
-                let n16 = self.fetch_u16(bus);
+                let n16 = Self::fetch_u16(bus, &mut self.pc);
                 self.sp = n16;
                 12
             }
@@ -335,7 +335,7 @@ impl Cpu {
                 12
             }
             0x36 /* LD [HL], n8 */ => {
-                let n8 = self.fetch_u8(bus);
+                let n8 = Self::fetch_u8(bus, &mut self.pc);
                 let addr = self.get_addr_from_source(AddrSource::HL);
                 bus.write_byte(addr, n8);
                 12
@@ -344,14 +344,14 @@ impl Cpu {
                 self.set_flags(FlagOp::Untouched, FlagOp::Unset, FlagOp::Unset, FlagOp::Set);
                 4
             }
-            0x38 /*  JR C, e8  */ => {
+            0x38 /* JR C, e8  */ => {
                 self.jp_rel(bus, Some(self.registers.f & FLAG_C), false)
             }
-            0x39 /*  ADD HL, SP */ => {
+            0x39 /* ADD HL, SP */ => {
                 self.add_u16(AddrSource::HL, self.sp);
                 8
             }
-            0x3A /*  LD A, [HL+] */ => {
+            0x3A /* LD A, [HL+] */ => {
                 self.ld_r_mem(bus, Reg8::A, AddrSource::HLDecrement);
                 8
             }
@@ -368,7 +368,7 @@ impl Cpu {
                 4
             }
             0x3E /* LD A, n8 */ => {
-                let n8 = self.fetch_u8(bus);
+                let n8 = Self::fetch_u8(bus, &mut self.pc);
                 self.registers.a = n8;
                 8
             }
@@ -402,7 +402,7 @@ impl Cpu {
                 todo!("WIP");
                 unreachable!();
             }
-        v @ 0x80..=0xBF => {
+            v @ 0x80..=0xBF => {
                 let source_bits = v & 0b00_000_111;
                 let source_op = self.decode_bits(source_bits);
                 let val = match source_op {
@@ -424,6 +424,9 @@ impl Cpu {
                 }
 
                 if let Operand8::MemHL = source_op { 8 } else { 4 }
+            }
+            0xC0 => {
+                self.ret(bus, Some(self.registers.f & FLAG_Z), true) 
             }
 
             v @ (0xD3 | 0xDB | 0xDD | 0xE3 | 0xE4 | 0xEB | 0xEC | 0xED | 0xF4 | 0xFC | 0xFD) => {
@@ -520,15 +523,15 @@ impl Cpu {
         self.set_addr_from_source(addr, to);
     }
 
-    fn fetch_u8(&mut self, bus: &Bus) -> u8 {
-        let value = bus.read_byte(self.pc);
-        self.pc = self.pc.wrapping_add(1);
+    fn fetch_u8(bus: &Bus, ptr: &mut u16) -> u8 {
+        let value = bus.read_byte(*ptr);
+        *ptr = ptr.wrapping_add(1);
         value
     }
 
-    fn fetch_u16(&mut self, bus: &Bus) -> u16 {
-        let low = self.fetch_u8(bus) as u16;
-        let high = self.fetch_u8(bus) as u16;
+    fn fetch_u16(bus: &Bus, ptr: &mut u16) -> u16 {
+        let low = Self::fetch_u8(bus, ptr) as u16;
+        let high = Self::fetch_u8(bus, ptr) as u16;
         (high << 8) | low
     }
 
@@ -586,7 +589,7 @@ impl Cpu {
     }
 
     fn jp_rel(&mut self, bus: &Bus, flag: Option<u8>, not: bool) -> u8 {
-        let e8 = self.fetch_u8(bus);
+        let e8 = Self::fetch_u8(bus, &mut self.pc);
         let flag_value = flag.unwrap_or(1);
         if (flag_value != 0) ^ not {
             let offset = e8 as i8 as i16;
@@ -729,6 +732,25 @@ impl Cpu {
             h.into(),
             (res_wide < 0).into(),
         );
+    }
+
+    fn ret(&mut self, bus: &Bus, flag: Option<u8>, not: bool) -> u8 {
+        match flag {
+            Some(v) => {
+                if (v != 0) ^ not {
+                    let bytes = Self::fetch_u16(bus, &mut self.sp);
+                    self.pc = bytes;
+                    20
+                } else {
+                    8
+                }
+            }
+            None => {
+                let bytes = Self::fetch_u16(bus, &mut self.sp);
+                self.pc = bytes;
+                16
+            }
+        }
     }
 
     fn and_u8(&mut self, dest: Reg8, val: u8) {

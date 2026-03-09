@@ -529,6 +529,39 @@ macro_rules! test_jr {
     };
 }
 
+macro_rules! test_ret_cond {
+    ($(#[$attr:meta])* $name:ident, $opcode:expr, $cond_flag:expr, $cond_state:expr, $should_jump:expr) => {
+        $(#[$attr])* #[test]
+        fn $name() {
+            let (mut cpu, mut bus) = setup_test!(&[$opcode]);
+
+            // Set up a mock stack with a return address of 0x1234
+            cpu.sp = 0xFFFC;
+            bus.write_byte(0xFFFC, 0x34); // Low byte
+            bus.write_byte(0xFFFD, 0x12); // High byte
+
+            // Set or clear the condition flag
+            if $cond_state {
+                cpu.registers.f |= $cond_flag;
+            } else {
+                cpu.registers.f &= !$cond_flag;
+            }
+
+            let t = cpu.step(&mut bus);
+
+            if $should_jump {
+                assert_eq!(cpu.pc, 0x1234, "PC should jump to the popped address");
+                assert_eq!(cpu.sp, 0xFFFE, "SP should be incremented by 2 after popping");
+                assert_eq!(t, 20, "Cycle count should be 20 for a taken conditional return");
+            } else {
+                assert_eq!(cpu.pc, 0x0101, "PC should just advance past the opcode");
+                assert_eq!(cpu.sp, 0xFFFC, "SP should remain unchanged");
+                assert_eq!(t, 8, "Cycle count should be 8 for an untaken conditional return");
+            }
+        }
+    };
+}
+
 #[test]
 fn test_0x00_nop() {
     let (mut cpu, mut bus) = setup_test!(&[0x00]);
@@ -1822,3 +1855,5 @@ test_cp!(
     false,
     4
 );
+test_ret_cond!(test_0xc0_ret_nz_jump, 0xC0, FLAG_Z, false, true);
+test_ret_cond!(test_0xc0_ret_nz_no_jump, 0xC0, FLAG_Z, true, false);
