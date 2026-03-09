@@ -359,6 +359,149 @@ macro_rules! test_sbc {
     };
 }
 
+macro_rules! test_and {
+    // --- FORMAT 8-BIT (A & r8) ---
+    // Flags for AND: Z is calculated, N = 0, H = 1, C = 0
+    ($(#[$attr:meta])* r8_r8, $name:ident, $opcode:expr, $reg_source:ident, $val_a:expr, $val_src:expr, $expected:expr, $z:expr, $cycles:expr) => {
+        $(#[$attr])* #[test]
+        fn $name() {
+            let (mut cpu, mut bus) = setup_test!(&[$opcode]);
+            cpu.registers.a = $val_a;
+            if stringify!($reg_source) != "a" {
+                cpu.registers.$reg_source = $val_src;
+            }
+            let t = cpu.step(&mut bus);
+            assert_eq!(cpu.registers.a, $expected);
+            assert_flags!(cpu, $z, false, true, false);
+            assert_eq!(t, $cycles);
+        }
+    };
+
+    // --- FORMAT 8-BIT MEMORY (A & [HL]) ---
+    ($(#[$attr:meta])* r8_hl_mem, $name:ident, $opcode:expr, $val_a:expr, $val_mem:expr, $expected:expr, $z:expr, $cycles:expr) => {
+        $(#[$attr])* #[test]
+        fn $name() {
+            let (mut cpu, mut bus) = setup_test!(&[$opcode]);
+            let addr = 0xC000;
+            set_r16!(cpu, hl, addr);
+            bus.write_byte(addr, $val_mem);
+            cpu.registers.a = $val_a;
+            let t = cpu.step(&mut bus);
+            assert_eq!(cpu.registers.a, $expected);
+            assert_flags!(cpu, $z, false, true, false);
+            assert_eq!(t, $cycles);
+        }
+    };
+}
+
+macro_rules! test_xor {
+    // --- FORMAT 8-BIT (A ^ r8) ---
+    // Flags for XOR: Z is calculated, N = 0, H = 0, C = 0
+    ($(#[$attr:meta])* r8_r8, $name:ident, $opcode:expr, $reg_source:ident, $val_a:expr, $val_src:expr, $expected:expr, $z:expr, $cycles:expr) => {
+        $(#[$attr])* #[test]
+        fn $name() {
+            let (mut cpu, mut bus) = setup_test!(&[$opcode]);
+            cpu.registers.a = $val_a;
+            if stringify!($reg_source) != "a" {
+                cpu.registers.$reg_source = $val_src;
+            }
+            let t = cpu.step(&mut bus);
+            assert_eq!(cpu.registers.a, $expected);
+            assert_flags!(cpu, $z, false, false, false);
+            assert_eq!(t, $cycles);
+        }
+    };
+
+    // --- FORMAT 8-BIT MEMORY (A ^ [HL]) ---
+    ($(#[$attr:meta])* r8_hl_mem, $name:ident, $opcode:expr, $val_a:expr, $val_mem:expr, $expected:expr, $z:expr, $cycles:expr) => {
+        $(#[$attr])* #[test]
+        fn $name() {
+            let (mut cpu, mut bus) = setup_test!(&[$opcode]);
+            let addr = 0xC000;
+            set_r16!(cpu, hl, addr);
+            bus.write_byte(addr, $val_mem);
+            cpu.registers.a = $val_a;
+            let t = cpu.step(&mut bus);
+            assert_eq!(cpu.registers.a, $expected);
+            assert_flags!(cpu, $z, false, false, false);
+            assert_eq!(t, $cycles);
+        }
+    };
+}
+
+macro_rules! test_or {
+    // --- FORMAT 8-BIT (A | r8) ---
+    // Flags for OR: Z is calculated, N = 0, H = 0, C = 0
+    ($(#[$attr:meta])* r8_r8, $name:ident, $opcode:expr, $reg_source:ident, $val_a:expr, $val_src:expr, $expected:expr, $z:expr, $cycles:expr) => {
+        $(#[$attr])* #[test]
+        fn $name() {
+            let (mut cpu, mut bus) = setup_test!(&[$opcode]);
+            cpu.registers.a = $val_a;
+            if stringify!($reg_source) != "a" {
+                cpu.registers.$reg_source = $val_src;
+            }
+            let t = cpu.step(&mut bus);
+            assert_eq!(cpu.registers.a, $expected);
+            assert_flags!(cpu, $z, false, false, false);
+            assert_eq!(t, $cycles);
+        }
+    };
+
+    // --- FORMAT 8-BIT MEMORY (A | [HL]) ---
+    ($(#[$attr:meta])* r8_hl_mem, $name:ident, $opcode:expr, $val_a:expr, $val_mem:expr, $expected:expr, $z:expr, $cycles:expr) => {
+        $(#[$attr])* #[test]
+        fn $name() {
+            let (mut cpu, mut bus) = setup_test!(&[$opcode]);
+            let addr = 0xC000;
+            set_r16!(cpu, hl, addr);
+            bus.write_byte(addr, $val_mem);
+            cpu.registers.a = $val_a;
+            let t = cpu.step(&mut bus);
+            assert_eq!(cpu.registers.a, $expected);
+            assert_flags!(cpu, $z, false, false, false);
+            assert_eq!(t, $cycles);
+        }
+    };
+}
+
+macro_rules! test_cp {
+    // --- FORMAT 8-BIT (CP r8) ---
+    // Flags for CP: N is always 1, Z/H/C are calculated based on subtraction
+    // NOTE: A is NOT modified, so we assert `a == val_a`. We do not need an $expected param.
+    ($(#[$attr:meta])* r8_r8, $name:ident, $opcode:expr, $reg_source:ident, $val_a:expr, $val_src:expr, $z:expr, $h:expr, $c:expr, $cycles:expr) => {
+        $(#[$attr])* #[test]
+        fn $name() {
+            let (mut cpu, mut bus) = setup_test!(&[$opcode]);
+            cpu.registers.a = $val_a;
+            if stringify!($reg_source) != "a" {
+                cpu.registers.$reg_source = $val_src;
+            }
+            let t = cpu.step(&mut bus);
+            // CP acts like SUB but throws away the result. A should be intact.
+            assert_eq!(cpu.registers.a, $val_a);
+            assert_flags!(cpu, $z, true, $h, $c);
+            assert_eq!(t, $cycles);
+        }
+    };
+
+    // --- FORMAT 8-BIT MEMORY (CP [HL]) ---
+    ($(#[$attr:meta])* r8_hl_mem, $name:ident, $opcode:expr, $val_a:expr, $val_mem:expr, $z:expr, $h:expr, $c:expr, $cycles:expr) => {
+        $(#[$attr])* #[test]
+        fn $name() {
+            let (mut cpu, mut bus) = setup_test!(&[$opcode]);
+            let addr = 0xC000;
+            set_r16!(cpu, hl, addr);
+            bus.write_byte(addr, $val_mem);
+            cpu.registers.a = $val_a;
+            let t = cpu.step(&mut bus);
+            // CP acts like SUB but throws away the result. A should be intact.
+            assert_eq!(cpu.registers.a, $val_a);
+            assert_flags!(cpu, $z, true, $h, $c);
+            assert_eq!(t, $cycles);
+        }
+    };
+}
+
 macro_rules! test_jr {
     ($(#[$attr:meta])* $name:ident, $opcode:expr, $offset:expr, $expected_pc_offset:expr) => {
         $(#[$attr])* #[test]
@@ -1253,6 +1396,427 @@ test_sub!(
     0x42,
     0x42,
     0x00,
+    true,
+    false,
+    false,
+    4
+);
+test_sbc!(
+    r8_r8,
+    test_0x98_sbc_a_b,
+    0x98,
+    b,
+    0x05,
+    0x02,
+    true,
+    0x02,
+    false,
+    false,
+    false,
+    4
+);
+
+test_sbc!(
+    r8_r8,
+    test_0x99_sbc_a_c_h_carry,
+    0x99,
+    c,
+    0x10,
+    0x01,
+    true,
+    0x0E,
+    false,
+    true,
+    false,
+    4
+);
+
+test_sbc!(
+    r8_r8,
+    test_0x9a_sbc_a_d_carry,
+    0x9A,
+    d,
+    0x00,
+    0x01,
+    false,
+    0xFF,
+    false,
+    true,
+    true,
+    4
+);
+
+test_sbc!(
+    r8_r8,
+    test_0x9b_sbc_a_e_carry_h_carry,
+    0x9B,
+    e,
+    0x05,
+    0x05,
+    true,
+    0xFF,
+    false,
+    true,
+    true,
+    4
+);
+
+test_sbc!(
+    r8_r8,
+    test_0x9c_sbc_a_h_zero,
+    0x9C,
+    h,
+    0x05,
+    0x05,
+    false,
+    0x00,
+    true,
+    false,
+    false,
+    4
+);
+
+test_sbc!(
+    r8_r8,
+    test_0x9d_sbc_a_l,
+    0x9D,
+    l,
+    0x10,
+    0x11,
+    false,
+    0xFF,
+    false,
+    true,
+    true,
+    4
+);
+
+test_sbc!(
+    r8_hl_mem,
+    test_0x9e_sbc_a_hl_mem,
+    0x9E,
+    0x40,
+    0x20,
+    true,
+    0x1F,
+    false,
+    true,
+    false,
+    8
+);
+
+test_sbc!(
+    r8_r8,
+    test_0x9f_sbc_a_a,
+    0x9F,
+    a,
+    0x42,
+    0x42,
+    true,
+    0xFF,
+    false,
+    true,
+    true,
+    4
+);
+test_and!(
+    r8_r8,
+    test_0xa0_and_a_b,
+    0xA0,
+    b,
+    0xFF,
+    0x0F,
+    0x0F,
+    false,
+    4
+);
+test_and!(
+    r8_r8,
+    test_0xa1_and_a_c_zero,
+    0xA1,
+    c,
+    0x0F,
+    0xF0,
+    0x00,
+    true,
+    4
+);
+test_and!(
+    r8_r8,
+    test_0xa2_and_a_d_zero,
+    0xA2,
+    d,
+    0xAA,
+    0x55,
+    0x00,
+    true,
+    4
+);
+test_and!(
+    r8_r8,
+    test_0xa3_and_a_e,
+    0xA3,
+    e,
+    0x55,
+    0xFF,
+    0x55,
+    false,
+    4
+);
+test_and!(
+    r8_r8,
+    test_0xa4_and_a_h,
+    0xA4,
+    h,
+    0x33,
+    0x11,
+    0x11,
+    false,
+    4
+);
+test_and!(
+    r8_r8,
+    test_0xa5_and_a_l_zero,
+    0xA5,
+    l,
+    0x00,
+    0xFF,
+    0x00,
+    true,
+    4
+);
+test_and!(
+    r8_hl_mem,
+    test_0xa6_and_a_hl_mem,
+    0xA6,
+    0xFF,
+    0x42,
+    0x42,
+    false,
+    8
+);
+test_and!(
+    r8_r8,
+    test_0xa7_and_a_a,
+    0xA7,
+    a,
+    0x12,
+    0x12,
+    0x12,
+    false,
+    4
+);
+test_xor!(
+    r8_r8,
+    test_0xa8_xor_a_b,
+    0xA8,
+    b,
+    0xFF,
+    0x0F,
+    0xF0,
+    false,
+    4
+);
+test_xor!(
+    r8_r8,
+    test_0xa9_xor_a_c_zero,
+    0xA9,
+    c,
+    0x0F,
+    0x0F,
+    0x00,
+    true,
+    4
+);
+test_xor!(
+    r8_r8,
+    test_0xaa_xor_a_d,
+    0xAA,
+    d,
+    0xAA,
+    0x55,
+    0xFF,
+    false,
+    4
+);
+test_xor!(
+    r8_r8,
+    test_0xab_xor_a_e,
+    0xAB,
+    e,
+    0x55,
+    0xFF,
+    0xAA,
+    false,
+    4
+);
+test_xor!(
+    r8_r8,
+    test_0xac_xor_a_h,
+    0xAC,
+    h,
+    0x33,
+    0x11,
+    0x22,
+    false,
+    4
+);
+test_xor!(
+    r8_r8,
+    test_0xad_xor_a_l,
+    0xAD,
+    l,
+    0x00,
+    0xFF,
+    0xFF,
+    false,
+    4
+);
+test_xor!(
+    r8_hl_mem,
+    test_0xae_xor_a_hl_mem,
+    0xAE,
+    0xFF,
+    0x42,
+    0xBD,
+    false,
+    8
+);
+test_xor!(
+    r8_r8,
+    test_0xaf_xor_a_a_zero,
+    0xAF,
+    a,
+    0x12,
+    0x12,
+    0x00,
+    true,
+    4
+);
+test_or!(r8_r8, test_0xb0_or_a_b, 0xB0, b, 0xF0, 0x0F, 0xFF, false, 4);
+test_or!(
+    r8_r8,
+    test_0xb1_or_a_c_zero,
+    0xB1,
+    c,
+    0x00,
+    0x00,
+    0x00,
+    true,
+    4
+);
+test_or!(r8_r8, test_0xb2_or_a_d, 0xB2, d, 0xAA, 0x55, 0xFF, false, 4);
+test_or!(r8_r8, test_0xb3_or_a_e, 0xB3, e, 0x05, 0x0A, 0x0F, false, 4);
+test_or!(r8_r8, test_0xb4_or_a_h, 0xB4, h, 0x33, 0x11, 0x33, false, 4);
+test_or!(r8_r8, test_0xb5_or_a_l, 0xB5, l, 0x00, 0xFF, 0xFF, false, 4);
+test_or!(
+    r8_hl_mem,
+    test_0xb6_or_a_hl_mem,
+    0xB6,
+    0x01,
+    0x42,
+    0x43,
+    false,
+    8
+);
+test_or!(r8_r8, test_0xb7_or_a_a, 0xB7, a, 0x12, 0x12, 0x12, false, 4);
+test_cp!(
+    r8_r8,
+    test_0xb8_cp_a_b,
+    0xB8,
+    b,
+    0x0A,
+    0x03,
+    false,
+    false,
+    false,
+    4
+);
+
+test_cp!(
+    r8_r8,
+    test_0xb9_cp_a_c_h_carry,
+    0xB9,
+    c,
+    0x10,
+    0x01,
+    false,
+    true,
+    false,
+    4
+);
+
+test_cp!(
+    r8_r8,
+    test_0xba_cp_a_d_carry,
+    0xBA,
+    d,
+    0x00,
+    0x01,
+    false,
+    true,
+    true,
+    4
+);
+
+test_cp!(
+    r8_r8,
+    test_0xbb_cp_a_e_zero,
+    0xBB,
+    e,
+    0x05,
+    0x05,
+    true,
+    false,
+    false,
+    4
+);
+
+test_cp!(
+    r8_r8,
+    test_0xbc_cp_a_h_carry_h_carry,
+    0xBC,
+    h,
+    0x10,
+    0x11,
+    false,
+    true,
+    true,
+    4
+);
+
+test_cp!(
+    r8_r8,
+    test_0xbd_cp_a_l_h_carry,
+    0xBD,
+    l,
+    0x20,
+    0x01,
+    false,
+    true,
+    false,
+    4
+);
+
+test_cp!(
+    r8_hl_mem,
+    test_0xbe_cp_a_hl_mem,
+    0xBE,
+    0x0A,
+    0x03,
+    false,
+    false,
+    false,
+    8
+);
+
+test_cp!(
+    r8_r8,
+    test_0xbf_cp_a_a_zero,
+    0xBF,
+    a,
+    0x42,
+    0x42,
     true,
     false,
     false,
