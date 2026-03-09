@@ -793,7 +793,8 @@ fn test_0x37_scf() {
 
 test_jr!(test_0x38_jr_c_jump, 0x38, FLAG_C, true, 0x0A, true);
 test_jr!(test_0x38_jr_c_no_jump, 0x38, FLAG_C, false, 0x0A, false);
-test_add_hl!(
+test_add!(
+    r16_r16,
     test_0x39_add_hl_sp,
     0x39,
     sp,
