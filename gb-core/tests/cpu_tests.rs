@@ -666,6 +666,22 @@ macro_rules! test_call {
     };
 }
 
+macro_rules! test_rst {
+    ($(#[$attr:meta])* $name:ident, $opcode:expr, $dest:expr) => {
+        $(#[$attr])* #[test]
+        fn $name() {
+            let (mut cpu, mut bus) = setup_test!(&[$opcode]);
+            cpu.sp = 0xE000;
+            let t = cpu.step(&mut bus);
+            assert_eq!(cpu.pc, $dest);
+            assert_eq!(cpu.sp, 0xDFFE);
+            assert_eq!(bus.read_byte(0xDFFF), 0x01); // High
+            assert_eq!(bus.read_byte(0xDFFE), 0x01); // Low
+            assert_eq!(t, 16);
+        }
+    };
+}
+
 #[test]
 fn test_0x00_nop() {
     let (mut cpu, mut bus) = setup_test!(&[0x00]);
@@ -1997,6 +2013,7 @@ test_add!(
     false,
     8
 );
+test_rst!(test_0xc7_rst_00, 0xC7, 0x0000);
 test_jp!(
     #[ignore]
     test_0xca_jp_z_jump,
