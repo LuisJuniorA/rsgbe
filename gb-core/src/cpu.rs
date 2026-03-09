@@ -441,6 +441,10 @@ impl Cpu {
             0xC4 => /* CALL NZ, a16 */ {
                 self.call(bus, Some(self.registers.f & FLAG_Z), true)
             }
+            0xC5 => /* PUSH BC */ {
+                self.push(bus, AddrSource::BC);
+                16
+            }
 
             v @ (0xD3 | 0xDB | 0xDD | 0xE3 | 0xE4 | 0xEB | 0xEC | 0xED | 0xF4 | 0xFC | 0xFD) => {
                 panic!("Illegal opcode {:#04X} encountered", v);
@@ -781,6 +785,12 @@ impl Cpu {
     fn pop(&mut self, bus: &Bus, addr: AddrSource) {
         let value = Self::fetch_u16(bus, &mut self.sp);
         self.set_addr_from_source(addr, value);
+    }
+
+    fn push(&mut self, bus: &mut Bus, addr: AddrSource) {
+        let value = self.get_addr_from_source(addr);
+        self.sp = self.sp.wrapping_sub(2);
+        self.write_u16(bus, self.sp, value);
     }
 
     fn call(&mut self, bus: &mut Bus, flag: Option<u8>, not: bool) -> u8 {

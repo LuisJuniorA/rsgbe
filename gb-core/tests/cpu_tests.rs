@@ -590,6 +590,22 @@ macro_rules! test_pop {
     };
 }
 
+macro_rules! test_push {
+    ($(#[$attr:meta])* $name:ident, $opcode:expr, $reg:ident, $val:expr) => {
+        $(#[$attr])* #[test]
+        fn $name() {
+            let (mut cpu, mut bus) = setup_test!(&[$opcode]);
+            set_r16!(cpu, $reg, $val);
+            cpu.sp = 0xE000;
+            let t = cpu.step(&mut bus);
+            assert_eq!(cpu.sp, 0xDFFE);
+            assert_eq!(bus.read_byte(0xDFFF), (($val >> 8) & 0xFF) as u8);
+            assert_eq!(bus.read_byte(0xDFFE), ($val & 0xFF) as u8);
+            assert_eq!(t, 16);
+        }
+    };
+}
+
 macro_rules! test_call {
     ($(#[$attr:meta])* $name:ident, $opcode:expr, $dest:expr) => {
         $(#[$attr])* #[test]
@@ -1955,6 +1971,7 @@ test_jp!(test_0xc2_jp_nz_no_jump, 0xC2, FLAG_Z, true, 0x1234, false);
 test_jp!(test_0xc3_jp_a16, 0xC3, 0xABCD);
 test_call!(test_0xc4_call_nz_jump, 0xC4, FLAG_Z, false, 0x1234, true);
 test_call!(test_0xc4_call_nz_no_jump, 0xC4, FLAG_Z, true, 0x1234, false);
+test_push!(test_0xc5_push_bc, 0xC5, bc, 0x1234);
 test_jp!(
     #[ignore]
     test_0xca_jp_z_jump,
@@ -2033,6 +2050,13 @@ test_call!(
     0x9ABC,
     false
 );
+test_push!(
+    #[ignore]
+    test_0xd5_push_de,
+    0xD5,
+    de,
+    0x5678
+);
 test_jp!(
     #[ignore]
     test_0xda_jp_c_jump,
@@ -2068,4 +2092,18 @@ test_call!(
     false,
     0xDEF0,
     false
+);
+test_push!(
+    #[ignore]
+    test_0xe5_push_hl,
+    0xE5,
+    hl,
+    0x9ABC
+);
+test_push!(
+    #[ignore]
+    test_0xf5_push_af,
+    0xF5,
+    af,
+    0x42F0
 );
