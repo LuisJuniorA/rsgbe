@@ -454,6 +454,9 @@ impl Cpu {
                 self.rst(bus, 0x00);
                 16
             }
+            0xC8 /* RET Z */ => {
+                self.ret(bus, Some(self.registers.f & FLAG_Z), false)
+            }
 
             v @ (0xD3 | 0xDB | 0xDD | 0xE3 | 0xE4 | 0xEB | 0xEC | 0xED | 0xF4 | 0xFC | 0xFD) => {
                 panic!("Illegal opcode {:#04X} encountered", v);
