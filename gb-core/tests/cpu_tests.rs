@@ -1937,12 +1937,7 @@ test_pop!(
 );
 test_jp!(test_0xc2_jp_nz_jump, 0xC2, FLAG_Z, false, 0x1234, true);
 test_jp!(test_0xc2_jp_nz_no_jump, 0xC2, FLAG_Z, true, 0x1234, false);
-test_jp!(
-    #[ignore]
-    test_0xc3_jp_a16,
-    0xC3,
-    0xABCD
-);
+test_jp!(test_0xc3_jp_a16, 0xC3, 0xABCD);
 test_jp!(
     #[ignore]
     test_0xca_jp_z_jump,
