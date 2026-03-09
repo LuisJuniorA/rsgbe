@@ -463,6 +463,10 @@ impl Cpu {
             0xCA /* JP Z, a16 */ => {
                 self.jp_abs(bus, Some(self.registers.f & FLAG_Z), false)
             }
+            0xCB /* PREFIX */ => {
+                let n8 = Self::fetch_u8(bus, &mut self.pc);
+                todo!("WIP");
+            }
 
             v @ (0xD3 | 0xDB | 0xDD | 0xE3 | 0xE4 | 0xEB | 0xEC | 0xED | 0xF4 | 0xFC | 0xFD) => {
                 panic!("Illegal opcode {:#04X} encountered", v);

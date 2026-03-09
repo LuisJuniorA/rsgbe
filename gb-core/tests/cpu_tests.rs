@@ -2029,15 +2029,13 @@ test_ret!(test_0xc8_ret_z_taken, 0xC8, FLAG_Z, true, true);
 test_ret!(test_0xc8_ret_z_not_taken, 0xC8, FLAG_Z, false, false);
 test_ret!(test_0xc9_ret, 0xC9);
 test_jp!(test_0xca_jp_z_jump, 0xCA, FLAG_Z, true, 0x4000, true);
-test_jp!(
-    #[ignore]
-    test_0xca_jp_z_no_jump,
-    0xCA,
-    FLAG_Z,
-    false,
-    0x4000,
-    false
-);
+test_jp!(test_0xca_jp_z_no_jump, 0xCA, FLAG_Z, false, 0x4000, false);
+#[test]
+#[should_panic(expected = "WIP")]
+fn test_prefix() {
+    let (mut cpu, mut bus) = setup_test!(&[0xCB]);
+    cpu.step(&mut bus);
+}
 test_call!(
     #[ignore]
     test_0xcc_call_z_jump,
