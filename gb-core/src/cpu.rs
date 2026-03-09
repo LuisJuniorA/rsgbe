@@ -108,7 +108,8 @@ impl Cpu {
                 20
             }
             0x09 /* ADD HL, BC */ => {
-                self.add_u16(AddrSource::HL, AddrSource::BC);
+                let src = self.get_addr_from_source(AddrSource::BC);
+                self.add_u16(AddrSource::HL, src);
                 8
             }
             0x0A /* LD A, [BC] */ => {
@@ -183,7 +184,8 @@ impl Cpu {
                 self.jp_rel(bus, None, false)
             }
             0x19 /* ADD HL, DE */ => {
-                self.add_u16(AddrSource::HL, AddrSource::DE);
+                let src = self.get_addr_from_source(AddrSource::DE);
+                self.add_u16(AddrSource::HL, src);
                 8
             }
             0x1A /* LD A, [DE] */ => {
@@ -276,7 +278,8 @@ impl Cpu {
                 self.jp_rel(bus, Some(self.registers.f & FLAG_Z), false)
             }
             0x29 /*  ADD HL, HL  */ => {
-                self.add_u16(AddrSource::HL, AddrSource::HL);
+                let src = self.get_addr_from_source(AddrSource::HL);
+                self.add_u16(AddrSource::HL, src);
                 8
             }
             0x2A /*  LD A, [HL+] */ => {
@@ -305,6 +308,75 @@ impl Cpu {
                 self.set_flags(FlagOp::Untouched, FlagOp::Set, FlagOp::Set, FlagOp::Untouched);
                 4
             }
+            0x30 /*  JR NC, e8 */ => {
+                self.jp_rel(bus, Some(self.registers.f & FLAG_C), true)
+            }
+            0x31 /* LD SP, n16 */ => {
+                let n16 = self.fetch_u16(bus);
+                self.sp = n16;
+                12
+            }
+            0x32 /* LD [HL-], A */ => {
+                self.ld_mem_r(bus, AddrSource::HLDecrement, Reg8::A);
+                8
+            }
+            0x33 /* INC SP */ => {
+                self.sp = self.sp.wrapping_add(1);
+                8
+            }
+            0x34 /* INC [HL] */ => {
+                let addr = self.registers.get_hl();
+                self.inc_mem(bus, addr);
+                12
+            }
+            0x35 /* DEC [HL] */ => {
+                let addr = self.registers.get_hl();
+                self.dec_mem(bus, addr);
+                12
+            }
+            0x36 /* LD [HL], n8 */ => {
+                let n8 = self.fetch_u8(bus);
+                let addr = self.get_addr_from_source(AddrSource::HL);
+                bus.write_byte(addr, n8);
+                12
+            }
+            0x37 /* SCF */ => {
+                self.set_flags(FlagOp::Untouched, FlagOp::Unset, FlagOp::Unset, FlagOp::Set);
+                4
+            }
+            0x38 /*  JR C, e8  */ => {
+                self.jp_rel(bus, Some(self.registers.f & FLAG_C), false)
+            }
+            0x39 /*  ADD HL, SP */ => {
+                self.add_u16(AddrSource::HL, self.sp);
+                8
+            }
+            0x3A /*  LD A, [HL+] */ => {
+                self.ld_r_mem(bus, Reg8::A, AddrSource::HLDecrement);
+                8
+            }
+            0x3B /* DEC SP */ => {
+                self.sp = self.sp.wrapping_sub(1);
+                8
+            }
+            0x3C /* INC A */ => {
+                self.inc_u8(Reg8::A);
+                4
+            }
+            0x3D /* DEC A */ => {
+                self.dec_u8(Reg8::A);
+                4
+            }
+            0x3E /* LD A, n8 */ => {
+                let n8 = self.fetch_u8(bus);
+                self.registers.a = n8;
+                8
+            }
+            0x3F /* CCF */ => {
+                let new_c = self.get_reg8(Reg8::F) & FLAG_C == 0;
+                self.set_flags(FlagOp::Untouched, FlagOp::Unset, FlagOp::Unset, new_c.into());
+                4
+            }
             v @ (0x40..=0x75 | 0x77..=0x7F) /* LD r8, r8 */ => {
                 let (op_src, op_dest) = self.decode_opcode(v);
 
@@ -329,8 +401,7 @@ impl Cpu {
             0x76 /* HALT */ => {
                 todo!("WIP");
                 unreachable!();
-                4
-            }
+           }
 
             v @ (0xD3 | 0xDB | 0xDD | 0xE3 | 0xE4 | 0xEB | 0xEC | 0xED | 0xF4 | 0xFC | 0xFD) => {
                 panic!("Illegal opcode {:#04X} encountered", v);
@@ -446,14 +517,13 @@ impl Cpu {
         bus.write_byte(addr.wrapping_add(1), high);
     }
 
-    fn add_u16(&mut self, dest: AddrSource, source: AddrSource) {
-        let val1 = self.get_addr_from_source(dest);
-        let val2 = self.get_addr_from_source(source);
+    fn add_u16(&mut self, dest: AddrSource, source: u16) {
+        let val = self.get_addr_from_source(dest);
 
-        let (res, carry) = val1.overflowing_add(val2);
+        let (res, carry) = val.overflowing_add(source);
 
         // 16-bit Half-Carry: Check if the lower 12 bits overflowed
-        let half_carry = (val1 & 0x0FFF) + (val2 & 0x0FFF) > 0x0FFF;
+        let half_carry = (val & 0x0FFF) + (source & 0x0FFF) > 0x0FFF;
 
         self.set_addr_from_source(dest, res);
 
@@ -463,6 +533,32 @@ impl Cpu {
             FlagOp::Unset,
             half_carry.into(),
             carry.into(),
+        );
+    }
+
+    fn inc_mem(&mut self, bus: &mut Bus, addr: u16) {
+        let val = bus.read_byte(addr);
+        let result = val.wrapping_add(1);
+        bus.write_byte(addr, result);
+
+        self.set_flags(
+            (result == 0).into(),
+            FlagOp::Unset,
+            ((val & 0x0F) == 0x0F).into(),
+            FlagOp::Untouched,
+        );
+    }
+
+    fn dec_mem(&mut self, bus: &mut Bus, addr: u16) {
+        let val = bus.read_byte(addr);
+        let result = val.wrapping_sub(1);
+        bus.write_byte(addr, result);
+
+        self.set_flags(
+            (result == 0).into(),
+            FlagOp::Set,
+            ((val & 0x0F) == 0).into(),
+            FlagOp::Untouched,
         );
     }
 
