@@ -425,19 +425,23 @@ impl Cpu {
 
                 if let Operand8::MemHL = source_op { 8 } else { 4 }
             }
-            0xC0 => {
+            0xC0 => /* RET NZ */ {
                 self.ret(bus, Some(self.registers.f & FLAG_Z), true)
             }
-            0xC1 => {
+            0xC1 => /* POP BC */ {
                 self.pop(bus, AddrSource::BC);
                 12
             }
-            0xC2 => {
+            0xC2 => /* JP NZ, a16 */ {
                 self.jp_abs(bus, Some(self.registers.f & FLAG_Z), true)
             }
-            0xC3 => {
+            0xC3 => /* JP a16 */ {
                 self.jp_abs(bus, None, false)
             }
+            0xC4 => /* CALL NZ, a16 */ {
+                self.call(bus, Some(self.registers.f & FLAG_Z), true)
+            }
+
             v @ (0xD3 | 0xDB | 0xDD | 0xE3 | 0xE4 | 0xEB | 0xEC | 0xED | 0xF4 | 0xFC | 0xFD) => {
                 panic!("Illegal opcode {:#04X} encountered", v);
             }
@@ -777,6 +781,22 @@ impl Cpu {
     fn pop(&mut self, bus: &Bus, addr: AddrSource) {
         let value = Self::fetch_u16(bus, &mut self.sp);
         self.set_addr_from_source(addr, value);
+    }
+
+    fn call(&mut self, bus: &mut Bus, flag: Option<u8>, not: bool) -> u8 {
+        let target_addr = Self::fetch_u16(bus, &mut self.pc);
+
+        let should_call = flag.map_or(true, |v| (v != 0) ^ not);
+
+        if should_call {
+            self.sp = self.sp.wrapping_sub(2);
+            self.write_u16(bus, self.sp, self.pc);
+            self.pc = target_addr;
+
+            24
+        } else {
+            12
+        }
     }
 
     fn and_u8(&mut self, dest: Reg8, val: u8) {

@@ -198,7 +198,6 @@ macro_rules! test_inc_dec {
 }
 
 macro_rules! test_add {
-    // --- FORMAT 8-BIT (r8 + r8) ---
     ($(#[$attr:meta])* r8_r8, $name:ident, $opcode:expr, $reg_dest:ident, $reg_source:ident, $val_dest:expr, $val_src:expr, $expected:expr, $z:expr, $n:expr, $h:expr, $c:expr, $cycles:expr) => {
         $(#[$attr])* #[test]
         fn $name() {
@@ -214,7 +213,6 @@ macro_rules! test_add {
         }
     };
 
-    // --- FORMAT 8-BIT MEMORY (r8 + [HL]) ---
     ($(#[$attr:meta])* r8_hl_mem, $name:ident, $opcode:expr, $val_a:expr, $val_mem:expr, $expected:expr, $z:expr, $n:expr, $h:expr, $c:expr, $cycles:expr) => {
         $(#[$attr])* #[test]
         fn $name() {
@@ -230,7 +228,6 @@ macro_rules! test_add {
         }
     };
 
-    // --- FORMAT 16-BIT (r16 + r16) ---
     ($(#[$attr:meta])* r16_r16, $name:ident, $opcode:expr, $src_reg:ident, $h1:expr, $h2:expr, $expected:expr, $h:expr, $c:expr) => {
         $(#[$attr])* #[test]
         fn $name() {
@@ -247,7 +244,6 @@ macro_rules! test_add {
 }
 
 macro_rules! test_adc {
-    // --- FORMAT 8-BIT (r8 + r8 + Carry) ---
     ($(#[$attr:meta])* r8_r8, $name:ident, $opcode:expr, $reg_dest:ident, $reg_source:ident, $val_dest:expr, $val_src:expr, $init_c:expr, $expected:expr, $z:expr, $n:expr, $h:expr, $c:expr, $cycles:expr) => {
         $(#[$attr])* #[test]
         fn $name() {
@@ -266,7 +262,6 @@ macro_rules! test_adc {
         }
     };
 
-    // --- FORMAT 8-BIT MEMORY (r8 + [HL] + Carry) ---
     ($(#[$attr:meta])* r8_hl_mem, $name:ident, $opcode:expr, $val_a:expr, $val_mem:expr, $init_c:expr, $expected:expr, $z:expr, $n:expr, $h:expr, $c:expr, $cycles:expr) => {
         $(#[$attr])* #[test]
         fn $name() {
@@ -286,7 +281,6 @@ macro_rules! test_adc {
     };
 }
 macro_rules! test_sub {
-    // --- FORMAT 8-BIT (r8 - r8) ---
     ($(#[$attr:meta])* r8_r8, $name:ident, $opcode:expr, $reg_source:ident, $val_a:expr, $val_src:expr, $expected:expr, $z:expr, $h:expr, $c:expr, $cycles:expr) => {
         $(#[$attr])* #[test]
         fn $name() {
@@ -302,7 +296,6 @@ macro_rules! test_sub {
         }
     };
 
-    // --- FORMAT 8-BIT MEMORY (r8 - [HL]) ---
     ($(#[$attr:meta])* r8_hl_mem, $name:ident, $opcode:expr, $val_a:expr, $val_mem:expr, $expected:expr, $z:expr, $h:expr, $c:expr, $cycles:expr) => {
         $(#[$attr])* #[test]
         fn $name() {
@@ -320,7 +313,6 @@ macro_rules! test_sub {
 }
 
 macro_rules! test_sbc {
-    // --- FORMAT 8-BIT (r8 - r8 - Carry) ---
     ($(#[$attr:meta])* r8_r8, $name:ident, $opcode:expr, $reg_source:ident, $val_a:expr, $val_src:expr, $init_c:expr, $expected:expr, $z:expr, $h:expr, $c:expr, $cycles:expr) => {
         $(#[$attr])* #[test]
         fn $name() {
@@ -339,7 +331,6 @@ macro_rules! test_sbc {
         }
     };
 
-    // --- FORMAT 8-BIT MEMORY (r8 - [HL] - Carry) ---
     ($(#[$attr:meta])* r8_hl_mem, $name:ident, $opcode:expr, $val_a:expr, $val_mem:expr, $init_c:expr, $expected:expr, $z:expr, $h:expr, $c:expr, $cycles:expr) => {
         $(#[$attr])* #[test]
         fn $name() {
@@ -360,8 +351,6 @@ macro_rules! test_sbc {
 }
 
 macro_rules! test_and {
-    // --- FORMAT 8-BIT (A & r8) ---
-    // Flags for AND: Z is calculated, N = 0, H = 1, C = 0
     ($(#[$attr:meta])* r8_r8, $name:ident, $opcode:expr, $reg_source:ident, $val_a:expr, $val_src:expr, $expected:expr, $z:expr, $cycles:expr) => {
         $(#[$attr])* #[test]
         fn $name() {
@@ -377,7 +366,6 @@ macro_rules! test_and {
         }
     };
 
-    // --- FORMAT 8-BIT MEMORY (A & [HL]) ---
     ($(#[$attr:meta])* r8_hl_mem, $name:ident, $opcode:expr, $val_a:expr, $val_mem:expr, $expected:expr, $z:expr, $cycles:expr) => {
         $(#[$attr])* #[test]
         fn $name() {
@@ -395,8 +383,6 @@ macro_rules! test_and {
 }
 
 macro_rules! test_xor {
-    // --- FORMAT 8-BIT (A ^ r8) ---
-    // Flags for XOR: Z is calculated, N = 0, H = 0, C = 0
     ($(#[$attr:meta])* r8_r8, $name:ident, $opcode:expr, $reg_source:ident, $val_a:expr, $val_src:expr, $expected:expr, $z:expr, $cycles:expr) => {
         $(#[$attr])* #[test]
         fn $name() {
@@ -412,7 +398,6 @@ macro_rules! test_xor {
         }
     };
 
-    // --- FORMAT 8-BIT MEMORY (A ^ [HL]) ---
     ($(#[$attr:meta])* r8_hl_mem, $name:ident, $opcode:expr, $val_a:expr, $val_mem:expr, $expected:expr, $z:expr, $cycles:expr) => {
         $(#[$attr])* #[test]
         fn $name() {
@@ -430,8 +415,6 @@ macro_rules! test_xor {
 }
 
 macro_rules! test_or {
-    // --- FORMAT 8-BIT (A | r8) ---
-    // Flags for OR: Z is calculated, N = 0, H = 0, C = 0
     ($(#[$attr:meta])* r8_r8, $name:ident, $opcode:expr, $reg_source:ident, $val_a:expr, $val_src:expr, $expected:expr, $z:expr, $cycles:expr) => {
         $(#[$attr])* #[test]
         fn $name() {
@@ -447,7 +430,6 @@ macro_rules! test_or {
         }
     };
 
-    // --- FORMAT 8-BIT MEMORY (A | [HL]) ---
     ($(#[$attr:meta])* r8_hl_mem, $name:ident, $opcode:expr, $val_a:expr, $val_mem:expr, $expected:expr, $z:expr, $cycles:expr) => {
         $(#[$attr])* #[test]
         fn $name() {
@@ -465,9 +447,6 @@ macro_rules! test_or {
 }
 
 macro_rules! test_cp {
-    // --- FORMAT 8-BIT (CP r8) ---
-    // Flags for CP: N is always 1, Z/H/C are calculated based on subtraction
-    // NOTE: A is NOT modified, so we assert `a == val_a`. We do not need an $expected param.
     ($(#[$attr:meta])* r8_r8, $name:ident, $opcode:expr, $reg_source:ident, $val_a:expr, $val_src:expr, $z:expr, $h:expr, $c:expr, $cycles:expr) => {
         $(#[$attr])* #[test]
         fn $name() {
@@ -477,14 +456,12 @@ macro_rules! test_cp {
                 cpu.registers.$reg_source = $val_src;
             }
             let t = cpu.step(&mut bus);
-            // CP acts like SUB but throws away the result. A should be intact.
             assert_eq!(cpu.registers.a, $val_a);
             assert_flags!(cpu, $z, true, $h, $c);
             assert_eq!(t, $cycles);
         }
     };
 
-    // --- FORMAT 8-BIT MEMORY (CP [HL]) ---
     ($(#[$attr:meta])* r8_hl_mem, $name:ident, $opcode:expr, $val_a:expr, $val_mem:expr, $z:expr, $h:expr, $c:expr, $cycles:expr) => {
         $(#[$attr])* #[test]
         fn $name() {
@@ -494,7 +471,6 @@ macro_rules! test_cp {
             bus.write_byte(addr, $val_mem);
             cpu.registers.a = $val_a;
             let t = cpu.step(&mut bus);
-            // CP acts like SUB but throws away the result. A should be intact.
             assert_eq!(cpu.registers.a, $val_a);
             assert_flags!(cpu, $z, true, $h, $c);
             assert_eq!(t, $cycles);
@@ -530,7 +506,6 @@ macro_rules! test_jr {
 }
 
 macro_rules! test_jp {
-    // JP a16
     ($(#[$attr:meta])* $name:ident, $opcode:expr, $dest:expr) => {
         $(#[$attr])* #[test]
         fn $name() {
@@ -540,7 +515,6 @@ macro_rules! test_jp {
             assert_eq!(t, 16);
         }
     };
-    // JP cond, a16
     ($(#[$attr:meta])* $name:ident, $opcode:expr, $cond_flag:expr, $cond_state:expr, $dest:expr, $should_jump:expr) => {
         $(#[$attr])* #[test]
         fn $name() {
@@ -564,12 +538,10 @@ macro_rules! test_ret_cond {
         fn $name() {
             let (mut cpu, mut bus) = setup_test!(&[$opcode]);
 
-            // Set up a mock stack with a return address of 0x1234
             cpu.sp = 0xFFFC;
-            bus.write_byte(0xFFFC, 0x34); // Low byte
-            bus.write_byte(0xFFFD, 0x12); // High byte
+            bus.write_byte(0xFFFC, 0x34);
+            bus.write_byte(0xFFFD, 0x12);
 
-            // Set or clear the condition flag
             if $cond_state {
                 cpu.registers.f |= $cond_flag;
             } else {
@@ -614,6 +586,54 @@ macro_rules! test_pop {
 
             assert_eq!(cpu.sp, 0xD002);
             assert_eq!(t, 12);
+        }
+    };
+}
+
+macro_rules! test_call {
+    ($(#[$attr:meta])* $name:ident, $opcode:expr, $dest:expr) => {
+        $(#[$attr])* #[test]
+        fn $name() {
+            let (mut cpu, mut bus) = setup_test!(&[$opcode, ($dest & 0xFF) as u8, ($dest >> 8) as u8]);
+
+            // Set SP to top of WRAM instead of HRAM
+            cpu.sp = 0xE000;
+
+            let t = cpu.step(&mut bus);
+
+            assert_eq!(cpu.pc, $dest);
+            assert_eq!(cpu.sp, 0xDFFE); // Decremented by 2
+
+            // Return address is PC + 3 (0x0100 + 3 = 0x0103)
+            assert_eq!(bus.read_byte(0xDFFF), 0x01); // High byte of 0x0103
+            assert_eq!(bus.read_byte(0xDFFE), 0x03); // Low byte of 0x0103
+            assert_eq!(t, 24);
+        }
+    };
+
+    ($(#[$attr:meta])* $name:ident, $opcode:expr, $cond_flag:expr, $cond_state:expr, $dest:expr, $should_jump:expr) => {
+        $(#[$attr])* #[test]
+        fn $name() {
+            let (mut cpu, mut bus) = setup_test!(&[$opcode, ($dest & 0xFF) as u8, ($dest >> 8) as u8]);
+
+            // Set SP to top of WRAM
+            cpu.sp = 0xE000;
+
+            if $cond_state { cpu.registers.f |= $cond_flag; } else { cpu.registers.f &= !$cond_flag; }
+            let t = cpu.step(&mut bus);
+
+            if $should_jump {
+                assert_eq!(cpu.pc, $dest);
+                assert_eq!(cpu.sp, 0xDFFE); // Decremented by 2
+
+                assert_eq!(bus.read_byte(0xDFFF), 0x01);
+                assert_eq!(bus.read_byte(0xDFFE), 0x03);
+                assert_eq!(t, 24);
+            } else {
+                assert_eq!(cpu.pc, 0x0103);
+                assert_eq!(cpu.sp, 0xE000); // SP remains unchanged if not jumping
+                assert_eq!(t, 12);
+            }
         }
     };
 }
@@ -861,25 +881,20 @@ test_ld!(r8_n8, test_0x26_ld_h_n8, 0x26, h, 0xFE, 8);
 
 #[test]
 fn test_0x27_daa() {
-    // Structure: (Initial A, N_flag, H_flag, C_flag) -> (Expected A, Expected C_flag)
-    // Note: Z flag should be set if Result A == 0
     let test_cases = [
-        // --- After Addition (N=0) ---
-        ((0x99, false, false, false), (0x99, false)), // No adjustment
-        ((0x0B, false, false, false), (0x11, false)), // A low nibble > 9
-        ((0xA0, false, false, false), (0x00, true)),  // A high nibble > 9
-        ((0x9A, false, false, false), (0x00, true)),  // Both > 9
-        ((0x02, false, true, false), (0x08, false)),  // H set, add 0x06
-        ((0x90, false, false, true), (0xF0, true)),   // C set, add 0x60
-        ((0x05, false, true, true), (0x6B, true)),    // C & H set, add 0x66
-        // --- After Subtraction (N=1) ---
-        ((0x99, true, false, false), (0x99, false)), // No adjustment
-        ((0x05, true, true, false), (0xFF, false)),  // H set, sub 0x06
-        ((0x40, true, false, true), (0xE0, true)),   // C set, sub 0x60
-        ((0x22, true, true, true), (0xBC, true)),    // C & H set, sub 0x66
-        // --- Edge Cases ---
-        ((0x00, false, false, false), (0x00, false)), // Zero remains zero
-        ((0x7A, false, false, false), (0x80, false)), // Low nibble A-F
+        ((0x99, false, false, false), (0x99, false)),
+        ((0x0B, false, false, false), (0x11, false)),
+        ((0xA0, false, false, false), (0x00, true)),
+        ((0x9A, false, false, false), (0x00, true)),
+        ((0x02, false, true, false), (0x08, false)),
+        ((0x90, false, false, true), (0xF0, true)),
+        ((0x05, false, true, true), (0x6B, true)),
+        ((0x99, true, false, false), (0x99, false)),
+        ((0x05, true, true, false), (0xFF, false)),
+        ((0x40, true, false, true), (0xE0, true)),
+        ((0x22, true, true, true), (0xBC, true)),
+        ((0x00, false, false, false), (0x00, false)),
+        ((0x7A, false, false, false), (0x80, false)),
     ];
 
     for ((start_a, n, h, c), (exp_a, exp_c)) in test_cases {
@@ -1938,6 +1953,8 @@ test_pop!(
 test_jp!(test_0xc2_jp_nz_jump, 0xC2, FLAG_Z, false, 0x1234, true);
 test_jp!(test_0xc2_jp_nz_no_jump, 0xC2, FLAG_Z, true, 0x1234, false);
 test_jp!(test_0xc3_jp_a16, 0xC3, 0xABCD);
+test_call!(test_0xc4_call_nz_jump, 0xC4, FLAG_Z, false, 0x1234, true);
+test_call!(test_0xc4_call_nz_no_jump, 0xC4, FLAG_Z, true, 0x1234, false);
 test_jp!(
     #[ignore]
     test_0xca_jp_z_jump,
@@ -1955,6 +1972,30 @@ test_jp!(
     false,
     0x4000,
     false
+);
+test_call!(
+    #[ignore]
+    test_0xcc_call_z_jump,
+    0xCC,
+    FLAG_Z,
+    true,
+    0x5678,
+    true
+);
+test_call!(
+    #[ignore]
+    test_0xcc_call_z_no_jump,
+    0xCC,
+    FLAG_Z,
+    false,
+    0x5678,
+    false
+);
+test_call!(
+    #[ignore]
+    test_0xcd_call_a16,
+    0xCD,
+    0xABCD
 );
 test_jp!(
     #[ignore]
@@ -1974,6 +2015,24 @@ test_jp!(
     0x5000,
     false
 );
+test_call!(
+    #[ignore]
+    test_0xd4_call_nc_jump,
+    0xD4,
+    FLAG_C,
+    false,
+    0x9ABC,
+    true
+);
+test_call!(
+    #[ignore]
+    test_0xd4_call_nc_no_jump,
+    0xD4,
+    FLAG_C,
+    true,
+    0x9ABC,
+    false
+);
 test_jp!(
     #[ignore]
     test_0xda_jp_c_jump,
@@ -1990,5 +2049,23 @@ test_jp!(
     FLAG_C,
     false,
     0x6000,
+    false
+);
+test_call!(
+    #[ignore]
+    test_0xdc_call_c_jump,
+    0xDC,
+    FLAG_C,
+    true,
+    0xDEF0,
+    true
+);
+test_call!(
+    #[ignore]
+    test_0xdc_call_c_no_jump,
+    0xDC,
+    FLAG_C,
+    false,
+    0xDEF0,
     false
 );
