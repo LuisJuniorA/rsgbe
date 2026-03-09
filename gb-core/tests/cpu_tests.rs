@@ -2110,6 +2110,7 @@ test_adc!(
     true,
     8
 );
+test_rst!(test_0xcf_rst_08, 0xCF, 0x0008);
 test_jp!(
     #[ignore]
     test_0xd2_jp_nc_jump,
