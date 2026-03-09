@@ -912,7 +912,6 @@ test_ld!(r8_r8, test_0x7d_ld_a_l, 0x7D, a, l, 4);
 test_ld!(r8_hl_mem, test_0x7e_ld_a_hl, 0x7E, a, 8);
 test_ld!(r8_r8, test_0x7f_ld_a_a, 0x7F, a, a, 4);
 test_add!(
-    #[ignore]
     r8_r8,
     test_0x80_add_a_b,
     0x80,
@@ -928,7 +927,6 @@ test_add!(
     4
 );
 test_add!(
-    #[ignore]
     r8_r8,
     test_0x81_add_a_c_zero,
     0x81,
@@ -944,7 +942,6 @@ test_add!(
     4
 );
 test_add!(
-    #[ignore]
     r8_r8,
     test_0x82_add_a_d_hcarry,
     0x82,
@@ -960,7 +957,6 @@ test_add!(
     4
 );
 test_add!(
-    #[ignore]
     r8_r8,
     test_0x83_add_a_e_carry,
     0x83,
@@ -976,7 +972,6 @@ test_add!(
     4
 );
 test_add!(
-    #[ignore]
     r8_r8,
     test_0x84_add_a_h_hc,
     0x84,
@@ -992,7 +987,6 @@ test_add!(
     4
 );
 test_add!(
-    #[ignore]
     r8_r8,
     test_0x85_add_a_l,
     0x85,
@@ -1008,7 +1002,6 @@ test_add!(
     4
 );
 test_add!(
-    #[ignore]
     r8_hl_mem,
     test_0x86_add_a_hl,
     0x86,
@@ -1022,7 +1015,6 @@ test_add!(
     8
 );
 test_add!(
-    #[ignore]
     r8_r8,
     test_0x87_add_a_a,
     0x87,
@@ -1038,7 +1030,6 @@ test_add!(
     4
 );
 test_adc!(
-    #[ignore]
     r8_r8,
     test_0x88_adc_a_b,
     0x88,
@@ -1055,7 +1046,6 @@ test_adc!(
     4
 );
 test_adc!(
-    #[ignore]
     r8_r8,
     test_0x89_adc_a_c,
     0x89,
@@ -1072,7 +1062,6 @@ test_adc!(
     4
 );
 test_adc!(
-    #[ignore]
     r8_r8,
     test_0x8a_adc_a_d,
     0x8A,
@@ -1089,7 +1078,6 @@ test_adc!(
     4
 );
 test_adc!(
-    #[ignore]
     r8_r8,
     test_0x8b_adc_a_e,
     0x8B,
@@ -1106,7 +1094,6 @@ test_adc!(
     4
 );
 test_adc!(
-    #[ignore]
     r8_r8,
     test_0x8c_adc_a_h,
     0x8C,
@@ -1123,7 +1110,6 @@ test_adc!(
     4
 );
 test_adc!(
-    #[ignore]
     r8_r8,
     test_0x8d_adc_a_l,
     0x8D,
@@ -1140,7 +1126,6 @@ test_adc!(
     4
 );
 test_adc!(
-    #[ignore]
     r8_hl_mem,
     test_0x8e_adc_a_hl_mem,
     0x8E,
@@ -1155,7 +1140,6 @@ test_adc!(
     8
 );
 test_adc!(
-    #[ignore]
     r8_r8,
     test_0x8f_adc_a_a,
     0x8F,
@@ -1172,7 +1156,6 @@ test_adc!(
     4
 );
 test_sub!(
-    #[ignore]
     r8_r8,
     test_0x90_sub_a_b,
     0x90,
@@ -1186,7 +1169,6 @@ test_sub!(
     4
 );
 test_sub!(
-    #[ignore]
     r8_r8,
     test_0x91_sub_a_c,
     0x91,
@@ -1200,7 +1182,6 @@ test_sub!(
     4
 );
 test_sub!(
-    #[ignore]
     r8_r8,
     test_0x92_sub_a_d,
     0x92,
@@ -1214,7 +1195,6 @@ test_sub!(
     4
 );
 test_sub!(
-    #[ignore]
     r8_r8,
     test_0x93_sub_a_e,
     0x93,
@@ -1228,7 +1208,6 @@ test_sub!(
     4
 );
 test_sub!(
-    #[ignore]
     r8_r8,
     test_0x94_sub_a_h,
     0x94,
@@ -1242,7 +1221,6 @@ test_sub!(
     4
 );
 test_sub!(
-    #[ignore]
     r8_r8,
     test_0x95_sub_a_l,
     0x95,
@@ -1256,7 +1234,6 @@ test_sub!(
     4
 );
 test_sub!(
-    #[ignore]
     r8_hl_mem,
     test_0x96_sub_a_hl,
     0x96,
@@ -1269,7 +1246,6 @@ test_sub!(
     8
 );
 test_sub!(
-    #[ignore]
     r8_r8,
     test_0x97_sub_a_a,
     0x97,

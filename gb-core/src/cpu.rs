@@ -401,7 +401,30 @@ impl Cpu {
             0x76 /* HALT */ => {
                 todo!("WIP");
                 unreachable!();
-           }
+            }
+        v @ 0x80..=0xBF => {
+                let source_bits = v & 0b00_000_111;
+                let source_op = self.decode_bits(source_bits);
+                let val = match source_op {
+                    Operand8::Reg(r) => self.get_reg8(r),
+                    Operand8::MemHL => bus.read_byte(self.registers.get_hl()),
+                };
+
+                let op = (v & 0b00_111_000) >> 3;
+                match op {
+                    0b000 /* ADD A, r8 */ => self.add_u8(Reg8::A, val, false),
+                    0b001 /* ADC A, r8 */ => self.add_u8(Reg8::A, val, true),
+                    0b010 /* SUB A, r8 */ => self.sub_u8(Reg8::A, val, false),
+                    0b011 /* SBC A, r8 */ => self.sub_u8(Reg8::A, val, true),
+                    0b100 /* AND A, r8 */ => self.and_u8(Reg8::A, val),
+                    0b101 /* XOR A, r8 */ => self.xor_u8(Reg8::A, val),
+                    0b110 /* OR A, r8  */ => self.or_u8(Reg8::A, val),
+                    0b111 /* CP A, r8  */ => self.cp_u8(Reg8::A, val),
+                    _ => unreachable!(),
+                }
+
+                if let Operand8::MemHL = source_op { 8 } else { 4 }
+            }
 
             v @ (0xD3 | 0xDB | 0xDD | 0xE3 | 0xE4 | 0xEB | 0xEC | 0xED | 0xF4 | 0xFC | 0xFD) => {
                 panic!("Illegal opcode {:#04X} encountered", v);
@@ -637,10 +660,10 @@ impl Cpu {
         // Note: 0x76 (01 110 110) is a special case: it is decoded as HALT instead of LD (HL), (HL).
 
         // Extract destination bits (5, 4, 3) and shift them to the right
-        let dest_bits = (opcode & 0b00111000) >> 3;
+        let dest_bits = (opcode & 0b00_111_000) >> 3;
 
         // Extract source bits (2, 1, 0)
-        let source_bits = opcode & 0b00000111;
+        let source_bits = opcode & 0b00_000_111;
 
         // Map bit patterns to Operand8 types (registers or memory)
         // Returns (source, destination) to match the expected function signature
@@ -659,5 +682,98 @@ impl Cpu {
             0b111 => Operand8::Reg(Reg8::A),
             _ => unreachable!(),
         }
+    }
+
+    fn add_u8(&mut self, dest: Reg8, val: u8, carry: bool) {
+        let current_val = self.get_reg8(dest);
+        let c = if carry && (self.registers.f & FLAG_C) != 0 {
+            1
+        } else {
+            0
+        };
+
+        // Use u16 to detect 8-bit carry
+        let res_wide = (current_val as u16) + (val as u16) + (c as u16);
+        let res = res_wide as u8;
+
+        // Half-carry: bit 3 to bit 4
+        let h = (current_val & 0x0F) + (val & 0x0F) + (c as u8) > 0x0F;
+
+        self.set_reg8(dest, res);
+        self.set_flags(
+            (res == 0).into(),
+            FlagOp::Unset,
+            h.into(),
+            (res_wide > 0xFF).into(),
+        );
+    }
+
+    fn sub_u8(&mut self, dest: Reg8, val: u8, carry: bool) {
+        let current_val = self.get_reg8(dest);
+        let c = if carry && (self.registers.f & FLAG_C) != 0 {
+            1
+        } else {
+            0
+        };
+
+        let res_wide = (current_val as i16) - (val as i16) - (c as i16);
+        let res = res_wide as u8;
+
+        // Half-borrow: check if lower nibble subtraction < 0
+        let h = (current_val & 0x0F) < (val & 0x0F) + (c as u8);
+
+        self.set_reg8(dest, res);
+        self.set_flags(
+            (res == 0).into(),
+            FlagOp::Set,
+            h.into(),
+            (res_wide < 0).into(),
+        );
+    }
+
+    fn and_u8(&mut self, dest: Reg8, val: u8) {
+        let res = self.get_reg8(dest) & val;
+        self.set_reg8(dest, res);
+
+        // AND always sets Half-Carry (H) to 1 on Game Boy
+        self.set_flags((res == 0).into(), FlagOp::Unset, FlagOp::Set, FlagOp::Unset);
+    }
+
+    fn xor_u8(&mut self, dest: Reg8, val: u8) {
+        let res = self.get_reg8(dest) ^ val;
+        self.set_reg8(dest, res);
+
+        self.set_flags(
+            (res == 0).into(),
+            FlagOp::Unset,
+            FlagOp::Unset,
+            FlagOp::Unset,
+        );
+    }
+
+    fn or_u8(&mut self, dest: Reg8, val: u8) {
+        let res = self.get_reg8(dest) | val;
+        self.set_reg8(dest, res);
+
+        self.set_flags(
+            (res == 0).into(),
+            FlagOp::Unset,
+            FlagOp::Unset,
+            FlagOp::Unset,
+        );
+    }
+
+    fn cp_u8(&mut self, dest: Reg8, val: u8) {
+        // CP is a comparison, so it acts like SUB but does NOT save the result back to the register
+        let current_val = self.get_reg8(dest);
+        let res = current_val.wrapping_sub(val);
+        let h = (current_val & 0x0F) < (val & 0x0F);
+
+        self.set_flags(
+            (res == 0).into(),
+            FlagOp::Set,
+            h.into(),
+            (current_val < val).into(),
+        );
     }
 }
