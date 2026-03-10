@@ -59,9 +59,4 @@ fn test_0xea_ld_a16_a() {
     assert_eq!(t, 16);
 }
 test_xor!(r8_n8, test_0xee_xor_a_n8, 0xEE, 0x0F, 0x0F, 0x00, true, 8);
-test_rst!(
-    #[ignore]
-    test_0xef_rst_28,
-    0xEF,
-    0x0028
-);
+test_rst!(test_0xef_rst_28, 0xEF, 0x0028);
