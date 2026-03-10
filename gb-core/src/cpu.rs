@@ -632,6 +632,11 @@ impl Cpu {
                 self.sp = self.get_addr_from_source(AddrSource::HL);
                 8
             }
+            0xFA /* LD A, [a16] */ => {
+                let a16 = Self::fetch_u16(bus, &mut self.pc);
+                self.registers.a = bus.read_byte(a16);
+                16
+            }
 
             v @ (0xD3 | 0xDB | 0xDD | 0xE3 | 0xE4 | 0xEB | 0xEC | 0xED | 0xF4 | 0xFC | 0xFD) => {
                 panic!("Illegal opcode {:#04X} encountered", v);

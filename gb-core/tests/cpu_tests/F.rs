@@ -44,7 +44,6 @@ fn test_0xf8_ld_hl_sp_e8() {
 }
 
 #[test]
-#[ignore]
 fn test_0xf9_ld_sp_hl() {
     let (mut cpu, mut bus) = setup_test!(&[0xF9]);
     cpu.registers.set_hl(0x1234);
@@ -54,10 +53,10 @@ fn test_0xf9_ld_sp_hl() {
 }
 
 #[test]
-#[ignore]
 fn test_0xfa_ld_a_a16() {
-    let (mut cpu, mut bus) = setup_test!(&[0xFA, 0x34, 0x12]);
-    bus.write_byte(0x1234, 0xBC);
+    let (mut cpu, mut bus) = setup_test!(&[0xFA, 0x23, 0xC1]);
+    bus.write_byte(0xC123, 0xBC);
+
     let t = cpu.step(&mut bus);
     assert_eq!(cpu.registers.a, 0xBC);
     assert_eq!(t, 16);
