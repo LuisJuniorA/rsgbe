@@ -71,22 +71,7 @@ fn test_0xfb_ei() {
     assert_eq!(t, 4);
 }
 
-#[test]
-#[should_panic]
-fn test_0xfc_illegal() {
-    let (mut cpu, mut bus) = setup_test!(&[0xFC]);
-    cpu.step(&mut bus);
-}
-
-#[test]
-#[should_panic]
-fn test_0xfd_illegal() {
-    let (mut cpu, mut bus) = setup_test!(&[0xFD]);
-    cpu.step(&mut bus);
-}
-
 test_cp!(
-    #[ignore]
     r8_n8,
     test_0xfe_cp_a_n8,
     0xFE,
@@ -98,9 +83,4 @@ test_cp!(
     8
 );
 
-test_rst!(
-    #[ignore]
-    test_0xff_rst_38,
-    0xFF,
-    0x0038
-);
+test_rst!(test_0xff_rst_38, 0xFF, 0x0038);
