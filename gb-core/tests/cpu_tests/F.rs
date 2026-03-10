@@ -30,3 +30,80 @@ fn test_0xf3_di() {
 
 test_push!(test_0xf5_push_af, 0xF5, af, 0x42F0);
 test_or!(r8_n8, test_0xf6_or_a_n8, 0xF6, 0x5A, 0x0F, 0x5F, false, 8);
+
+test_rst!(test_0xf7_rst_30, 0xF7, 0x0030);
+
+#[test]
+#[ignore]
+fn test_0xf8_ld_hl_sp_e8() {
+    let (mut cpu, mut bus) = setup_test!(&[0xF8, 0x02]);
+    cpu.sp = 0xFFF0;
+    let t = cpu.step(&mut bus);
+    assert_eq!(cpu.registers.get_hl(), 0xFFF2);
+    assert_eq!(t, 12);
+    assert_flags!(cpu, false, false, false, false);
+}
+
+#[test]
+#[ignore]
+fn test_0xf9_ld_sp_hl() {
+    let (mut cpu, mut bus) = setup_test!(&[0xF9]);
+    cpu.registers.set_hl(0x1234);
+    let t = cpu.step(&mut bus);
+    assert_eq!(cpu.sp, 0x1234);
+    assert_eq!(t, 8);
+}
+
+#[test]
+#[ignore]
+fn test_0xfa_ld_a_a16() {
+    let (mut cpu, mut bus) = setup_test!(&[0xFA, 0x34, 0x12]);
+    bus.write_byte(0x1234, 0xBC);
+    let t = cpu.step(&mut bus);
+    assert_eq!(cpu.registers.a, 0xBC);
+    assert_eq!(t, 16);
+}
+
+#[test]
+#[ignore]
+fn test_0xfb_ei() {
+    let (mut cpu, mut bus) = setup_test!(&[0xFB]);
+    cpu.ime = false;
+    let t = cpu.step(&mut bus);
+    assert!(cpu.ime);
+    assert_eq!(t, 4);
+}
+
+#[test]
+#[should_panic]
+fn test_0xfc_illegal() {
+    let (mut cpu, mut bus) = setup_test!(&[0xFC]);
+    cpu.step(&mut bus);
+}
+
+#[test]
+#[should_panic]
+fn test_0xfd_illegal() {
+    let (mut cpu, mut bus) = setup_test!(&[0xFD]);
+    cpu.step(&mut bus);
+}
+
+test_cp!(
+    #[ignore]
+    r8_n8,
+    test_0xfe_cp_a_n8,
+    0xFE,
+    0x3E,
+    0x3E,
+    true,
+    false,
+    false,
+    8
+);
+
+test_rst!(
+    #[ignore]
+    test_0xff_rst_38,
+    0xFF,
+    0x0038
+);
