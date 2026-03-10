@@ -10,7 +10,15 @@ fn test_0xf0_ldh_a_a8() {
 }
 
 test_pop!(test_0xf1_pop_af, 0xF1, af, 0x42F0);
-
+#[test]
+fn test_0xf2_ldh_a_c() {
+    let (mut cpu, mut bus) = setup_test!(&[0xF2]);
+    cpu.registers.c = 0x85;
+    bus.write_byte(0xFF85, 0x12);
+    let t = cpu.step(&mut bus);
+    assert_eq!(cpu.registers.a, 0x12);
+    assert_eq!(t, 8);
+}
 test_push!(
     #[ignore]
     test_0xf5_push_af,
