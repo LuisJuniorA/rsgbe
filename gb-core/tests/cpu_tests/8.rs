@@ -1,0 +1,261 @@
+use super::*;
+
+test_add!(
+    r8_r8,
+    test_0x80_add_a_b,
+    0x80,
+    a,
+    b,
+    0x30,
+    0x12,
+    0x42,
+    false,
+    false,
+    false,
+    false,
+    4
+);
+
+test_add!(
+    r8_r8,
+    test_0x81_add_a_c_zero,
+    0x81,
+    a,
+    c,
+    0x00,
+    0x00,
+    0x00,
+    true,
+    false,
+    false,
+    false,
+    4
+);
+
+test_add!(
+    r8_r8,
+    test_0x82_add_a_d_hcarry,
+    0x82,
+    a,
+    d,
+    0x0F,
+    0x01,
+    0x10,
+    false,
+    false,
+    true,
+    false,
+    4
+);
+
+test_add!(
+    r8_r8,
+    test_0x83_add_a_e_carry,
+    0x83,
+    a,
+    e,
+    0xFF,
+    0x01,
+    0x00,
+    true,
+    false,
+    true,
+    true,
+    4
+);
+
+test_add!(
+    r8_r8,
+    test_0x84_add_a_h_hc,
+    0x84,
+    a,
+    h,
+    0x88,
+    0x88,
+    0x10,
+    false,
+    false,
+    true,
+    true,
+    4
+);
+
+test_add!(
+    r8_r8,
+    test_0x85_add_a_l,
+    0x85,
+    a,
+    l,
+    0x10,
+    0x20,
+    0x30,
+    false,
+    false,
+    false,
+    false,
+    4
+);
+
+test_add!(
+    r8_hl_mem,
+    test_0x86_add_a_hl,
+    0x86,
+    0x40,
+    0x40,
+    0x80,
+    false,
+    false,
+    false,
+    false,
+    8
+);
+
+test_add!(
+    r8_r8,
+    test_0x87_add_a_a,
+    0x87,
+    a,
+    a,
+    0x10,
+    0x10,
+    0x20,
+    false,
+    false,
+    false,
+    false,
+    4
+);
+
+test_adc!(
+    r8_r8,
+    test_0x88_adc_a_b,
+    0x88,
+    a,
+    b,
+    0x10,
+    0x20,
+    false,
+    0x30,
+    false,
+    false,
+    false,
+    false,
+    4
+);
+
+test_adc!(
+    r8_r8,
+    test_0x89_adc_a_c,
+    0x89,
+    a,
+    c,
+    0x10,
+    0x20,
+    true,
+    0x31,
+    false,
+    false,
+    false,
+    false,
+    4
+);
+
+test_adc!(
+    r8_r8,
+    test_0x8a_adc_a_d,
+    0x8A,
+    a,
+    d,
+    0x00,
+    0x00,
+    false,
+    0x00,
+    true,
+    false,
+    false,
+    false,
+    4
+);
+
+test_adc!(
+    r8_r8,
+    test_0x8b_adc_a_e,
+    0x8B,
+    a,
+    e,
+    0x0F,
+    0x00,
+    true,
+    0x10,
+    false,
+    false,
+    true,
+    false,
+    4
+);
+
+test_adc!(
+    r8_r8,
+    test_0x8c_adc_a_h,
+    0x8C,
+    a,
+    h,
+    0xFF,
+    0x00,
+    true,
+    0x00,
+    true,
+    false,
+    true,
+    true,
+    4
+);
+
+test_adc!(
+    r8_r8,
+    test_0x8d_adc_a_l,
+    0x8D,
+    a,
+    l,
+    0x80,
+    0x7F,
+    true,
+    0x00,
+    true,
+    false,
+    true,
+    true,
+    4
+);
+
+test_adc!(
+    r8_hl_mem,
+    test_0x8e_adc_a_hl_mem,
+    0x8E,
+    0x05,
+    0x05,
+    true,
+    0x0B,
+    false,
+    false,
+    false,
+    false,
+    8
+);
+
+test_adc!(
+    r8_r8,
+    test_0x8f_adc_a_a,
+    0x8F,
+    a,
+    a,
+    0x40,
+    0x40,
+    true,
+    0x81,
+    false,
+    false,
+    false,
+    false,
+    4
+);

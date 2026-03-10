@@ -1,0 +1,231 @@
+use super::*;
+
+test_sub!(
+    r8_r8,
+    test_0x90_sub_a_b,
+    0x90,
+    b,
+    0x0A,
+    0x03,
+    0x07,
+    false,
+    false,
+    false,
+    4
+);
+
+test_sub!(
+    r8_r8,
+    test_0x91_sub_a_c,
+    0x91,
+    c,
+    0x10,
+    0x01,
+    0x0F,
+    false,
+    true,
+    false,
+    4
+);
+
+test_sub!(
+    r8_r8,
+    test_0x92_sub_a_d,
+    0x92,
+    d,
+    0x00,
+    0x01,
+    0xFF,
+    false,
+    true,
+    true,
+    4
+);
+
+test_sub!(
+    r8_r8,
+    test_0x93_sub_a_e,
+    0x93,
+    e,
+    0x05,
+    0x05,
+    0x00,
+    true,
+    false,
+    false,
+    4
+);
+
+test_sub!(
+    r8_r8,
+    test_0x94_sub_a_h,
+    0x94,
+    h,
+    0x0A,
+    0x03,
+    0x07,
+    false,
+    false,
+    false,
+    4
+);
+
+test_sub!(
+    r8_r8,
+    test_0x95_sub_a_l,
+    0x95,
+    l,
+    0x0A,
+    0x03,
+    0x07,
+    false,
+    false,
+    false,
+    4
+);
+
+test_sub!(
+    r8_hl_mem,
+    test_0x96_sub_a_hl,
+    0x96,
+    0x0A,
+    0x03,
+    0x07,
+    false,
+    false,
+    false,
+    8
+);
+
+test_sub!(
+    r8_r8,
+    test_0x97_sub_a_a,
+    0x97,
+    a,
+    0x42,
+    0x42,
+    0x00,
+    true,
+    false,
+    false,
+    4
+);
+
+test_sbc!(
+    r8_r8,
+    test_0x98_sbc_a_b,
+    0x98,
+    b,
+    0x05,
+    0x02,
+    true,
+    0x02,
+    false,
+    false,
+    false,
+    4
+);
+
+test_sbc!(
+    r8_r8,
+    test_0x99_sbc_a_c_h_carry,
+    0x99,
+    c,
+    0x10,
+    0x01,
+    true,
+    0x0E,
+    false,
+    true,
+    false,
+    4
+);
+
+test_sbc!(
+    r8_r8,
+    test_0x9a_sbc_a_d_carry,
+    0x9A,
+    d,
+    0x00,
+    0x01,
+    false,
+    0xFF,
+    false,
+    true,
+    true,
+    4
+);
+
+test_sbc!(
+    r8_r8,
+    test_0x9b_sbc_a_e_carry_h_carry,
+    0x9B,
+    e,
+    0x05,
+    0x05,
+    true,
+    0xFF,
+    false,
+    true,
+    true,
+    4
+);
+
+test_sbc!(
+    r8_r8,
+    test_0x9c_sbc_a_h_zero,
+    0x9C,
+    h,
+    0x05,
+    0x05,
+    false,
+    0x00,
+    true,
+    false,
+    false,
+    4
+);
+
+test_sbc!(
+    r8_r8,
+    test_0x9d_sbc_a_l,
+    0x9D,
+    l,
+    0x10,
+    0x11,
+    false,
+    0xFF,
+    false,
+    true,
+    true,
+    4
+);
+
+test_sbc!(
+    r8_hl_mem,
+    test_0x9e_sbc_a_hl_mem,
+    0x9E,
+    0x40,
+    0x20,
+    true,
+    0x1F,
+    false,
+    true,
+    false,
+    8
+);
+
+test_sbc!(
+    r8_r8,
+    test_0x9f_sbc_a_a,
+    0x9F,
+    a,
+    0x42,
+    0x42,
+    true,
+    0xFF,
+    false,
+    true,
+    true,
+    4
+);

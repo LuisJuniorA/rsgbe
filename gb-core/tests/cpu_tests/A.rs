@@ -1,0 +1,191 @@
+use super::*;
+
+test_and!(
+    r8_r8,
+    test_0xa0_and_a_b,
+    0xA0,
+    b,
+    0xFF,
+    0x0F,
+    0x0F,
+    false,
+    4
+);
+
+test_and!(
+    r8_r8,
+    test_0xa1_and_a_c_zero,
+    0xA1,
+    c,
+    0x0F,
+    0xF0,
+    0x00,
+    true,
+    4
+);
+
+test_and!(
+    r8_r8,
+    test_0xa2_and_a_d_zero,
+    0xA2,
+    d,
+    0xAA,
+    0x55,
+    0x00,
+    true,
+    4
+);
+
+test_and!(
+    r8_r8,
+    test_0xa3_and_a_e,
+    0xA3,
+    e,
+    0x55,
+    0xFF,
+    0x55,
+    false,
+    4
+);
+
+test_and!(
+    r8_r8,
+    test_0xa4_and_a_h,
+    0xA4,
+    h,
+    0x33,
+    0x11,
+    0x11,
+    false,
+    4
+);
+
+test_and!(
+    r8_r8,
+    test_0xa5_and_a_l_zero,
+    0xA5,
+    l,
+    0x00,
+    0xFF,
+    0x00,
+    true,
+    4
+);
+
+test_and!(
+    r8_hl_mem,
+    test_0xa6_and_a_hl_mem,
+    0xA6,
+    0xFF,
+    0x42,
+    0x42,
+    false,
+    8
+);
+
+test_and!(
+    r8_r8,
+    test_0xa7_and_a_a,
+    0xA7,
+    a,
+    0x12,
+    0x12,
+    0x12,
+    false,
+    4
+);
+
+test_xor!(
+    r8_r8,
+    test_0xa8_xor_a_b,
+    0xA8,
+    b,
+    0xFF,
+    0x0F,
+    0xF0,
+    false,
+    4
+);
+
+test_xor!(
+    r8_r8,
+    test_0xa9_xor_a_c_zero,
+    0xA9,
+    c,
+    0x0F,
+    0x0F,
+    0x00,
+    true,
+    4
+);
+
+test_xor!(
+    r8_r8,
+    test_0xaa_xor_a_d,
+    0xAA,
+    d,
+    0xAA,
+    0x55,
+    0xFF,
+    false,
+    4
+);
+
+test_xor!(
+    r8_r8,
+    test_0xab_xor_a_e,
+    0xAB,
+    e,
+    0x55,
+    0xFF,
+    0xAA,
+    false,
+    4
+);
+
+test_xor!(
+    r8_r8,
+    test_0xac_xor_a_h,
+    0xAC,
+    h,
+    0x33,
+    0x11,
+    0x22,
+    false,
+    4
+);
+
+test_xor!(
+    r8_r8,
+    test_0xad_xor_a_l,
+    0xAD,
+    l,
+    0x00,
+    0xFF,
+    0xFF,
+    false,
+    4
+);
+
+test_xor!(
+    r8_hl_mem,
+    test_0xae_xor_a_hl_mem,
+    0xAE,
+    0xFF,
+    0x42,
+    0xBD,
+    false,
+    8
+);
+
+test_xor!(
+    r8_r8,
+    test_0xaf_xor_a_a_zero,
+    0xAF,
+    a,
+    0x12,
+    0x12,
+    0x00,
+    true,
+    4
+);
