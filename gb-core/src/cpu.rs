@@ -571,13 +571,18 @@ impl Cpu {
                     FlagOp::Unset,
                     FlagOp::Unset,
                     if h { FlagOp::Set } else { FlagOp::Unset },
-                    if c { FlagOp::Set } else { FlagOp::Unset }
+                    if c { FlagOp::Set } else { FlagOp::Unset },
                 );
                 16
             }
             0xE9 /* JP HL */ => {
                 self.pc = self.get_addr_from_source(AddrSource::HL);
                 4
+            }
+            0xEA /* LD [a16] A */ => {
+                let a16 = Self::fetch_u16(bus, &mut self.pc);
+                bus.write_byte(a16, self.registers.a);
+                16
             }
 
             v @ (0xD3 | 0xDB | 0xDD | 0xE3 | 0xE4 | 0xEB | 0xEC | 0xED | 0xF4 | 0xFC | 0xFD) => {
