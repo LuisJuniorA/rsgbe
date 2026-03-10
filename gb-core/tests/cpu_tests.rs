@@ -1,4 +1,7 @@
-use gb_core::{cpu::Cpu, cpu::FLAG_C, cpu::FLAG_H, cpu::FLAG_N, cpu::FLAG_Z, memory::Bus};
+use gb_core::{
+    cpu::{Cpu, FLAG_C, FLAG_H, FLAG_N, FLAG_Z},
+    memory::Bus,
+};
 
 macro_rules! setup_test {
     ($data:expr) => {{
