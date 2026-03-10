@@ -19,6 +19,10 @@ test_sub!(
     false,
     8
 );
+
+test_ret!(test_0xd8_ret_z_taken, 0xD8, FLAG_C, true, true);
+test_ret!(test_0xd8_ret_z_not_taken, 0xD8, FLAG_C, false, false);
+
 test_rst!(rst_10, 0xD7, 0x0010);
 test_jp!(
     #[ignore]
