@@ -41,7 +41,7 @@ impl Bus {
 
     pub fn write_byte(&mut self, addr: u16, val: u8) {
         match addr {
-            0x0000..=0x7FFF => {} //ROM is read-only
+            0x0000..=0x7FFF => {} // ROM is read-only
             0x8000..=0x9FFF => {} // TODO: vram
             0xC000..=0xDFFF => self.wram[(addr - 0xC000) as usize] = val,
             0xFF80..=0xFFFE => self.hram[(addr - 0xFF80) as usize] = val,

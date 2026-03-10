@@ -628,6 +628,10 @@ impl Cpu {
                 self.set_addr_from_source(AddrSource::HL, self.sp.wrapping_add(e8 as u16));
                 12
             }
+            0xF9 /* LD SP, HL */ => {
+                self.sp = self.get_addr_from_source(AddrSource::HL);
+                8
+            }
 
             v @ (0xD3 | 0xDB | 0xDD | 0xE3 | 0xE4 | 0xEB | 0xEC | 0xED | 0xF4 | 0xFC | 0xFD) => {
                 panic!("Illegal opcode {:#04X} encountered", v);
