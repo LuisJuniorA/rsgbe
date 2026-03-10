@@ -6,13 +6,7 @@ test_jp!(test_0xd2_jp_nc_jump, 0xD2, FLAG_C, false, 0x5000, true);
 test_jp!(test_0xd2_jp_nc_no_jump, 0xD2, FLAG_C, true, 0x5000, false);
 test_call!(test_0xd4_call_nc_jump, 0xD4, FLAG_C, false, 0x9ABC, true);
 test_call!(test_0xd4_call_nc_no_jump, 0xD4, FLAG_C, true, 0x9ABC, false);
-test_push!(
-    #[ignore]
-    test_0xd5_push_de,
-    0xD5,
-    de,
-    0x5678
-);
+test_push!(test_0xd5_push_de, 0xD5, de, 0x5678);
 
 test_jp!(
     #[ignore]

@@ -495,6 +495,10 @@ impl Cpu {
             0xD4 /* CALL NC, a16 */ => {
                 self.call(bus, Some(self.registers.f & FLAG_C), true)
             }
+            0xD5 /* PUSH DE */ => {
+                self.push(bus, AddrSource::DE);
+                16
+            }
 
             v @ (0xD3 | 0xDB | 0xDD | 0xE3 | 0xE4 | 0xEB | 0xEC | 0xED | 0xF4 | 0xFC | 0xFD) => {
                 panic!("Illegal opcode {:#04X} encountered", v);
