@@ -593,6 +593,11 @@ impl Cpu {
                 self.rst(bus, 0x28);
                 16
             }
+            0xF0 /* LDH A, [a8] */ => {
+                let a8 = Self::fetch_u8(bus, &mut self.pc);
+                self.ldh_r8_mem_u8(bus, Reg8::A, a8);
+                12
+            }
 
             v @ (0xD3 | 0xDB | 0xDD | 0xE3 | 0xE4 | 0xEB | 0xEC | 0xED | 0xF4 | 0xFC | 0xFD) => {
                 panic!("Illegal opcode {:#04X} encountered", v);
