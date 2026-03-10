@@ -63,7 +63,6 @@ fn test_0xfa_ld_a_a16() {
 }
 
 #[test]
-#[ignore]
 fn test_0xfb_ei() {
     let (mut cpu, mut bus) = setup_test!(&[0xFB]);
     cpu.ime = false;
