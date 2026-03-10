@@ -32,12 +32,7 @@ test_add!(
     false,
     8
 );
-test_rst!(
-    #[ignore]
-    test_0xe7_rst_20,
-    0xE7,
-    0x0020
-);
+test_rst!(test_0xe7_rst_20, 0xE7, 0x0020);
 #[test]
 #[ignore]
 fn test_0xe8_add_sp_e8() {
