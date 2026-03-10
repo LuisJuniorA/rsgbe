@@ -9,13 +9,7 @@ fn test_0xf0_ldh_a_a8() {
     assert_eq!(t, 12);
 }
 
-test_pop!(
-    #[ignore]
-    test_0xf1_pop_af,
-    0xF1,
-    af,
-    0x42F0
-);
+test_pop!(test_0xf1_pop_af, 0xF1, af, 0x42F0);
 
 test_push!(
     #[ignore]

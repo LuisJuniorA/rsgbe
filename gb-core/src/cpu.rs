@@ -598,6 +598,10 @@ impl Cpu {
                 self.ldh_r8_mem_u8(bus, Reg8::A, a8);
                 12
             }
+            0xF1 /* POP AF */ => {
+                self.pop(bus, AddrSource::AF);
+                12
+            }
 
             v @ (0xD3 | 0xDB | 0xDD | 0xE3 | 0xE4 | 0xEB | 0xEC | 0xED | 0xF4 | 0xFC | 0xFD) => {
                 panic!("Illegal opcode {:#04X} encountered", v);
@@ -948,7 +952,12 @@ impl Cpu {
     }
 
     fn pop(&mut self, bus: &Bus, addr: AddrSource) {
-        let value = Self::fetch_u16(bus, &mut self.sp);
+        let mut value = Self::fetch_u16(bus, &mut self.sp);
+
+        if let AddrSource::AF = addr {
+            value &= 0xFFF0;
+        }
+
         self.set_addr_from_source(addr, value);
     }
 
