@@ -537,6 +537,10 @@ impl Cpu {
                 self.ldh_mem_u8_r8(bus, a8, Reg8::A);
                 12
             }
+            0xE1 /* POP HL */ => {
+                self.pop(bus, AddrSource::HL);
+                12
+            }
 
             v @ (0xD3 | 0xDB | 0xDD | 0xE3 | 0xE4 | 0xEB | 0xEC | 0xED | 0xF4 | 0xFC | 0xFD) => {
                 panic!("Illegal opcode {:#04X} encountered", v);

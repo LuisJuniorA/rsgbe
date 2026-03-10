@@ -8,13 +8,7 @@ fn test_0xe0_ldh_a8_a() {
     assert_eq!(bus.read_byte(0xFF80), 0x42);
     assert_eq!(t, 12);
 }
-test_pop!(
-    #[ignore]
-    test_0xe1_pop_hl,
-    0xE1,
-    hl,
-    0x9ABC
-);
+test_pop!(test_0xe1_pop_hl, 0xE1, hl, 0x9ABC);
 #[test]
 #[ignore]
 fn test_0xe2_ldh_c_a() {
