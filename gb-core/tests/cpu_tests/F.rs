@@ -34,7 +34,6 @@ test_or!(r8_n8, test_0xf6_or_a_n8, 0xF6, 0x5A, 0x0F, 0x5F, false, 8);
 test_rst!(test_0xf7_rst_30, 0xF7, 0x0030);
 
 #[test]
-#[ignore]
 fn test_0xf8_ld_hl_sp_e8() {
     let (mut cpu, mut bus) = setup_test!(&[0xF8, 0x02]);
     cpu.sp = 0xFFF0;

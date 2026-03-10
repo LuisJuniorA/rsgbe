@@ -623,6 +623,11 @@ impl Cpu {
                 self.rst(bus, 0x30);
                 16
             }
+            0xF8 /* LD HL, SP + e8 */ => {
+                let e8 = Self::fetch_u8(bus, &mut self.pc);
+                self.set_addr_from_source(AddrSource::HL, self.sp.wrapping_add(e8 as u16));
+                12
+            }
 
             v @ (0xD3 | 0xDB | 0xDD | 0xE3 | 0xE4 | 0xEB | 0xEC | 0xED | 0xF4 | 0xFC | 0xFD) => {
                 panic!("Illegal opcode {:#04X} encountered", v);
