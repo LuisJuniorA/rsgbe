@@ -26,3 +26,12 @@ test_push!(
     af,
     0x42F0
 );
+
+#[test]
+fn test_0xf3_di() {
+    let (mut cpu, mut bus) = setup_test!(&[0xF3]);
+    cpu.ime = true;
+    let t = cpu.step(&mut bus);
+    assert!(!cpu.ime, "IME should be disabled after DI");
+    assert_eq!(t, 4, "DI should take 4 cycles");
+}

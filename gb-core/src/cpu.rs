@@ -606,6 +606,10 @@ impl Cpu {
                 self.ldh_r8_mem_u8(bus, Reg8::A, self.registers.c);
                 8
             }
+            0xF3 /* DI */ => {
+                self.ime = false;
+                4
+            }
 
             v @ (0xD3 | 0xDB | 0xDD | 0xE3 | 0xE4 | 0xEB | 0xEC | 0xED | 0xF4 | 0xFC | 0xFD) => {
                 panic!("Illegal opcode {:#04X} encountered", v);
