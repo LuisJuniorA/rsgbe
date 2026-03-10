@@ -54,27 +54,11 @@ fn test_0xe9_jp_hl() {
 fn test_0xea_ld_a16_a() {
     let (mut cpu, mut bus) = setup_test!(&[0xEA, 0x23, 0xC1]);
     cpu.registers.a = 0xBC;
-
     let t = cpu.step(&mut bus);
-
     assert_eq!(bus.read_byte(0xC123), 0xBC);
     assert_eq!(t, 16);
 }
-
-test_sub!(
-    #[ignore]
-    r8_n8,
-    test_0xee_xor_a_n8,
-    0xEE,
-    0xFF,
-    0xFF,
-    0x00,
-    true,
-    false,
-    false,
-    8
-);
-
+test_xor!(r8_n8, test_0xee_xor_a_n8, 0xEE, 0x0F, 0x0F, 0x00, true, 8);
 test_rst!(
     #[ignore]
     test_0xef_rst_28,
