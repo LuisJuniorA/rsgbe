@@ -34,7 +34,6 @@ test_add!(
 );
 test_rst!(test_0xe7_rst_20, 0xE7, 0x0020);
 #[test]
-#[ignore]
 fn test_0xe8_add_sp_e8() {
     let (mut cpu, mut bus) = setup_test!(&[0xE8, 0x02]);
     cpu.sp = 0xFFF0;
