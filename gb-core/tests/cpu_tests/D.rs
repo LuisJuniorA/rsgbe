@@ -12,15 +12,7 @@ test_jp!(
     true
 );
 
-test_jp!(
-    #[ignore]
-    test_0xd2_jp_nc_no_jump,
-    0xD2,
-    FLAG_C,
-    true,
-    0x5000,
-    false
-);
+test_jp!(test_0xd2_jp_nc_no_jump, 0xD2, FLAG_C, true, 0x5000, false);
 
 test_call!(
     #[ignore]
