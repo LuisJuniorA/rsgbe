@@ -428,7 +428,7 @@ impl Cpu {
             }
             0xCB /* PREFIX */ => {
                 let n8 = Self::fetch_u8(bus, &mut self.pc);
-                todo!("WIP");
+                self.execute_cb(bus, n8)
             }
             0xCC /* CALL Z, a16 */ => {
                 self.call(bus, Some(self.registers.f & FLAG_Z), false)
