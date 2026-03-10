@@ -18,11 +18,8 @@ fn test_0xe2_ldh_c_a() {
     assert_eq!(bus.read_byte(0xFF80), 0x42);
     assert_eq!(t, 8);
 }
-
 test_push!(test_0xe5_push_hl, 0xE5, hl, 0x9ABC);
-
 test_add!(
-    #[ignore]
     r8_n8,
     test_0xe6_and_a_n8,
     0xE6,
