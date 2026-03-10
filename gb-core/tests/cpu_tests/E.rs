@@ -43,7 +43,6 @@ fn test_0xe8_add_sp_e8() {
     assert_eq!(t, 16);
 }
 #[test]
-#[ignore]
 fn test_0xe9_jp_hl() {
     let (mut cpu, mut bus) = setup_test!(&[0xE9]);
     set_r16!(cpu, hl, 0x4000);
