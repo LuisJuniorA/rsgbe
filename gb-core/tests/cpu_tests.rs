@@ -389,6 +389,22 @@ macro_rules! test_sbc {
             assert_eq!(t, $cycles);
         }
     };
+
+    ($(#[$attr:meta])* r8_n8, $name:ident, $opcode:expr, $val_a:expr, $val_imm:expr, $init_c:expr, $expected:expr, $z:expr, $h:expr, $c:expr, $cycles:expr) => {
+        $(#[$attr])* #[test]
+        fn $name() {
+            let (mut cpu, mut bus) = setup_test!(&[$opcode, $val_imm]);
+            cpu.registers.a = $val_a;
+
+            if $init_c { cpu.registers.f |= FLAG_C; } else { cpu.registers.f &= !FLAG_C; }
+
+            let t = cpu.step(&mut bus);
+
+            assert_eq!(cpu.registers.a, $expected);
+            assert_flags!(cpu, $z, true, $h, $c);
+            assert_eq!(t, $cycles);
+        }
+    };
 }
 
 macro_rules! test_and {

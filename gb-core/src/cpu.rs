@@ -520,6 +520,18 @@ impl Cpu {
             0xDA /* JP C, a16 */ => {
                 self.jp_abs(bus, Some(self.registers.f & FLAG_C), false)
             }
+            0xDC /* CALL C, a16 */ => {
+                self.call(bus, Some(self.registers.f & FLAG_C), false)
+            }
+            0xDE /* SBC A, n8 */ => {
+                let n8 = Self::fetch_u8(bus, &mut self.pc);
+                self.sub_u8(Reg8::A, n8, true);
+                8
+            }
+            0xDF /* RST $18 */ => {
+                self.rst(bus, 0x18);
+                16
+            }
 
             v @ (0xD3 | 0xDB | 0xDD | 0xE3 | 0xE4 | 0xEB | 0xEC | 0xED | 0xF4 | 0xFC | 0xFD) => {
                 panic!("Illegal opcode {:#04X} encountered", v);

@@ -40,22 +40,36 @@ test_jp!(test_0xda_jp_c_jump, 0xDA, FLAG_C, true, 0x6000, true);
 
 test_jp!(test_0xda_jp_c_no_jump, 0xDA, FLAG_C, false, 0x6000, false);
 
-test_call!(
-    #[ignore]
-    test_0xdc_call_c_jump,
-    0xDC,
-    FLAG_C,
+test_call!(test_0xdc_call_c_jump, 0xDC, FLAG_C, true, 0xDEF0, true);
+
+test_call!(test_0xdc_call_c_no_jump, 0xDC, FLAG_C, false, 0xDEF0, false);
+
+test_sbc!(
+    r8_n8,
+    test_0xde_sbc_half_carry,
+    0xDE,
+    0x10,
+    0x00,
     true,
-    0xDEF0,
-    true
+    0x0F,
+    false,
+    true,
+    false,
+    8
 );
 
-test_call!(
-    #[ignore]
-    test_0xdc_call_c_no_jump,
-    0xDC,
-    FLAG_C,
-    false,
-    0xDEF0,
-    false
+test_sbc!(
+    r8_n8,
+    test_0xde_sbc_zero_and_carry,
+    0xDE,
+    0x00,
+    0xFF,
+    true,
+    0x00,
+    true,
+    true,
+    true,
+    8
 );
+
+test_rst!(test_0xdf_rst_18, 0xDF, 0x0018);
