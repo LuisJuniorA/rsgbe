@@ -19,14 +19,6 @@ fn test_0xf2_ldh_a_c() {
     assert_eq!(cpu.registers.a, 0x12);
     assert_eq!(t, 8);
 }
-test_push!(
-    #[ignore]
-    test_0xf5_push_af,
-    0xF5,
-    af,
-    0x42F0
-);
-
 #[test]
 fn test_0xf3_di() {
     let (mut cpu, mut bus) = setup_test!(&[0xF3]);
@@ -35,3 +27,5 @@ fn test_0xf3_di() {
     assert!(!cpu.ime, "IME should be disabled after DI");
     assert_eq!(t, 4, "DI should take 4 cycles");
 }
+
+test_push!(test_0xf5_push_af, 0xF5, af, 0x42F0);
