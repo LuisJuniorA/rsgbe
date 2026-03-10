@@ -10,13 +10,12 @@ fn test_0xe0_ldh_a8_a() {
 }
 test_pop!(test_0xe1_pop_hl, 0xE1, hl, 0x9ABC);
 #[test]
-#[ignore]
 fn test_0xe2_ldh_c_a() {
     let (mut cpu, mut bus) = setup_test!(&[0xE2]);
     cpu.registers.a = 0x42;
-    cpu.registers.c = 0x10;
+    cpu.registers.c = 0x80;
     let t = cpu.step(&mut bus);
-    assert_eq!(bus.read_byte(0xFF10), 0x42);
+    assert_eq!(bus.read_byte(0xFF80), 0x42);
     assert_eq!(t, 8);
 }
 
