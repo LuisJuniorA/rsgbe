@@ -545,6 +545,10 @@ impl Cpu {
                 self.ldh_mem_u8_r8(bus, self.registers.c, Reg8::A);
                 8
             }
+            0xE5 /* PUSH HL */ => {
+                self.push(bus, AddrSource::HL);
+                16
+            }
 
             v @ (0xD3 | 0xDB | 0xDD | 0xE3 | 0xE4 | 0xEB | 0xEC | 0xED | 0xF4 | 0xFC | 0xFD) => {
                 panic!("Illegal opcode {:#04X} encountered", v);

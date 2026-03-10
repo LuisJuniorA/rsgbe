@@ -19,13 +19,7 @@ fn test_0xe2_ldh_c_a() {
     assert_eq!(t, 8);
 }
 
-test_push!(
-    #[ignore]
-    test_0xe5_push_hl,
-    0xE5,
-    hl,
-    0x9ABC
-);
+test_push!(test_0xe5_push_hl, 0xE5, hl, 0x9ABC);
 
 test_add!(
     #[ignore]
