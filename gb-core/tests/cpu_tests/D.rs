@@ -20,29 +20,25 @@ test_sub!(
     8
 );
 
+test_rst!(rst_10, 0xD7, 0x0010);
 test_ret!(test_0xd8_ret_z_taken, 0xD8, FLAG_C, true, true);
 test_ret!(test_0xd8_ret_z_not_taken, 0xD8, FLAG_C, false, false);
+#[test]
+fn test_0xd9_reti() {
+    let (mut cpu, mut bus) = setup_test!(&[0xD9]);
+    cpu.sp = 0xFFFC;
+    bus.write_byte(0xFFFC, 0x34);
+    bus.write_byte(0xFFFD, 0x12);
+    cpu.ime = false;
+    let t = cpu.step(&mut bus);
+    assert_eq!(cpu.pc, 0x1234, "PC should jump to the popped address");
+    assert_eq!(cpu.sp, 0xFFFE, "SP should be incremented by 2");
+    assert_eq!(t, 16, "RETI should take 16 cycles");
+    assert!(cpu.ime, "IME should be enabled after RETI");
+}
+test_jp!(test_0xda_jp_c_jump, 0xDA, FLAG_C, true, 0x6000, true);
 
-test_rst!(rst_10, 0xD7, 0x0010);
-test_jp!(
-    #[ignore]
-    test_0xda_jp_c_jump,
-    0xDA,
-    FLAG_C,
-    true,
-    0x6000,
-    true
-);
-
-test_jp!(
-    #[ignore]
-    test_0xda_jp_c_no_jump,
-    0xDA,
-    FLAG_C,
-    false,
-    0x6000,
-    false
-);
+test_jp!(test_0xda_jp_c_no_jump, 0xDA, FLAG_C, false, 0x6000, false);
 
 test_call!(
     #[ignore]
@@ -63,17 +59,3 @@ test_call!(
     0xDEF0,
     false
 );
-
-#[test]
-fn test_0xd9_reti() {
-    let (mut cpu, mut bus) = setup_test!(&[0xD9]);
-    cpu.sp = 0xFFFC;
-    bus.write_byte(0xFFFC, 0x34);
-    bus.write_byte(0xFFFD, 0x12);
-    cpu.ime = false;
-    let t = cpu.step(&mut bus);
-    assert_eq!(cpu.pc, 0x1234, "PC should jump to the popped address");
-    assert_eq!(cpu.sp, 0xFFFE, "SP should be incremented by 2");
-    assert_eq!(t, 16, "RETI should take 16 cycles");
-    assert!(cpu.ime, "IME should be enabled after RETI");
-}
