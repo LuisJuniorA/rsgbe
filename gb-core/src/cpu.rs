@@ -499,6 +499,11 @@ impl Cpu {
                 self.push(bus, AddrSource::DE);
                 16
             }
+            0xD6 /* SUB A, n8 */ => {
+                let n8 = Self::fetch_u8(bus, &mut self.pc);
+                self.sub_u8(Reg8::A, n8, false);
+                8
+            }
 
             v @ (0xD3 | 0xDB | 0xDD | 0xE3 | 0xE4 | 0xEB | 0xEC | 0xED | 0xF4 | 0xFC | 0xFD) => {
                 panic!("Illegal opcode {:#04X} encountered", v);
