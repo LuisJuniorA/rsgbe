@@ -19,6 +19,7 @@ test_sub!(
     false,
     8
 );
+test_rst!(rst_10, 0xD7, 0x0010);
 test_jp!(
     #[ignore]
     test_0xda_jp_c_jump,
