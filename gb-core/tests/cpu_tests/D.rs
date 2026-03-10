@@ -1,5 +1,6 @@
 use super::*;
-
+test_ret!(test_0xd0_ret_nc_jump, 0xD0, FLAG_C, false, true);
+test_ret!(test_0xd0_ret_nc_no_jump, 0xD0, FLAG_C, true, false);
 test_pop!(
     #[ignore]
     test_0xd1_pop_de,

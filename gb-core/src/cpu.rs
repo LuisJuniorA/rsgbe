@@ -482,6 +482,9 @@ impl Cpu {
                 self.rst(bus, 0x08);
                 16
             }
+            0xD0 /* RET NC */ => {
+                self.ret(bus, Some(self.registers.f & FLAG_C), true)
+            }
 
             v @ (0xD3 | 0xDB | 0xDD | 0xE3 | 0xE4 | 0xEB | 0xEC | 0xED | 0xF4 | 0xFC | 0xFD) => {
                 panic!("Illegal opcode {:#04X} encountered", v);
@@ -803,7 +806,7 @@ impl Cpu {
     fn ret(&mut self, bus: &Bus, flag: Option<u8>, not: bool) -> u8 {
         match flag {
             Some(v) => {
-                if (v != 0) ^ not {
+                if ((self.registers.f & v) != 0) ^ not {
                     let bytes = Self::fetch_u16(bus, &mut self.sp);
                     self.pc = bytes;
                     20
