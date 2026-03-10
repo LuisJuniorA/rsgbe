@@ -532,6 +532,11 @@ impl Cpu {
                 self.rst(bus, 0x18);
                 16
             }
+            0xE0 /* LDH [a8], A */ => {
+                let a8 = Self::fetch_u8(bus, &mut self.pc);
+                self.ldh_mem_u8_r8(bus, a8, Reg8::A);
+                12
+            }
 
             v @ (0xD3 | 0xDB | 0xDD | 0xE3 | 0xE4 | 0xEB | 0xEC | 0xED | 0xF4 | 0xFC | 0xFD) => {
                 panic!("Illegal opcode {:#04X} encountered", v);
@@ -581,6 +586,18 @@ impl Cpu {
         let val = self.get_reg8(src_reg);
         let addr = self.get_addr_from_source(dest_addr);
         bus.write_byte(addr, val);
+    }
+
+    fn ldh_mem_u8_r8(&mut self, bus: &mut Bus, dest_u8: u8, src: Reg8) {
+        let val = self.get_reg8(src);
+        let dest_u16 = 0xFF00 | dest_u8 as u16;
+        bus.write_byte(dest_u16, val);
+    }
+
+    fn ldh_r8_mem_u8(&mut self, bus: &Bus, dest: Reg8, src_u8: u8) {
+        let src_u16 = 0xFF00 | (src_u8 as u16);
+        let val = bus.read_byte(src_u16);
+        self.set_reg8(dest, val);
     }
 
     fn inc_u8(&mut self, addr: Reg8) {

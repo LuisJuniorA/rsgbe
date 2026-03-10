@@ -45,7 +45,6 @@ impl Bus {
             0x8000..=0x9FFF => {} // TODO: vram
             0xC000..=0xDFFF => self.wram[(addr - 0xC000) as usize] = val,
             0xFF80..=0xFFFE => self.hram[(addr - 0xFF80) as usize] = val,
-            0xFF80..=0xFFFE => self.hram[(addr - 0xFF80) as usize] = val,
             0xFFFF => self.ie = val,
             _ => {}
         }
