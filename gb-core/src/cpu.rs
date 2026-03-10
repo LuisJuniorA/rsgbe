@@ -47,6 +47,7 @@ pub struct Cpu {
     pub registers: Registers, // Register
     pub pc: u16,              // Program Counter
     pub sp: u16,              // Stack Pointer
+    pub ime: bool,            // Interrupt Master Enable
 }
 
 impl Cpu {
@@ -55,6 +56,7 @@ impl Cpu {
             registers: Registers::new(),
             pc: 0x100,
             sp: 0xFFE,
+            ime: false,
         }
     }
     pub fn step(&mut self, bus: &mut Bus) -> u8 {
@@ -510,6 +512,10 @@ impl Cpu {
             }
             0xD8 /* RET C */ => {
                 self.ret(bus, Some(self.registers.f & FLAG_C), false)
+            }
+            0xD9 /* RETI */ => {
+                self.ime = true;
+                self.ret(bus, None, false)
             }
 
             v @ (0xD3 | 0xDB | 0xDD | 0xE3 | 0xE4 | 0xEB | 0xEC | 0xED | 0xF4 | 0xFC | 0xFD) => {
