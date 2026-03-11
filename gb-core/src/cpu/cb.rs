@@ -13,7 +13,46 @@ impl Cpu {
 
                 if let Operand8::MemHL = operand { 16 } else { 8 }
             }
-            _ => unreachable!("CB Opcode {:#04X} not implemented", opcode),
+            0x08..=0x0F => {
+                let operand = self.decode_bits(opcode & 0x07);
+
+                match operand {
+                    Operand8::Reg(r) => self.rrc_r8(r),
+                    Operand8::MemHL => self.rrc_hl(bus),
+                }
+
+                if let Operand8::MemHL = operand { 16 } else { 8 }
+            }
+            0x10..=0x17 => todo!(),
+            0x18..=0x1F => todo!(),
+            0x20..=0x27 => todo!(),
+            0x28..=0x2F => todo!(),
+            0x30..=0x37 => todo!(),
+            0x38..=0x3F => todo!(),
+            0x40..=0x47 => todo!(),
+            0x48..=0x4F => todo!(),
+            0x50..=0x57 => todo!(),
+            0x58..=0x5F => todo!(),
+            0x60..=0x67 => todo!(),
+            0x68..=0x6F => todo!(),
+            0x70..=0x77 => todo!(),
+            0x78..=0x7F => todo!(),
+            0x80..=0x87 => todo!(),
+            0x88..=0x8F => todo!(),
+            0x90..=0x97 => todo!(),
+            0x98..=0x9F => todo!(),
+            0xA0..=0xA7 => todo!(),
+            0xA8..=0xAF => todo!(),
+            0xB8..=0xBF => todo!(),
+            0xB0..=0xB7 => todo!(),
+            0xC0..=0xC7 => todo!(),
+            0xC8..=0xCF => todo!(),
+            0xD0..=0xD7 => todo!(),
+            0xD8..=0xDF => todo!(),
+            0xE0..=0xE7 => todo!(),
+            0xE8..=0xEF => todo!(),
+            0xF0..=0xF7 => todo!(),
+            0xF8..=0xFF => todo!(),
         }
     }
 
@@ -39,6 +78,32 @@ impl Cpu {
             FlagOp::Unset,
             FlagOp::Unset,
             (bit7 != 0).into(),
+        );
+        res
+    }
+
+    fn rrc_r8(&mut self, reg: Reg8) {
+        let val = self.get_reg8(reg);
+        let res = self.rrc_logic(val);
+        self.set_reg8(reg, res);
+    }
+
+    fn rrc_hl(&mut self, bus: &mut Bus) {
+        let addr = self.registers.get_hl();
+        let val = bus.read_byte(addr);
+        let res = self.rrc_logic(val);
+        bus.write_byte(addr, res);
+    }
+
+    fn rrc_logic(&mut self, val: u8) -> u8 {
+        let bit0 = val & 0x01;
+        let res = (val >> 1) | (bit0 << 7);
+
+        self.set_flags(
+            (res == 0).into(),
+            FlagOp::Unset,
+            FlagOp::Unset,
+            (bit0 != 0).into(),
         );
         res
     }

@@ -111,10 +111,3 @@ test_adc!(
 );
 
 test_rst!(test_0xcf_rst_08, 0xCF, 0x0008);
-
-#[test]
-#[should_panic(expected = "WIP")]
-fn test_prefix() {
-    let (mut cpu, mut bus) = setup_test!(&[0xCB]);
-    cpu.step(&mut bus);
-}

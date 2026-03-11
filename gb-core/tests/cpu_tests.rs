@@ -777,6 +777,36 @@ macro_rules! test_rst {
     };
 }
 
+macro_rules! test_cb_r8 {
+    ($(#[$attr:meta])* $name:ident, $cb_opcode:expr, $reg:ident, $init:expr, $expected:expr, $z:expr, $n:expr, $h:expr, $c:expr, $cycles:expr) => {
+        $(#[$attr])* #[test]
+        fn $name() {
+            let (mut cpu, mut bus) = setup_test!(&[0xCB, $cb_opcode]);
+            cpu.registers.$reg = $init;
+            let t = cpu.step(&mut bus);
+            assert_eq!(cpu.registers.$reg, $expected);
+            assert_flags!(cpu, $z, $n, $h, $c);
+            assert_eq!(t, $cycles);
+        }
+    };
+}
+
+macro_rules! test_cb_hl_mem {
+    ($(#[$attr:meta])* $name:ident, $cb_opcode:expr, $init:expr, $expected:expr, $z:expr, $n:expr, $h:expr, $c:expr, $cycles:expr) => {
+        $(#[$attr])* #[test]
+        fn $name() {
+            let (mut cpu, mut bus) = setup_test!(&[0xCB, $cb_opcode]);
+            let addr = 0xC000;
+            set_r16!(cpu, hl, addr);
+            bus.write_byte(addr, $init);
+            let t = cpu.step(&mut bus);
+            assert_eq!(bus.read_byte(addr), $expected);
+            assert_flags!(cpu, $z, $n, $h, $c);
+            assert_eq!(t, $cycles);
+        }
+    };
+}
+
 #[path = "cpu_tests/0.rs"]
 mod group_0;
 
@@ -824,3 +854,6 @@ mod group_e;
 
 #[path = "cpu_tests/F.rs"]
 mod group_f;
+
+#[path = "cpu_tests/prefix_cb.rs"]
+mod prefix_cb;
