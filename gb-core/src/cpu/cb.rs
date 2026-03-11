@@ -90,7 +90,11 @@ impl Cpu {
     }
 
     fn rl_logic(&mut self, val: u8) -> u8 {
-        let carry = if (self.registers.f & FLAG_C) != 0 { 1 } else { 0 };
+        let carry = if (self.registers.f & FLAG_C) != 0 {
+            1
+        } else {
+            0
+        };
         let bit7 = (val & 0x80) >> 7;
         let res = (val << 1) | carry;
 
@@ -104,7 +108,11 @@ impl Cpu {
     }
 
     fn rr_logic(&mut self, val: u8) -> u8 {
-        let carry = if (self.registers.f & FLAG_C) != 0 { 1 } else { 0 };
+        let carry = if (self.registers.f & FLAG_C) != 0 {
+            1
+        } else {
+            0
+        };
         let bit0 = val & 0x01;
         let res = (val >> 1) | (carry << 7);
 
