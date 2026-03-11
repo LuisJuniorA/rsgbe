@@ -13,10 +13,33 @@ test_mem_write_r8!(test_0x74_ld_hl_mem_h, 0x74, hl, h, 8);
 test_mem_write_r8!(test_0x75_ld_hl_mem_l, 0x75, hl, l, 8);
 
 #[test]
-#[should_panic(expected = "WIP")]
 fn test_0x76_halt() {
-    let (mut cpu, mut bus) = setup_test!(&[0x76]);
+    let (mut cpu, mut bus) = setup_test!(&[0x76, 0x00]);
+
+    let cycles = cpu.step(&mut bus);
+    assert_eq!(cycles, 4);
+    assert!(cpu.halted, "CPU should be in halted state");
+    assert_eq!(cpu.pc, 0x0101, "PC should be right after HALT opcode");
+
+    let cycles_halted = cpu.step(&mut bus);
+    assert_eq!(cycles_halted, 4, "Halted CPU should still consume 4 cycles");
+    assert!(cpu.halted, "CPU should remain halted");
+    assert_eq!(cpu.pc, 0x0101, "PC should NOT increment while halted");
+
+    bus.ie = 0x01;
+    bus.if_reg = 0x01;
+    cpu.ime = false;
+
+    let cycles_wake = cpu.step(&mut bus);
+    assert_eq!(cycles_wake, 4, "Waking from HALT should take 4 cycles");
+    assert!(!cpu.halted, "CPU should wake up from halt");
+    assert_eq!(
+        cpu.pc, 0x0101,
+        "PC should still be at 0x101 right after waking"
+    );
+
     cpu.step(&mut bus);
+    assert_eq!(cpu.pc, 0x0102);
 }
 
 test_mem_write_r8!(test_0x77_ld_hl_mem_a, 0x77, hl, a, 8);

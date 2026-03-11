@@ -64,11 +64,16 @@ fn test_0xfa_ld_a_a16() {
 
 #[test]
 fn test_0xfb_ei() {
-    let (mut cpu, mut bus) = setup_test!(&[0xFB]);
+    let (mut cpu, mut bus) = setup_test!(&[0xFB, 0x00]);
     cpu.ime = false;
-    let t = cpu.step(&mut bus);
-    assert!(cpu.ime);
-    assert_eq!(t, 4);
+
+    let t1 = cpu.step(&mut bus);
+    assert!(!cpu.ime, "IME should NOT be enabled immediately after EI");
+    assert_eq!(t1, 4);
+
+    let t2 = cpu.step(&mut bus);
+    assert!(cpu.ime, "IME should be enabled after a 1-instruction delay");
+    assert_eq!(t2, 4);
 }
 
 test_cp!(

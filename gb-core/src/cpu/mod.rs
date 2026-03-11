@@ -9,6 +9,8 @@ pub struct Cpu {
     pub pc: u16,              // Program Counter
     pub sp: u16,              // Stack Pointer
     pub ime: bool,            // Interrupt Master Enable
+    pub ime_delay: bool,
+    pub halted: bool,
 }
 
 impl Cpu {
@@ -18,6 +20,8 @@ impl Cpu {
             pc: 0x100,
             sp: 0xFFE,
             ime: false,
+            ime_delay: false,
+            halted: false,
         }
     }
 }
@@ -30,10 +34,50 @@ impl Default for Cpu {
 
 impl Cpu {
     pub fn step(&mut self, bus: &mut Bus) -> u8 {
-        let opcode = bus.read_byte(self.pc);
-        self.pc = self.pc.wrapping_add(1);
+        let mut cycles = 0;
+        let mut woke_up = false;
 
-        self.execute(bus, opcode)
+        let was_ime_delay = self.ime_delay;
+        self.ime_delay = false;
+
+        let pending = bus.ie & bus.if_reg & 0x1F;
+        if pending != 0 {
+            if self.halted {
+                self.halted = false;
+                woke_up = true;
+            }
+            if self.ime {
+                self.ime = false;
+                let interrupt = pending.trailing_zeros() as u8;
+                bus.if_reg &= !(1 << interrupt);
+                self.sp = self.sp.wrapping_sub(2);
+                self.write_u16(bus, self.sp, self.pc);
+                self.pc = 0x0040 + (interrupt as u16 * 8);
+                cycles = 20;
+            } else if woke_up {
+                cycles = 4;
+            }
+        }
+
+        if cycles == 0 {
+            if self.halted {
+                cycles = 4;
+            } else {
+                let opcode = bus.read_byte(self.pc);
+                self.pc = self.pc.wrapping_add(1);
+                cycles = self.execute(bus, opcode);
+            }
+        }
+
+        if was_ime_delay {
+            self.ime = true;
+        }
+
+        if bus.timer.step(cycles) {
+            bus.if_reg |= 0x04;
+        }
+
+        cycles
     }
 
     // LD [HL], A = bus.write_byte(hl, A)
@@ -113,9 +157,9 @@ impl Cpu {
                 self.set_flags(FlagOp::Unset, FlagOp::Unset, FlagOp::Unset, carry.into());
                 4
             }
-            0x10 /*STOP n8 */ => {
-                todo!("WIP");
-                unreachable!();
+            0x10 /* STOP n8 */ => {
+                self.pc = self.pc.wrapping_add(1);
+                self.halted = true;
                 4
             }
             0x11 /* LD DE, n16 */ => {
@@ -371,8 +415,8 @@ impl Cpu {
                 }
             }
             0x76 /* HALT */ => {
-                todo!("WIP");
-                unreachable!();
+                self.halted = true;
+                4
             }
             v @ 0x80..=0xBF => {
                 let source_bits = v & 0b00_000_111;
@@ -620,7 +664,7 @@ impl Cpu {
                 16
             }
             0xFB /* EI */ => {
-                self.ime = true;
+                self.ime_delay = true;
                 4
             }
             0xFE /* XOR A, n8 */ => {

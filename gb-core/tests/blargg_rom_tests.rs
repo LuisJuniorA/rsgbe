@@ -18,14 +18,6 @@ fn run_blargg_test(rom_name: &str) {
     let mut bus = Bus::new(rom);
     let mut cpu = Cpu::new();
 
-    // Initial CPU state expected by Blargg tests
-    cpu.pc = 0x100;
-    cpu.registers.set_af(0x01B0);
-    cpu.registers.set_bc(0x0013);
-    cpu.registers.set_de(0x00D8);
-    cpu.registers.set_hl(0x014D);
-    cpu.sp = 0xFFFE;
-
     let mut cycles = 0;
     let max_cycles = 250_000_000;
 
@@ -57,7 +49,6 @@ fn test_01_special() {
 }
 
 #[test]
-#[ignore = "Requires interrupts and HALT which are WIP"]
 fn test_02_interrupts() {
     run_blargg_test("02-interrupts.gb");
 }
@@ -88,7 +79,6 @@ fn test_07_jr_jp_call_ret_rst() {
 }
 
 #[test]
-#[ignore = "Requires HALT and STOP which are WIP"]
 fn test_08_misc_instrs() {
     run_blargg_test("08-misc instrs.gb");
 }

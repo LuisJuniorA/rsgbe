@@ -1,12 +1,21 @@
 use super::*;
 
 #[test]
-#[should_panic(expected = "WIP")]
 fn test_0x10_stop_n8() {
     let (mut cpu, mut bus) = setup_test!(&[0x10, 0x00]);
-    let old_pc = cpu.pc;
+
+    bus.timer.div = 0x1234;
+
     cpu.step(&mut bus);
-    assert_eq!(cpu.pc - old_pc, 2);
+    assert!(cpu.halted, "STOP should halt the CPU");
+    assert_eq!(cpu.pc, 0x0102, "STOP is a 2-byte instruction");
+    let old_div = bus.timer.div;
+    cpu.step(&mut bus);
+    assert_eq!(
+        bus.timer.div,
+        old_div + 4,
+        "In basic implementation, DIV usually keeps ticking, but logic stops"
+    );
 }
 
 test_ld!(r16_n16, test_0x11_ld_de_n16, 0x11, de, 0x8000, 12);
