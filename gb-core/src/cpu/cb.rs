@@ -1,135 +1,66 @@
 use super::*;
 
 impl Cpu {
-    pub(super) fn execute_cb(&mut self, bus: &mut Bus, opcode: u8) -> u8 {
-        match opcode {
-            0x00..=0x07 => {
-                let operand = self.decode_bits(opcode & 0x07);
-
-                match operand {
-                    Operand8::Reg(r) => self.rlc_r8(r),
-                    Operand8::MemHL => self.rlc_hl(bus),
-                }
-
-                if let Operand8::MemHL = operand { 16 } else { 8 }
+    /// Helper for operations that read, modify, and write back (Rotates, Shifts, RES, SET)
+    fn mutate_operand<F>(&mut self, bus: &mut Bus, operand: Operand8, op: F) -> u8
+    where
+        F: FnOnce(&mut Self, u8) -> u8,
+    {
+        match operand {
+            Operand8::Reg(r) => {
+                let val = self.get_reg8(r);
+                let res = op(self, val);
+                self.set_reg8(r, res);
+                8
             }
-            0x08..=0x0F => {
-                let operand = self.decode_bits(opcode & 0x07);
-
-                match operand {
-                    Operand8::Reg(r) => self.rrc_r8(r),
-                    Operand8::MemHL => self.rrc_hl(bus),
-                }
-
-                if let Operand8::MemHL = operand { 16 } else { 8 }
-            }
-            0x10..=0x17 => {
-                let operand = self.decode_bits(opcode & 0x07);
-
-                match operand {
-                    Operand8::Reg(r) => self.rl_r8(r),
-                    Operand8::MemHL => self.rl_hl(bus),
-                }
-
-                if let Operand8::MemHL = operand { 16 } else { 8 }
-            }
-            0x18..=0x1F => {
-                let operand = self.decode_bits(opcode & 0x07);
-
-                match operand {
-                    Operand8::Reg(r) => self.rr_r8(r),
-                    Operand8::MemHL => self.rr_hl(bus),
-                }
-
-                if let Operand8::MemHL = operand { 16 } else { 8 }
-            }
-            0x20..=0x27 => {
-                let operand = self.decode_bits(opcode & 0x07);
-
-                match operand {
-                    Operand8::Reg(r) => self.sla_r8(r),
-                    Operand8::MemHL => self.sla_hl(bus),
-                }
-
-                if let Operand8::MemHL = operand { 16 } else { 8 }
-            }
-            0x28..=0x2F => {
-                let operand = self.decode_bits(opcode & 0x07);
-
-                match operand {
-                    Operand8::Reg(r) => self.sra_r8(r),
-                    Operand8::MemHL => self.sra_hl(bus),
-                }
-
-                if let Operand8::MemHL = operand { 16 } else { 8 }
-            }
-            0x30..=0x37 => {
-                let operand = self.decode_bits(opcode & 0x07);
-
-                match operand {
-                    Operand8::Reg(r) => self.swap_r8(r),
-                    Operand8::MemHL => self.swap_hl(bus),
-                }
-
-                if let Operand8::MemHL = operand { 16 } else { 8 }
-            }
-            0x38..=0x3F => {
-                let operand = self.decode_bits(opcode & 0x07);
-
-                match operand {
-                    Operand8::Reg(r) => self.srl_r8(r),
-                    Operand8::MemHL => self.srl_hl(bus),
-                }
-
-                if let Operand8::MemHL = operand { 16 } else { 8 }
-            }
-            0x40..=0x7F => {
-                let bit = (opcode & 0x38) >> 3;
-                let operand = self.decode_bits(opcode & 0x07);
-
-                match operand {
-                    Operand8::Reg(r) => self.bit_r8(bit, r),
-                    Operand8::MemHL => self.bit_hl(bit, bus),
-                }
-
-                if let Operand8::MemHL = operand { 12 } else { 8 }
-            }
-            0x80..=0xBF => {
-                let bit = (opcode & 0x38) >> 3;
-                let operand = self.decode_bits(opcode & 0x07);
-
-                match operand {
-                    Operand8::Reg(r) => self.res_r8(bit, r),
-                    Operand8::MemHL => self.res_hl(bit, bus),
-                }
-
-                if let Operand8::MemHL = operand { 16 } else { 8 }
-            }
-            0xC0..=0xFF => {
-                let bit = (opcode & 0x38) >> 3;
-                let operand = self.decode_bits(opcode & 0x07);
-
-                match operand {
-                    Operand8::Reg(r) => self.set_r8(bit, r),
-                    Operand8::MemHL => self.set_hl(bit, bus),
-                }
-
-                if let Operand8::MemHL = operand { 16 } else { 8 }
+            Operand8::MemHL => {
+                let addr = self.registers.get_hl();
+                let val = bus.read_byte(addr);
+                let res = op(self, val);
+                bus.write_byte(addr, res);
+                16
             }
         }
     }
 
-    fn rlc_r8(&mut self, reg: Reg8) {
-        let val = self.get_reg8(reg);
-        let res = self.rlc_logic(val);
-        self.set_reg8(reg, res);
+    /// Helper for the BIT operation (reads only, does not write back, different cycle count)
+    fn test_operand<F>(&mut self, bus: &mut Bus, operand: Operand8, op: F) -> u8
+    where
+        F: FnOnce(&mut Self, u8),
+    {
+        match operand {
+            Operand8::Reg(r) => {
+                let val = self.get_reg8(r);
+                op(self, val);
+                8
+            }
+            Operand8::MemHL => {
+                let addr = self.registers.get_hl();
+                let val = bus.read_byte(addr);
+                op(self, val);
+                12 // Note the 12 cycles for BIT (MemHL)
+            }
+        }
     }
 
-    fn rlc_hl(&mut self, bus: &mut Bus) {
-        let addr = self.registers.get_hl();
-        let val = bus.read_byte(addr);
-        let res = self.rlc_logic(val);
-        bus.write_byte(addr, res);
+    pub(super) fn execute_cb(&mut self, bus: &mut Bus, opcode: u8) -> u8 {
+        // Decode the operand once at the top
+        let operand = self.decode_bits(opcode & 0x07);
+        let bit_idx = (opcode & 0x38) >> 3;
+
+        match opcode {
+            0x00..=0x07 => self.mutate_operand(bus, operand, Self::rlc_logic),
+            0x08..=0x0F => self.mutate_operand(bus, operand, Self::rrc_logic),
+            0x10..=0x17 => self.mutate_operand(bus, operand, Self::rl_logic),
+            0x18..=0x1F => self.mutate_operand(bus, operand, Self::rr_logic),
+            0x20..=0x27 => self.mutate_operand(bus, operand, Self::sla_logic),
+            0x28..=0x2F => self.mutate_operand(bus, operand, Self::sra_logic),
+            0x30..=0x37 => self.mutate_operand(bus, operand, Self::swap_logic),
+            0x38..=0x3F => self.mutate_operand(bus, operand, Self::srl_logic),
+            0x40..=0x7F => self.test_operand(bus, operand, |cpu, val| cpu.bit_logic(bit_idx, val)),
+            0x80..=0xBF => self.mutate_operand(bus, operand, |_, val| val & !(1 << bit_idx)),
+            0xC0..=0xFF => self.mutate_operand(bus, operand, |_, val| val | (1 << bit_idx)),
+        }
     }
 
     fn rlc_logic(&mut self, val: u8) -> u8 {
@@ -145,19 +76,6 @@ impl Cpu {
         res
     }
 
-    fn rrc_r8(&mut self, reg: Reg8) {
-        let val = self.get_reg8(reg);
-        let res = self.rrc_logic(val);
-        self.set_reg8(reg, res);
-    }
-
-    fn rrc_hl(&mut self, bus: &mut Bus) {
-        let addr = self.registers.get_hl();
-        let val = bus.read_byte(addr);
-        let res = self.rrc_logic(val);
-        bus.write_byte(addr, res);
-    }
-
     fn rrc_logic(&mut self, val: u8) -> u8 {
         let bit0 = val & 0x01;
         let res = (val >> 1) | (bit0 << 7);
@@ -169,19 +87,6 @@ impl Cpu {
             (bit0 != 0).into(),
         );
         res
-    }
-
-    fn rl_r8(&mut self, reg: Reg8) {
-        let val = self.get_reg8(reg);
-        let res = self.rl_logic(val);
-        self.set_reg8(reg, res);
-    }
-
-    fn rl_hl(&mut self, bus: &mut Bus) {
-        let addr = self.registers.get_hl();
-        let val = bus.read_byte(addr);
-        let res = self.rl_logic(val);
-        bus.write_byte(addr, res);
     }
 
     fn rl_logic(&mut self, val: u8) -> u8 {
@@ -198,19 +103,6 @@ impl Cpu {
         res
     }
 
-    fn rr_r8(&mut self, reg: Reg8) {
-        let val = self.get_reg8(reg);
-        let res = self.rr_logic(val);
-        self.set_reg8(reg, res);
-    }
-
-    fn rr_hl(&mut self, bus: &mut Bus) {
-        let addr = self.registers.get_hl();
-        let val = bus.read_byte(addr);
-        let res = self.rr_logic(val);
-        bus.write_byte(addr, res);
-    }
-
     fn rr_logic(&mut self, val: u8) -> u8 {
         let carry = if (self.registers.f & FLAG_C) != 0 { 1 } else { 0 };
         let bit0 = val & 0x01;
@@ -223,19 +115,6 @@ impl Cpu {
             (bit0 != 0).into(),
         );
         res
-    }
-
-    fn sla_r8(&mut self, reg: Reg8) {
-        let val = self.get_reg8(reg);
-        let res = self.sla_logic(val);
-        self.set_reg8(reg, res);
-    }
-
-    fn sla_hl(&mut self, bus: &mut Bus) {
-        let addr = self.registers.get_hl();
-        let val = bus.read_byte(addr);
-        let res = self.sla_logic(val);
-        bus.write_byte(addr, res);
     }
 
     fn sla_logic(&mut self, val: u8) -> u8 {
@@ -251,19 +130,6 @@ impl Cpu {
         res
     }
 
-    fn sra_r8(&mut self, reg: Reg8) {
-        let val = self.get_reg8(reg);
-        let res = self.sra_logic(val);
-        self.set_reg8(reg, res);
-    }
-
-    fn sra_hl(&mut self, bus: &mut Bus) {
-        let addr = self.registers.get_hl();
-        let val = bus.read_byte(addr);
-        let res = self.sra_logic(val);
-        bus.write_byte(addr, res);
-    }
-
     fn sra_logic(&mut self, val: u8) -> u8 {
         let bit0 = val & 0x01;
         let res = (val >> 1) | (val & 0x80);
@@ -277,19 +143,6 @@ impl Cpu {
         res
     }
 
-    fn swap_r8(&mut self, reg: Reg8) {
-        let val = self.get_reg8(reg);
-        let res = self.swap_logic(val);
-        self.set_reg8(reg, res);
-    }
-
-    fn swap_hl(&mut self, bus: &mut Bus) {
-        let addr = self.registers.get_hl();
-        let val = bus.read_byte(addr);
-        let res = self.swap_logic(val);
-        bus.write_byte(addr, res);
-    }
-
     fn swap_logic(&mut self, val: u8) -> u8 {
         let res = (val << 4) | (val >> 4);
 
@@ -300,19 +153,6 @@ impl Cpu {
             FlagOp::Unset,
         );
         res
-    }
-
-    fn srl_r8(&mut self, reg: Reg8) {
-        let val = self.get_reg8(reg);
-        let res = self.srl_logic(val);
-        self.set_reg8(reg, res);
-    }
-
-    fn srl_hl(&mut self, bus: &mut Bus) {
-        let addr = self.registers.get_hl();
-        let val = bus.read_byte(addr);
-        let res = self.srl_logic(val);
-        bus.write_byte(addr, res);
     }
 
     fn srl_logic(&mut self, val: u8) -> u8 {
@@ -328,17 +168,6 @@ impl Cpu {
         res
     }
 
-    fn bit_r8(&mut self, bit: u8, reg: Reg8) {
-        let val = self.get_reg8(reg);
-        self.bit_logic(bit, val);
-    }
-
-    fn bit_hl(&mut self, bit: u8, bus: &mut Bus) {
-        let addr = self.registers.get_hl();
-        let val = bus.read_byte(addr);
-        self.bit_logic(bit, val);
-    }
-
     fn bit_logic(&mut self, bit: u8, val: u8) {
         let bit_val = (val >> bit) & 0x01;
 
@@ -348,31 +177,5 @@ impl Cpu {
             FlagOp::Set,
             FlagOp::Untouched,
         );
-    }
-
-    fn res_r8(&mut self, bit: u8, reg: Reg8) {
-        let val = self.get_reg8(reg);
-        let res = val & !(1 << bit);
-        self.set_reg8(reg, res);
-    }
-
-    fn res_hl(&mut self, bit: u8, bus: &mut Bus) {
-        let addr = self.registers.get_hl();
-        let val = bus.read_byte(addr);
-        let res = val & !(1 << bit);
-        bus.write_byte(addr, res);
-    }
-
-    fn set_r8(&mut self, bit: u8, reg: Reg8) {
-        let val = self.get_reg8(reg);
-        let res = val | (1 << bit);
-        self.set_reg8(reg, res);
-    }
-
-    fn set_hl(&mut self, bit: u8, bus: &mut Bus) {
-        let addr = self.registers.get_hl();
-        let val = bus.read_byte(addr);
-        let res = val | (1 << bit);
-        bus.write_byte(addr, res);
     }
 }
