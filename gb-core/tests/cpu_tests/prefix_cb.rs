@@ -61,3 +61,27 @@ test_cb_r8!(test_cb_2c_sra_h, 0x2C, h, 0xFF, 0xFF, false, false, false, true, 8)
 test_cb_r8!(test_cb_2d_sra_l, 0x2D, l, 0x0F, 0x07, false, false, false, true, 8);
 test_cb_hl_mem!(test_cb_2e_sra_hl_mem, 0x2E, 0x81, 0xC0, false, false, false, true, 16);
 test_cb_r8!(test_cb_2f_sra_a, 0x2F, a, 0x01, 0x00, true, false, false, true, 8);
+
+// SWAP
+// Swaps the upper and lower nibbles (4 bits) of the byte.
+// Flags: Z is set if result is 0. N, H, and C are always reset.
+test_cb_r8!(test_cb_30_swap_b, 0x30, b, 0xA5, 0x5A, false, false, false, false, 8);
+test_cb_r8!(test_cb_31_swap_c, 0x31, c, 0x00, 0x00, true, false, false, false, 8);
+test_cb_r8!(test_cb_32_swap_d, 0x32, d, 0xF0, 0x0F, false, false, false, false, 8);
+test_cb_r8!(test_cb_33_swap_e, 0x33, e, 0x0F, 0xF0, false, false, false, false, 8);
+test_cb_r8!(test_cb_34_swap_h, 0x34, h, 0x12, 0x21, false, false, false, false, 8);
+test_cb_r8!(test_cb_35_swap_l, 0x35, l, 0xAB, 0xBA, false, false, false, false, 8);
+test_cb_hl_mem!(test_cb_36_swap_hl_mem, 0x36, 0x80, 0x08, false, false, false, false, 16);
+test_cb_r8!(test_cb_37_swap_a, 0x37, a, 0x00, 0x00, true, false, false, false, 8);
+
+// SRL (Shift Right Logical)
+// Shifts right: bit 7 becomes 0, bit 0 goes into the Carry flag.
+// Flags: Z is set if result is 0. N and H are reset. C contains old bit 0.
+test_cb_r8!(test_cb_38_srl_b, 0x38, b, 0x85, 0x42, false, false, false, true, 8);
+test_cb_r8!(test_cb_39_srl_c, 0x39, c, 0x00, 0x00, true, false, false, false, 8);
+test_cb_r8!(test_cb_3a_srl_d, 0x3A, d, 0x80, 0x40, false, false, false, false, 8);
+test_cb_r8!(test_cb_3b_srl_e, 0x3B, e, 0x01, 0x00, true, false, false, true, 8);
+test_cb_r8!(test_cb_3c_srl_h, 0x3C, h, 0xFF, 0x7F, false, false, false, true, 8);
+test_cb_r8!(test_cb_3d_srl_l, 0x3D, l, 0x0F, 0x07, false, false, false, true, 8);
+test_cb_hl_mem!(test_cb_3e_srl_hl_mem, 0x3E, 0x81, 0x40, false, false, false, true, 16);
+test_cb_r8!(test_cb_3f_srl_a, 0x3F, a, 0x01, 0x00, true, false, false, true, 8);

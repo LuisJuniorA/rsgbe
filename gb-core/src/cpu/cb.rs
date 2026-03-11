@@ -63,8 +63,26 @@ impl Cpu {
 
                 if let Operand8::MemHL = operand { 16 } else { 8 }
             }
-            0x30..=0x37 => todo!(),
-            0x38..=0x3F => todo!(),
+            0x30..=0x37 => {
+                let operand = self.decode_bits(opcode & 0x07);
+
+                match operand {
+                    Operand8::Reg(r) => self.swap_r8(r),
+                    Operand8::MemHL => self.swap_hl(bus),
+                }
+
+                if let Operand8::MemHL = operand { 16 } else { 8 }
+            }
+            0x38..=0x3F => {
+                let operand = self.decode_bits(opcode & 0x07);
+
+                match operand {
+                    Operand8::Reg(r) => self.srl_r8(r),
+                    Operand8::MemHL => self.srl_hl(bus),
+                }
+
+                if let Operand8::MemHL = operand { 16 } else { 8 }
+            }
             0x40..=0x47 => todo!(),
             0x48..=0x4F => todo!(),
             0x50..=0x57 => todo!(),
@@ -240,6 +258,57 @@ impl Cpu {
     fn sra_logic(&mut self, val: u8) -> u8 {
         let bit0 = val & 0x01;
         let res = (val >> 1) | (val & 0x80);
+
+        self.set_flags(
+            (res == 0).into(),
+            FlagOp::Unset,
+            FlagOp::Unset,
+            (bit0 != 0).into(),
+        );
+        res
+    }
+
+    fn swap_r8(&mut self, reg: Reg8) {
+        let val = self.get_reg8(reg);
+        let res = self.swap_logic(val);
+        self.set_reg8(reg, res);
+    }
+
+    fn swap_hl(&mut self, bus: &mut Bus) {
+        let addr = self.registers.get_hl();
+        let val = bus.read_byte(addr);
+        let res = self.swap_logic(val);
+        bus.write_byte(addr, res);
+    }
+
+    fn swap_logic(&mut self, val: u8) -> u8 {
+        let res = (val << 4) | (val >> 4);
+
+        self.set_flags(
+            (res == 0).into(),
+            FlagOp::Unset,
+            FlagOp::Unset,
+            FlagOp::Unset,
+        );
+        res
+    }
+
+    fn srl_r8(&mut self, reg: Reg8) {
+        let val = self.get_reg8(reg);
+        let res = self.srl_logic(val);
+        self.set_reg8(reg, res);
+    }
+
+    fn srl_hl(&mut self, bus: &mut Bus) {
+        let addr = self.registers.get_hl();
+        let val = bus.read_byte(addr);
+        let res = self.srl_logic(val);
+        bus.write_byte(addr, res);
+    }
+
+    fn srl_logic(&mut self, val: u8) -> u8 {
+        let bit0 = val & 0x01;
+        let res = val >> 1;
 
         self.set_flags(
             (res == 0).into(),
