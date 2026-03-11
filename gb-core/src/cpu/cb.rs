@@ -152,7 +152,7 @@ impl Cpu {
     }
 
     fn swap_logic(&mut self, val: u8) -> u8 {
-        let res = (val << 4) | (val >> 4);
+        let res = val.rotate_right(4);
 
         self.set_flags(
             (res == 0).into(),
