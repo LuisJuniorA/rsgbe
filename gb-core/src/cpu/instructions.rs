@@ -181,7 +181,6 @@ impl Cpu {
         let a16 = Self::fetch_u16(bus, &mut self.pc);
         let flag_value = flag.unwrap_or(1);
         if (flag_value != 0) ^ not {
-            let offset = a16 as i16;
             self.pc = a16;
             16
         } else {
@@ -359,7 +358,7 @@ impl Cpu {
     pub(super) fn call(&mut self, bus: &mut Bus, flag: Option<u8>, not: bool) -> u8 {
         let target_addr = Self::fetch_u16(bus, &mut self.pc);
 
-        let should_call = flag.map_or(true, |v| (v != 0) ^ not);
+        let should_call = flag.is_none_or(|v| (v != 0) ^ not);
 
         if should_call {
             self.sp = self.sp.wrapping_sub(2);

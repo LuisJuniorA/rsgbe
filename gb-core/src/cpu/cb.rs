@@ -1,3 +1,5 @@
+use super::*;
+
 impl Cpu {
     pub(super) fn execute_cb(&mut self, bus: &mut Bus, opcode: u8) -> u8 {
         match opcode {

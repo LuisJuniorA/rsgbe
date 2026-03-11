@@ -20,6 +20,15 @@ impl Cpu {
             ime: false,
         }
     }
+}
+
+impl Default for Cpu {
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
+impl Cpu {
     pub fn step(&mut self, bus: &mut Bus) -> u8 {
         let opcode = bus.read_byte(self.pc);
         self.pc = self.pc.wrapping_add(1);
@@ -615,7 +624,6 @@ impl Cpu {
             v @ (0xD3 | 0xDB | 0xDD | 0xE3 | 0xE4 | 0xEB | 0xEC | 0xED | 0xF4 | 0xFC | 0xFD) => {
                 panic!("Illegal opcode {:#04X} encountered", v);
             }
-            _ => 4,
         }
     }
 }

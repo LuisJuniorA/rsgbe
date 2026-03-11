@@ -22,7 +22,15 @@ impl Registers {
             l: 0x4d,
         }
     }
+}
 
+impl Default for Registers {
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
+impl Registers {
     pub fn get_af(&self) -> u16 {
         (self.a as u16) << 8 | (self.f as u16)
     }
