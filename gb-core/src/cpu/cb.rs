@@ -94,14 +94,17 @@ impl Cpu {
 
                 if let Operand8::MemHL = operand { 12 } else { 8 }
             }
-            0x80..=0x87 => todo!(),
-            0x88..=0x8F => todo!(),
-            0x90..=0x97 => todo!(),
-            0x98..=0x9F => todo!(),
-            0xA0..=0xA7 => todo!(),
-            0xA8..=0xAF => todo!(),
-            0xB8..=0xBF => todo!(),
-            0xB0..=0xB7 => todo!(),
+            0x80..=0xBF => {
+                let bit = (opcode & 0x38) >> 3;
+                let operand = self.decode_bits(opcode & 0x07);
+
+                match operand {
+                    Operand8::Reg(r) => self.res_r8(bit, r),
+                    Operand8::MemHL => self.res_hl(bit, bus),
+                }
+
+                if let Operand8::MemHL = operand { 16 } else { 8 }
+            }
             0xC0..=0xC7 => todo!(),
             0xC8..=0xCF => todo!(),
             0xD0..=0xD7 => todo!(),
@@ -342,5 +345,18 @@ impl Cpu {
             FlagOp::Set,
             FlagOp::Untouched,
         );
+    }
+
+    fn res_r8(&mut self, bit: u8, reg: Reg8) {
+        let val = self.get_reg8(reg);
+        let res = val & !(1 << bit);
+        self.set_reg8(reg, res);
+    }
+
+    fn res_hl(&mut self, bit: u8, bus: &mut Bus) {
+        let addr = self.registers.get_hl();
+        let val = bus.read_byte(addr);
+        let res = val & !(1 << bit);
+        bus.write_byte(addr, res);
     }
 }

@@ -165,3 +165,83 @@ test_cb_r8!(test_cb_7c_bit_7_h, 0x7C, h, 0x55, 0x55, true, false, true, false, 8
 test_cb_r8!(test_cb_7d_bit_7_l, 0x7D, l, 0xAA, 0xAA, false, false, true, false, 8);
 test_cb_hl_mem!(test_cb_7e_bit_7_hl_mem, 0x7E, 0x55, 0x55, true, false, true, false, 12);
 test_cb_r8!(test_cb_7f_bit_7_a, 0x7F, a, 0xAA, 0xAA, false, false, true, false, 8);
+
+// RES 0 (0x80 - 0x87)
+test_cb_r8!(test_cb_80_res_0_b, 0x80, b, 0xFF, 0xFE, false, false, false, false, 8);
+test_cb_r8!(test_cb_81_res_0_c, 0x81, c, 0xFF, 0xFE, false, false, false, false, 8);
+test_cb_r8!(test_cb_82_res_0_d, 0x82, d, 0xFF, 0xFE, false, false, false, false, 8);
+test_cb_r8!(test_cb_83_res_0_e, 0x83, e, 0xFF, 0xFE, false, false, false, false, 8);
+test_cb_r8!(test_cb_84_res_0_h, 0x84, h, 0xFF, 0xFE, false, false, false, false, 8);
+test_cb_r8!(test_cb_85_res_0_l, 0x85, l, 0xFF, 0xFE, false, false, false, false, 8);
+test_cb_hl_mem!(test_cb_86_res_0_hl_mem, 0x86, 0xFF, 0xFE, false, false, false, false, 16);
+test_cb_r8!(test_cb_87_res_0_a, 0x87, a, 0xFF, 0xFE, false, false, false, false, 8);
+
+// RES 1 (0x88 - 0x8F)
+test_cb_r8!(test_cb_88_res_1_b, 0x88, b, 0xFF, 0xFD, false, false, false, false, 8);
+test_cb_r8!(test_cb_89_res_1_c, 0x89, c, 0xFF, 0xFD, false, false, false, false, 8);
+test_cb_r8!(test_cb_8a_res_1_d, 0x8A, d, 0xFF, 0xFD, false, false, false, false, 8);
+test_cb_r8!(test_cb_8b_res_1_e, 0x8B, e, 0xFF, 0xFD, false, false, false, false, 8);
+test_cb_r8!(test_cb_8c_res_1_h, 0x8C, h, 0xFF, 0xFD, false, false, false, false, 8);
+test_cb_r8!(test_cb_8d_res_1_l, 0x8D, l, 0xFF, 0xFD, false, false, false, false, 8);
+test_cb_hl_mem!(test_cb_8e_res_1_hl_mem, 0x8E, 0xFF, 0xFD, false, false, false, false, 16);
+test_cb_r8!(test_cb_8f_res_1_a, 0x8F, a, 0xFF, 0xFD, false, false, false, false, 8);
+
+// RES 2 (0x90 - 0x97)
+test_cb_r8!(test_cb_90_res_2_b, 0x90, b, 0xFF, 0xFB, false, false, false, false, 8);
+test_cb_r8!(test_cb_91_res_2_c, 0x91, c, 0xFF, 0xFB, false, false, false, false, 8);
+test_cb_r8!(test_cb_92_res_2_d, 0x92, d, 0xFF, 0xFB, false, false, false, false, 8);
+test_cb_r8!(test_cb_93_res_2_e, 0x93, e, 0xFF, 0xFB, false, false, false, false, 8);
+test_cb_r8!(test_cb_94_res_2_h, 0x94, h, 0xFF, 0xFB, false, false, false, false, 8);
+test_cb_r8!(test_cb_95_res_2_l, 0x95, l, 0xFF, 0xFB, false, false, false, false, 8);
+test_cb_hl_mem!(test_cb_96_res_2_hl_mem, 0x96, 0xFF, 0xFB, false, false, false, false, 16);
+test_cb_r8!(test_cb_97_res_2_a, 0x97, a, 0xFF, 0xFB, false, false, false, false, 8);
+
+// RES 3 (0x98 - 0x9F)
+test_cb_r8!(test_cb_98_res_3_b, 0x98, b, 0xFF, 0xF7, false, false, false, false, 8);
+test_cb_r8!(test_cb_99_res_3_c, 0x99, c, 0xFF, 0xF7, false, false, false, false, 8);
+test_cb_r8!(test_cb_9a_res_3_d, 0x9A, d, 0xFF, 0xF7, false, false, false, false, 8);
+test_cb_r8!(test_cb_9b_res_3_e, 0x9B, e, 0xFF, 0xF7, false, false, false, false, 8);
+test_cb_r8!(test_cb_9c_res_3_h, 0x9C, h, 0xFF, 0xF7, false, false, false, false, 8);
+test_cb_r8!(test_cb_9d_res_3_l, 0x9D, l, 0xFF, 0xF7, false, false, false, false, 8);
+test_cb_hl_mem!(test_cb_9e_res_3_hl_mem, 0x9E, 0xFF, 0xF7, false, false, false, false, 16);
+test_cb_r8!(test_cb_9f_res_3_a, 0x9F, a, 0xFF, 0xF7, false, false, false, false, 8);
+
+// RES 4 (0xA0 - 0xA7)
+test_cb_r8!(test_cb_a0_res_4_b, 0xA0, b, 0xFF, 0xEF, false, false, false, false, 8);
+test_cb_r8!(test_cb_a1_res_4_c, 0xA1, c, 0xFF, 0xEF, false, false, false, false, 8);
+test_cb_r8!(test_cb_a2_res_4_d, 0xA2, d, 0xFF, 0xEF, false, false, false, false, 8);
+test_cb_r8!(test_cb_a3_res_4_e, 0xA3, e, 0xFF, 0xEF, false, false, false, false, 8);
+test_cb_r8!(test_cb_a4_res_4_h, 0xA4, h, 0xFF, 0xEF, false, false, false, false, 8);
+test_cb_r8!(test_cb_a5_res_4_l, 0xA5, l, 0xFF, 0xEF, false, false, false, false, 8);
+test_cb_hl_mem!(test_cb_a6_res_4_hl_mem, 0xA6, 0xFF, 0xEF, false, false, false, false, 16);
+test_cb_r8!(test_cb_a7_res_4_a, 0xA7, a, 0xFF, 0xEF, false, false, false, false, 8);
+
+// RES 5 (0xA8 - 0xAF)
+test_cb_r8!(test_cb_a8_res_5_b, 0xA8, b, 0xFF, 0xDF, false, false, false, false, 8);
+test_cb_r8!(test_cb_a9_res_5_c, 0xA9, c, 0xFF, 0xDF, false, false, false, false, 8);
+test_cb_r8!(test_cb_aa_res_5_d, 0xAA, d, 0xFF, 0xDF, false, false, false, false, 8);
+test_cb_r8!(test_cb_ab_res_5_e, 0xAB, e, 0xFF, 0xDF, false, false, false, false, 8);
+test_cb_r8!(test_cb_ac_res_5_h, 0xAC, h, 0xFF, 0xDF, false, false, false, false, 8);
+test_cb_r8!(test_cb_ad_res_5_l, 0xAD, l, 0xFF, 0xDF, false, false, false, false, 8);
+test_cb_hl_mem!(test_cb_ae_res_5_hl_mem, 0xAE, 0xFF, 0xDF, false, false, false, false, 16);
+test_cb_r8!(test_cb_af_res_5_a, 0xAF, a, 0xFF, 0xDF, false, false, false, false, 8);
+
+// RES 6 (0xB0 - 0xB7)
+test_cb_r8!(test_cb_b0_res_6_b, 0xB0, b, 0xFF, 0xBF, false, false, false, false, 8);
+test_cb_r8!(test_cb_b1_res_6_c, 0xB1, c, 0xFF, 0xBF, false, false, false, false, 8);
+test_cb_r8!(test_cb_b2_res_6_d, 0xB2, d, 0xFF, 0xBF, false, false, false, false, 8);
+test_cb_r8!(test_cb_b3_res_6_e, 0xB3, e, 0xFF, 0xBF, false, false, false, false, 8);
+test_cb_r8!(test_cb_b4_res_6_h, 0xB4, h, 0xFF, 0xBF, false, false, false, false, 8);
+test_cb_r8!(test_cb_b5_res_6_l, 0xB5, l, 0xFF, 0xBF, false, false, false, false, 8);
+test_cb_hl_mem!(test_cb_b6_res_6_hl_mem, 0xB6, 0xFF, 0xBF, false, false, false, false, 16);
+test_cb_r8!(test_cb_b7_res_6_a, 0xB7, a, 0xFF, 0xBF, false, false, false, false, 8);
+
+// RES 7 (0xB8 - 0xBF)
+test_cb_r8!(test_cb_b8_res_7_b, 0xB8, b, 0xFF, 0x7F, false, false, false, false, 8);
+test_cb_r8!(test_cb_b9_res_7_c, 0xB9, c, 0xFF, 0x7F, false, false, false, false, 8);
+test_cb_r8!(test_cb_ba_res_7_d, 0xBA, d, 0xFF, 0x7F, false, false, false, false, 8);
+test_cb_r8!(test_cb_bb_res_7_e, 0xBB, e, 0xFF, 0x7F, false, false, false, false, 8);
+test_cb_r8!(test_cb_bc_res_7_h, 0xBC, h, 0xFF, 0x7F, false, false, false, false, 8);
+test_cb_r8!(test_cb_bd_res_7_l, 0xBD, l, 0xFF, 0x7F, false, false, false, false, 8);
+test_cb_hl_mem!(test_cb_be_res_7_hl_mem, 0xBE, 0xFF, 0x7F, false, false, false, false, 16);
+test_cb_r8!(test_cb_bf_res_7_a, 0xBF, a, 0xFF, 0x7F, false, false, false, false, 8);
