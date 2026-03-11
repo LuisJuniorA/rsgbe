@@ -85,3 +85,83 @@ test_cb_r8!(test_cb_3c_srl_h, 0x3C, h, 0xFF, 0x7F, false, false, false, true, 8)
 test_cb_r8!(test_cb_3d_srl_l, 0x3D, l, 0x0F, 0x07, false, false, false, true, 8);
 test_cb_hl_mem!(test_cb_3e_srl_hl_mem, 0x3E, 0x81, 0x40, false, false, false, true, 16);
 test_cb_r8!(test_cb_3f_srl_a, 0x3F, a, 0x01, 0x00, true, false, false, true, 8);
+
+// BIT 0 (0x40 - 0x47)
+test_cb_r8!(test_cb_40_bit_0_b, 0x40, b, 0x55, 0x55, false, false, true, false, 8);
+test_cb_r8!(test_cb_41_bit_0_c, 0x41, c, 0xAA, 0xAA, true, false, true, false, 8);
+test_cb_r8!(test_cb_42_bit_0_d, 0x42, d, 0x55, 0x55, false, false, true, false, 8);
+test_cb_r8!(test_cb_43_bit_0_e, 0x43, e, 0xAA, 0xAA, true, false, true, false, 8);
+test_cb_r8!(test_cb_44_bit_0_h, 0x44, h, 0x55, 0x55, false, false, true, false, 8);
+test_cb_r8!(test_cb_45_bit_0_l, 0x45, l, 0xAA, 0xAA, true, false, true, false, 8);
+test_cb_hl_mem!(test_cb_46_bit_0_hl_mem, 0x46, 0x55, 0x55, false, false, true, false, 12);
+test_cb_r8!(test_cb_47_bit_0_a, 0x47, a, 0xAA, 0xAA, true, false, true, false, 8);
+
+// BIT 1 (0x48 - 0x4F)
+test_cb_r8!(test_cb_48_bit_1_b, 0x48, b, 0x55, 0x55, true, false, true, false, 8);
+test_cb_r8!(test_cb_49_bit_1_c, 0x49, c, 0xAA, 0xAA, false, false, true, false, 8);
+test_cb_r8!(test_cb_4a_bit_1_d, 0x4A, d, 0x55, 0x55, true, false, true, false, 8);
+test_cb_r8!(test_cb_4b_bit_1_e, 0x4B, e, 0xAA, 0xAA, false, false, true, false, 8);
+test_cb_r8!(test_cb_4c_bit_1_h, 0x4C, h, 0x55, 0x55, true, false, true, false, 8);
+test_cb_r8!(test_cb_4d_bit_1_l, 0x4D, l, 0xAA, 0xAA, false, false, true, false, 8);
+test_cb_hl_mem!(test_cb_4e_bit_1_hl_mem, 0x4E, 0x55, 0x55, true, false, true, false, 12);
+test_cb_r8!(test_cb_4f_bit_1_a, 0x4F, a, 0xAA, 0xAA, false, false, true, false, 8);
+
+// BIT 2 (0x50 - 0x57)
+test_cb_r8!(test_cb_50_bit_2_b, 0x50, b, 0x55, 0x55, false, false, true, false, 8);
+test_cb_r8!(test_cb_51_bit_2_c, 0x51, c, 0xAA, 0xAA, true, false, true, false, 8);
+test_cb_r8!(test_cb_52_bit_2_d, 0x52, d, 0x55, 0x55, false, false, true, false, 8);
+test_cb_r8!(test_cb_53_bit_2_e, 0x53, e, 0xAA, 0xAA, true, false, true, false, 8);
+test_cb_r8!(test_cb_54_bit_2_h, 0x54, h, 0x55, 0x55, false, false, true, false, 8);
+test_cb_r8!(test_cb_55_bit_2_l, 0x55, l, 0xAA, 0xAA, true, false, true, false, 8);
+test_cb_hl_mem!(test_cb_56_bit_2_hl_mem, 0x56, 0x55, 0x55, false, false, true, false, 12);
+test_cb_r8!(test_cb_57_bit_2_a, 0x57, a, 0xAA, 0xAA, true, false, true, false, 8);
+
+// BIT 3 (0x58 - 0x5F)
+test_cb_r8!(test_cb_58_bit_3_b, 0x58, b, 0x55, 0x55, true, false, true, false, 8);
+test_cb_r8!(test_cb_59_bit_3_c, 0x59, c, 0xAA, 0xAA, false, false, true, false, 8);
+test_cb_r8!(test_cb_5a_bit_3_d, 0x5A, d, 0x55, 0x55, true, false, true, false, 8);
+test_cb_r8!(test_cb_5b_bit_3_e, 0x5B, e, 0xAA, 0xAA, false, false, true, false, 8);
+test_cb_r8!(test_cb_5c_bit_3_h, 0x5C, h, 0x55, 0x55, true, false, true, false, 8);
+test_cb_r8!(test_cb_5d_bit_3_l, 0x5D, l, 0xAA, 0xAA, false, false, true, false, 8);
+test_cb_hl_mem!(test_cb_5e_bit_3_hl_mem, 0x5E, 0x55, 0x55, true, false, true, false, 12);
+test_cb_r8!(test_cb_5f_bit_3_a, 0x5F, a, 0xAA, 0xAA, false, false, true, false, 8);
+
+// BIT 4 (0x60 - 0x67)
+test_cb_r8!(test_cb_60_bit_4_b, 0x60, b, 0x55, 0x55, false, false, true, false, 8);
+test_cb_r8!(test_cb_61_bit_4_c, 0x61, c, 0xAA, 0xAA, true, false, true, false, 8);
+test_cb_r8!(test_cb_62_bit_4_d, 0x62, d, 0x55, 0x55, false, false, true, false, 8);
+test_cb_r8!(test_cb_63_bit_4_e, 0x63, e, 0xAA, 0xAA, true, false, true, false, 8);
+test_cb_r8!(test_cb_64_bit_4_h, 0x64, h, 0x55, 0x55, false, false, true, false, 8);
+test_cb_r8!(test_cb_65_bit_4_l, 0x65, l, 0xAA, 0xAA, true, false, true, false, 8);
+test_cb_hl_mem!(test_cb_66_bit_4_hl_mem, 0x66, 0x55, 0x55, false, false, true, false, 12);
+test_cb_r8!(test_cb_67_bit_4_a, 0x67, a, 0xAA, 0xAA, true, false, true, false, 8);
+
+// BIT 5 (0x68 - 0x6F)
+test_cb_r8!(test_cb_68_bit_5_b, 0x68, b, 0x55, 0x55, true, false, true, false, 8);
+test_cb_r8!(test_cb_69_bit_5_c, 0x69, c, 0xAA, 0xAA, false, false, true, false, 8);
+test_cb_r8!(test_cb_6a_bit_5_d, 0x6A, d, 0x55, 0x55, true, false, true, false, 8);
+test_cb_r8!(test_cb_6b_bit_5_e, 0x6B, e, 0xAA, 0xAA, false, false, true, false, 8);
+test_cb_r8!(test_cb_6c_bit_5_h, 0x6C, h, 0x55, 0x55, true, false, true, false, 8);
+test_cb_r8!(test_cb_6d_bit_5_l, 0x6D, l, 0xAA, 0xAA, false, false, true, false, 8);
+test_cb_hl_mem!(test_cb_6e_bit_5_hl_mem, 0x6E, 0x55, 0x55, true, false, true, false, 12);
+test_cb_r8!(test_cb_6f_bit_5_a, 0x6F, a, 0xAA, 0xAA, false, false, true, false, 8);
+
+// BIT 6 (0x70 - 0x77)
+test_cb_r8!(test_cb_70_bit_6_b, 0x70, b, 0x55, 0x55, false, false, true, false, 8);
+test_cb_r8!(test_cb_71_bit_6_c, 0x71, c, 0xAA, 0xAA, true, false, true, false, 8);
+test_cb_r8!(test_cb_72_bit_6_d, 0x72, d, 0x55, 0x55, false, false, true, false, 8);
+test_cb_r8!(test_cb_73_bit_6_e, 0x73, e, 0xAA, 0xAA, true, false, true, false, 8);
+test_cb_r8!(test_cb_74_bit_6_h, 0x74, h, 0x55, 0x55, false, false, true, false, 8);
+test_cb_r8!(test_cb_75_bit_6_l, 0x75, l, 0xAA, 0xAA, true, false, true, false, 8);
+test_cb_hl_mem!(test_cb_76_bit_6_hl_mem, 0x76, 0x55, 0x55, false, false, true, false, 12);
+test_cb_r8!(test_cb_77_bit_6_a, 0x77, a, 0xAA, 0xAA, true, false, true, false, 8);
+
+// BIT 7 (0x78 - 0x7F)
+test_cb_r8!(test_cb_78_bit_7_b, 0x78, b, 0x55, 0x55, true, false, true, false, 8);
+test_cb_r8!(test_cb_79_bit_7_c, 0x79, c, 0xAA, 0xAA, false, false, true, false, 8);
+test_cb_r8!(test_cb_7a_bit_7_d, 0x7A, d, 0x55, 0x55, true, false, true, false, 8);
+test_cb_r8!(test_cb_7b_bit_7_e, 0x7B, e, 0xAA, 0xAA, false, false, true, false, 8);
+test_cb_r8!(test_cb_7c_bit_7_h, 0x7C, h, 0x55, 0x55, true, false, true, false, 8);
+test_cb_r8!(test_cb_7d_bit_7_l, 0x7D, l, 0xAA, 0xAA, false, false, true, false, 8);
+test_cb_hl_mem!(test_cb_7e_bit_7_hl_mem, 0x7E, 0x55, 0x55, true, false, true, false, 12);
+test_cb_r8!(test_cb_7f_bit_7_a, 0x7F, a, 0xAA, 0xAA, false, false, true, false, 8);
