@@ -245,3 +245,83 @@ test_cb_r8!(test_cb_bc_res_7_h, 0xBC, h, 0xFF, 0x7F, false, false, false, false,
 test_cb_r8!(test_cb_bd_res_7_l, 0xBD, l, 0xFF, 0x7F, false, false, false, false, 8);
 test_cb_hl_mem!(test_cb_be_res_7_hl_mem, 0xBE, 0xFF, 0x7F, false, false, false, false, 16);
 test_cb_r8!(test_cb_bf_res_7_a, 0xBF, a, 0xFF, 0x7F, false, false, false, false, 8);
+
+// SET 0 (0xC0 - 0xC7)
+test_cb_r8!(test_cb_c0_set_0_b, 0xC0, b, 0x00, 0x01, false, false, false, false, 8);
+test_cb_r8!(test_cb_c1_set_0_c, 0xC1, c, 0x00, 0x01, false, false, false, false, 8);
+test_cb_r8!(test_cb_c2_set_0_d, 0xC2, d, 0x00, 0x01, false, false, false, false, 8);
+test_cb_r8!(test_cb_c3_set_0_e, 0xC3, e, 0x00, 0x01, false, false, false, false, 8);
+test_cb_r8!(test_cb_c4_set_0_h, 0xC4, h, 0x00, 0x01, false, false, false, false, 8);
+test_cb_r8!(test_cb_c5_set_0_l, 0xC5, l, 0x00, 0x01, false, false, false, false, 8);
+test_cb_hl_mem!(test_cb_c6_set_0_hl_mem, 0xC6, 0x00, 0x01, false, false, false, false, 16);
+test_cb_r8!(test_cb_c7_set_0_a, 0xC7, a, 0x00, 0x01, false, false, false, false, 8);
+
+// SET 1 (0xC8 - 0xCF)
+test_cb_r8!(test_cb_c8_set_1_b, 0xC8, b, 0x00, 0x02, false, false, false, false, 8);
+test_cb_r8!(test_cb_c9_set_1_c, 0xC9, c, 0x00, 0x02, false, false, false, false, 8);
+test_cb_r8!(test_cb_ca_set_1_d, 0xCA, d, 0x00, 0x02, false, false, false, false, 8);
+test_cb_r8!(test_cb_cb_set_1_e, 0xCB, e, 0x00, 0x02, false, false, false, false, 8);
+test_cb_r8!(test_cb_cc_set_1_h, 0xCC, h, 0x00, 0x02, false, false, false, false, 8);
+test_cb_r8!(test_cb_cd_set_1_l, 0xCD, l, 0x00, 0x02, false, false, false, false, 8);
+test_cb_hl_mem!(test_cb_ce_set_1_hl_mem, 0xCE, 0x00, 0x02, false, false, false, false, 16);
+test_cb_r8!(test_cb_cf_set_1_a, 0xCF, a, 0x00, 0x02, false, false, false, false, 8);
+
+// SET 2 (0xD0 - 0xD7)
+test_cb_r8!(test_cb_d0_set_2_b, 0xD0, b, 0x00, 0x04, false, false, false, false, 8);
+test_cb_r8!(test_cb_d1_set_2_c, 0xD1, c, 0x00, 0x04, false, false, false, false, 8);
+test_cb_r8!(test_cb_d2_set_2_d, 0xD2, d, 0x00, 0x04, false, false, false, false, 8);
+test_cb_r8!(test_cb_d3_set_2_e, 0xD3, e, 0x00, 0x04, false, false, false, false, 8);
+test_cb_r8!(test_cb_d4_set_2_h, 0xD4, h, 0x00, 0x04, false, false, false, false, 8);
+test_cb_r8!(test_cb_d5_set_2_l, 0xD5, l, 0x00, 0x04, false, false, false, false, 8);
+test_cb_hl_mem!(test_cb_d6_set_2_hl_mem, 0xD6, 0x00, 0x04, false, false, false, false, 16);
+test_cb_r8!(test_cb_d7_set_2_a, 0xD7, a, 0x00, 0x04, false, false, false, false, 8);
+
+// SET 3 (0xD8 - 0xDF)
+test_cb_r8!(test_cb_d8_set_3_b, 0xD8, b, 0x00, 0x08, false, false, false, false, 8);
+test_cb_r8!(test_cb_d9_set_3_c, 0xD9, c, 0x00, 0x08, false, false, false, false, 8);
+test_cb_r8!(test_cb_da_set_3_d, 0xDA, d, 0x00, 0x08, false, false, false, false, 8);
+test_cb_r8!(test_cb_db_set_3_e, 0xDB, e, 0x00, 0x08, false, false, false, false, 8);
+test_cb_r8!(test_cb_dc_set_3_h, 0xDC, h, 0x00, 0x08, false, false, false, false, 8);
+test_cb_r8!(test_cb_dd_set_3_l, 0xDD, l, 0x00, 0x08, false, false, false, false, 8);
+test_cb_hl_mem!(test_cb_de_set_3_hl_mem, 0xDE, 0x00, 0x08, false, false, false, false, 16);
+test_cb_r8!(test_cb_df_set_3_a, 0xDF, a, 0x00, 0x08, false, false, false, false, 8);
+
+// SET 4 (0xE0 - 0xE7)
+test_cb_r8!(test_cb_e0_set_4_b, 0xE0, b, 0x00, 0x10, false, false, false, false, 8);
+test_cb_r8!(test_cb_e1_set_4_c, 0xE1, c, 0x00, 0x10, false, false, false, false, 8);
+test_cb_r8!(test_cb_e2_set_4_d, 0xE2, d, 0x00, 0x10, false, false, false, false, 8);
+test_cb_r8!(test_cb_e3_set_4_e, 0xE3, e, 0x00, 0x10, false, false, false, false, 8);
+test_cb_r8!(test_cb_e4_set_4_h, 0xE4, h, 0x00, 0x10, false, false, false, false, 8);
+test_cb_r8!(test_cb_e5_set_4_l, 0xE5, l, 0x00, 0x10, false, false, false, false, 8);
+test_cb_hl_mem!(test_cb_e6_set_4_hl_mem, 0xE6, 0x00, 0x10, false, false, false, false, 16);
+test_cb_r8!(test_cb_e7_set_4_a, 0xE7, a, 0x00, 0x10, false, false, false, false, 8);
+
+// SET 5 (0xE8 - 0xEF)
+test_cb_r8!(test_cb_e8_set_5_b, 0xE8, b, 0x00, 0x20, false, false, false, false, 8);
+test_cb_r8!(test_cb_e9_set_5_c, 0xE9, c, 0x00, 0x20, false, false, false, false, 8);
+test_cb_r8!(test_cb_ea_set_5_d, 0xEA, d, 0x00, 0x20, false, false, false, false, 8);
+test_cb_r8!(test_cb_eb_set_5_e, 0xEB, e, 0x00, 0x20, false, false, false, false, 8);
+test_cb_r8!(test_cb_ec_set_5_h, 0xEC, h, 0x00, 0x20, false, false, false, false, 8);
+test_cb_r8!(test_cb_ed_set_5_l, 0xED, l, 0x00, 0x20, false, false, false, false, 8);
+test_cb_hl_mem!(test_cb_ee_set_5_hl_mem, 0xEE, 0x00, 0x20, false, false, false, false, 16);
+test_cb_r8!(test_cb_ef_set_5_a, 0xEF, a, 0x00, 0x20, false, false, false, false, 8);
+
+// SET 6 (0xF0 - 0xF7)
+test_cb_r8!(test_cb_f0_set_6_b, 0xF0, b, 0x00, 0x40, false, false, false, false, 8);
+test_cb_r8!(test_cb_f1_set_6_c, 0xF1, c, 0x00, 0x40, false, false, false, false, 8);
+test_cb_r8!(test_cb_f2_set_6_d, 0xF2, d, 0x00, 0x40, false, false, false, false, 8);
+test_cb_r8!(test_cb_f3_set_6_e, 0xF3, e, 0x00, 0x40, false, false, false, false, 8);
+test_cb_r8!(test_cb_f4_set_6_h, 0xF4, h, 0x00, 0x40, false, false, false, false, 8);
+test_cb_r8!(test_cb_f5_set_6_l, 0xF5, l, 0x00, 0x40, false, false, false, false, 8);
+test_cb_hl_mem!(test_cb_f6_set_6_hl_mem, 0xF6, 0x00, 0x40, false, false, false, false, 16);
+test_cb_r8!(test_cb_f7_set_6_a, 0xF7, a, 0x00, 0x40, false, false, false, false, 8);
+
+// SET 7 (0xF8 - 0xFF)
+test_cb_r8!(test_cb_f8_set_7_b, 0xF8, b, 0x00, 0x80, false, false, false, false, 8);
+test_cb_r8!(test_cb_f9_set_7_c, 0xF9, c, 0x00, 0x80, false, false, false, false, 8);
+test_cb_r8!(test_cb_fa_set_7_d, 0xFA, d, 0x00, 0x80, false, false, false, false, 8);
+test_cb_r8!(test_cb_fb_set_7_e, 0xFB, e, 0x00, 0x80, false, false, false, false, 8);
+test_cb_r8!(test_cb_fc_set_7_h, 0xFC, h, 0x00, 0x80, false, false, false, false, 8);
+test_cb_r8!(test_cb_fd_set_7_l, 0xFD, l, 0x00, 0x80, false, false, false, false, 8);
+test_cb_hl_mem!(test_cb_fe_set_7_hl_mem, 0xFE, 0x00, 0x80, false, false, false, false, 16);
+test_cb_r8!(test_cb_ff_set_7_a, 0xFF, a, 0x00, 0x80, false, false, false, false, 8);
