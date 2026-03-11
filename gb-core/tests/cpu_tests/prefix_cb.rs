@@ -39,3 +39,25 @@ test_cb_r8!(test_cb_1c_rr_h, 0x1C, h, 0xFF, 0x7F, false, false, false, true, 8);
 test_cb_r8!(test_cb_1d_rr_l, 0x1D, l, 0x80, 0x40, false, false, false, false, 8);
 test_cb_hl_mem!(test_cb_1e_rr_hl_mem, 0x1E, 0x01, 0x00, true, false, false, true, 16);
 test_cb_r8!(test_cb_1f_rr_a, 0x1F, a, 0x01, 0x00, true, false, false, true, 8);
+
+// SLA (Shift Left Arithmetic)
+// Shifts left: bit 0 becomes 0, bit 7 goes into the Carry flag.
+test_cb_r8!(test_cb_20_sla_b, 0x20, b, 0x85, 0x0A, false, false, false, true, 8);
+test_cb_r8!(test_cb_21_sla_c, 0x21, c, 0x00, 0x00, true, false, false, false, 8);
+test_cb_r8!(test_cb_22_sla_d, 0x22, d, 0x80, 0x00, true, false, false, true, 8);
+test_cb_r8!(test_cb_23_sla_e, 0x23, e, 0x01, 0x02, false, false, false, false, 8);
+test_cb_r8!(test_cb_24_sla_h, 0x24, h, 0xFF, 0xFE, false, false, false, true, 8);
+test_cb_r8!(test_cb_25_sla_l, 0x25, l, 0x0F, 0x1E, false, false, false, false, 8);
+test_cb_hl_mem!(test_cb_26_sla_hl_mem, 0x26, 0x81, 0x02, false, false, false, true, 16);
+test_cb_r8!(test_cb_27_sla_a, 0x27, a, 0x85, 0x0A, false, false, false, true, 8);
+
+// SRA (Shift Right Arithmetic)
+// Shifts right: bit 7 is duplicated (sign extension), bit 0 goes into the Carry flag.
+test_cb_r8!(test_cb_28_sra_b, 0x28, b, 0x85, 0xC2, false, false, false, true, 8);
+test_cb_r8!(test_cb_29_sra_c, 0x29, c, 0x00, 0x00, true, false, false, false, 8);
+test_cb_r8!(test_cb_2a_sra_d, 0x2A, d, 0x80, 0xC0, false, false, false, false, 8);
+test_cb_r8!(test_cb_2b_sra_e, 0x2B, e, 0x01, 0x00, true, false, false, true, 8);
+test_cb_r8!(test_cb_2c_sra_h, 0x2C, h, 0xFF, 0xFF, false, false, false, true, 8);
+test_cb_r8!(test_cb_2d_sra_l, 0x2D, l, 0x0F, 0x07, false, false, false, true, 8);
+test_cb_hl_mem!(test_cb_2e_sra_hl_mem, 0x2E, 0x81, 0xC0, false, false, false, true, 16);
+test_cb_r8!(test_cb_2f_sra_a, 0x2F, a, 0x01, 0x00, true, false, false, true, 8);
