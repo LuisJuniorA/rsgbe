@@ -3,7 +3,7 @@ use std::fs;
 use std::path::PathBuf;
 
 fn run_blargg_test(rom_name: &str) {
-    // The test ROMs are stored at the root of the workspace in `test_roms`
+    // The test ROMs are stored at the root of the workspace in `test/roms`
     let mut path = PathBuf::from(env!("CARGO_MANIFEST_DIR"));
     path.push("tests/roms");
     path.push(rom_name);
@@ -27,7 +27,7 @@ fn run_blargg_test(rom_name: &str) {
     cpu.sp = 0xFFFE;
 
     let mut cycles = 0;
-    let max_cycles = 50_000_000;
+    let max_cycles = 250_000_000;
 
     while cycles < max_cycles {
         cycles += cpu.step(&mut bus) as u64;

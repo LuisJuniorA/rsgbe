@@ -594,8 +594,20 @@ impl Cpu {
                 16
             }
             0xF8 /* LD HL, SP + e8 */ => {
-                let e8 = Self::fetch_u8(bus, &mut self.pc);
-                self.set_addr_from_source(AddrSource::HL, self.sp.wrapping_add(e8 as u16));
+                let e8 = Self::fetch_u8(bus, &mut self.pc) as i8;
+                let sp = self.sp;
+
+                let h = ((sp & 0xF) + (e8 as u8 as u16 & 0xF)) > 0xF;
+                let c = ((sp & 0xFF) + (e8 as u8 as u16 & 0xFF)) > 0xFF;
+
+                self.registers.set_hl(sp.wrapping_add_signed(e8 as i16));
+
+                self.set_flags(
+                    FlagOp::Unset,
+                    FlagOp::Unset,
+                    if h { FlagOp::Set } else { FlagOp::Unset },
+                    if c { FlagOp::Set } else { FlagOp::Unset },
+                );
                 12
             }
             0xF9 /* LD SP, HL */ => {
