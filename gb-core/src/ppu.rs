@@ -84,7 +84,35 @@ impl Ppu {
             let byte1 = vram[pixel_data_address as usize];
             let byte2 = vram[(pixel_data_address + 1) as usize];
 
-            // TODO: Extract the exact pixel color from byte1 and byte2 using x_pos
+            let pixel_within_tile = x_pos & 7;
+
+            // Invert the pixel position to find the correct bit.
+            let bit_index = 7 - pixel_within_tile;
+
+            // Extract the single bit from both bytes
+            let bit1 = (byte1 >> bit_index) & 0x01;
+            let bit2 = (byte2 >> bit_index) & 0x01;
+
+            // Combine the two bits to get a Color ID
+            let color_id = (bit2 << 1) | bit1;
+
+            let shade = (self.bgp >> (color_id * 2)) & 0b11;
+
+            let rgba = match shade {
+                0 => [155, 188, 15, 255], // Lightest (Classic GB Green)
+                1 => [139, 172, 15, 255], // Light
+                2 => [48, 98, 48, 255],   // Dark
+                3 => [15, 56, 15, 255],   // Darkest
+                _ => unreachable!(),
+            };
+
+            // The buffer is 160 pixels wide, 4 bytes per pixel.
+            let buffer_index = ((self.ly as usize * 160) + x as usize) * 4;
+
+            self.framebuffer[buffer_index] = rgba[0]; // R
+            self.framebuffer[buffer_index + 1] = rgba[1]; // G
+            self.framebuffer[buffer_index + 2] = rgba[2]; // B
+            self.framebuffer[buffer_index + 3] = rgba[3]; // A
         }
     }
 }
