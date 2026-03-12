@@ -92,9 +92,22 @@ impl Bus {
                     self.if_reg |= 0x04; // Request timer interrupt if the reset caused an overflow
                 }
             }
+            0xFF40 => self.ppu.lcdc = val,
+            0xFF41 => self.ppu.stat = val,
+            0xFF42 => self.ppu.scy = val,
+            0xFF43 => self.ppu.scx = val,
+            0xFF44 => self.ppu.ly = val,
+            0xFF45 => self.ppu.lyc = val,
+            0xFF47 => self.ppu.bgp = val,
+            0xFF48 => self.ppu.obp0 = val,
+            0xFF49 => self.ppu.obp1 = val,
+            0xFF4A => self.ppu.wy = val,
+            0xFF4B => self.ppu.wx = val,
+
             0xFF05 => self.timer.tima = val,
             0xFF06 => self.timer.tma = val,
             0xFF07 => self.timer.tac = val,
+
             0xFF0F => self.if_reg = val,
             0xFF80..=0xFFFE => self.hram[(addr - 0xFF80) as usize] = val,
             0xFFFF => self.ie = val,
