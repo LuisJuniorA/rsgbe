@@ -1,9 +1,11 @@
 use crate::cartridge::mbc::MBC;
 pub use crate::cartridge::mbc1::MBC1;
+pub use crate::cartridge::mbc2::MBC2;
 use crate::cartridge::no_mbc::NoMBC;
 
 pub mod mbc;
 mod mbc1;
+mod mbc2;
 mod no_mbc;
 
 pub struct Cartridge {
@@ -22,8 +24,9 @@ impl Cartridge {
 
         let mbc_type = data[0x0147];
         let mbc: Box<dyn MBC> = match mbc_type {
-            0x00 => Box::new(NoMBC::new(data)),
+            0x00 | 0xFF => Box::new(NoMBC::new(data)),
             0x01..=0x03 => Box::new(MBC1::new(data, ram_size)),
+            0x05 | 0x06 => Box::new(MBC2::new(data)),
             _ => panic!("Unknown MBC : {:#02X}", mbc_type),
         };
 
@@ -37,7 +40,7 @@ impl Cartridge {
         self.mbc.write_byte(addr, val);
     }
 
-    fn calculate_ram_size(code: u8) -> u16 {
+    fn calculate_ram_size(code: u8) -> usize {
         match code {
             0x01 => 1 << 11, // 2 KiB
             0x02 => 1 << 13, // 8 KiB
