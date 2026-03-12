@@ -12,18 +12,12 @@ pub struct MBC1 {
 }
 
 impl MBC1 {
-    pub fn new(rom: Vec<u8>) -> Self {
+    pub fn new(rom: Vec<u8>, ram_size: u16) -> Self {
         let rom_num_banks = rom.len() / 0x4000;
         let rom_bank_mask = if rom_num_banks > 0 {
             (rom_num_banks.next_power_of_two() - 1) as u8
         } else {
             0
-        };
-        let ram_size = match rom[0x149] {
-            0x01 => 1 << 11, // 2 KiB
-            0x02 => 1 << 13, // 8 KiB
-            0x03 => 1 << 14, // 32 KiB
-            _ => 0,
         };
 
         let ram_num_banks = (ram_size / 0x2000).max(1) as u8;
