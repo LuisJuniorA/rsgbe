@@ -1,11 +1,13 @@
 use crate::cartridge::mbc::MBC;
 pub use crate::cartridge::mbc1::MBC1;
 pub use crate::cartridge::mbc2::MBC2;
+pub use crate::cartridge::mbc3::MBC3;
 use crate::cartridge::no_mbc::NoMBC;
 
 pub mod mbc;
 mod mbc1;
 mod mbc2;
+mod mbc3;
 mod no_mbc;
 
 pub struct Cartridge {
@@ -31,6 +33,7 @@ impl Cartridge {
                 Box::new(MBC1::new(data, ram_size, is_mbc1m))
             }
             0x05 | 0x06 => Box::new(MBC2::new(data)),
+            0x0F | 0x10 => Box::new(MBC3::new(data, ram_size)),
             _ => panic!("Unknown MBC : {:#02X}", mbc_type),
         };
 
