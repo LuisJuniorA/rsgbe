@@ -52,7 +52,19 @@ impl Bus {
             0xFF06 => self.timer.tma,
             0xFF07 => self.timer.tac,
             0xFF0F => self.if_reg,
-            0xFF40 => self.ppu.llcd,
+
+            0xFF40 => self.ppu.lcdc,
+            0xFF41 => self.ppu.stat,
+            0xFF42 => self.ppu.scy,
+            0xFF43 => self.ppu.scx,
+            0xFF44 => self.ppu.ly,
+            0xFF45 => self.ppu.lyc,
+            0xFF47 => self.ppu.bgp,
+            0xFF48 => self.ppu.obp0,
+            0xFF49 => self.ppu.obp1,
+            0xFF4A => self.ppu.wy,
+            0xFF4B => self.ppu.wx,
+
             // $FF80 - $FFFE: High RAM
             0xFF80..=0xFFFE => self.hram[(addr - 0xFF80) as usize],
             0xFFFF => self.ie,
