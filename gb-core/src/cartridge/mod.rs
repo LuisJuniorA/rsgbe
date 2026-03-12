@@ -20,12 +20,16 @@ impl Cartridge {
         if data.len() < power_of_two_size {
             data.resize(power_of_two_size, 0xFF);
         }
-        let ram_size = Self::calculate_ram_size(data[0x0149]);
 
         let mbc_type = data[0x0147];
+        let ram_size = Self::calculate_ram_size(data[0x0149]);
+
         let mbc: Box<dyn MBC> = match mbc_type {
             0x00 | 0xFF => Box::new(NoMBC::new(data)),
-            0x01..=0x03 => Box::new(MBC1::new(data, ram_size)),
+            0x01..=0x03 => {
+                let is_mbc1m = Self::is_mbc1m(&data);
+                Box::new(MBC1::new(data, ram_size, is_mbc1m))
+            }
             0x05 | 0x06 => Box::new(MBC2::new(data)),
             _ => panic!("Unknown MBC : {:#02X}", mbc_type),
         };
@@ -49,5 +53,28 @@ impl Cartridge {
             0x05 => 1 << 19, // 512 KiB
             _ => 0,
         }
+    }
+
+    fn is_mbc1m(data: &[u8]) -> bool {
+        if data.len() <= 0x40000 {
+            return false;
+        }
+
+        let nintendo_logo_start = 0x0104;
+        let block_size = 0x40000; // 256 KiB
+
+        let mut matches = 0;
+        let num_blocks = data.len() / block_size;
+
+        for i in 1..num_blocks.min(4) {
+            let offset = i * block_size + nintendo_logo_start;
+            if offset + 4 < data.len() {
+                if data[offset..offset + 4] == [0xCE, 0xED, 0x66, 0x66] {
+                    matches += 1;
+                }
+            }
+        }
+
+        matches > 0
     }
 }

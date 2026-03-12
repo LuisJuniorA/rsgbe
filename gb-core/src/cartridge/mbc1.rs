@@ -9,10 +9,11 @@ pub struct MBC1 {
     rom_bank_mask: u8,
     ram_bank_mask: u8,
     ram_enabled: bool,
+    is_mbc1m: bool,
 }
 
 impl MBC1 {
-    pub fn new(rom: Vec<u8>, ram_size: usize) -> Self {
+    pub fn new(rom: Vec<u8>, ram_size: usize, is_mbc1m: bool) -> Self {
         let rom_num_banks = rom.len() / 0x4000;
         let rom_bank_mask = if rom_num_banks > 0 {
             (rom_num_banks.next_power_of_two() - 1) as u8
@@ -32,24 +33,27 @@ impl MBC1 {
             rom_bank_mask,
             ram_bank_mask,
             ram_enabled: false,
+            is_mbc1m,
         }
     }
 
     pub fn get_effective_rom_bank(&self, addr: u16) -> usize {
+        let shift = if self.is_mbc1m { 4 } else { 5 };
+        let mask = if self.is_mbc1m { 0x0f } else { 0xFF };
+
         let bank = if addr < 0x4000 {
-            // 0x0000 - 0x3FFF
             if self.mode == 0 {
                 0
             } else {
-                self.ram_bank << 5
+                (self.ram_bank) << shift
             }
         } else {
-            // 0x4000 - 0x7FFF
             let mut b = self.rom_bank;
             if b == 0 {
                 b = 1;
             }
-            (self.ram_bank << 5) | b
+
+            ((self.ram_bank) << shift) | (b & mask)
         };
 
         (bank & self.rom_bank_mask) as usize
@@ -93,7 +97,7 @@ impl MBC for MBC1 {
             // ROM's Bank
             0x2000..=0x3FFF => {
                 let mut bank = val & 0x1F;
-                if bank == 0 {
+                if bank == 0 && self.is_mbc1m {
                     bank = 1;
                 }
 
