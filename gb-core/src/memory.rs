@@ -1,10 +1,11 @@
+use crate::cartridge::Cartridge;
 use crate::timer::Timer;
 
 const WRAM_SIZE: usize = 1 << 13; // 8192 bytes
 const HRAM_SIZE: usize = (1 << 7) - 1; // 127 bytes
 
 pub struct Bus {
-    rom: Vec<u8>, // TEMPORARY: flat ROM until we build Cartridge/MBCs
+    cartridge: Cartridge,
     wram: [u8; WRAM_SIZE],
     hram: [u8; HRAM_SIZE],
     pub ie: u8,
@@ -17,7 +18,7 @@ pub struct Bus {
 impl Bus {
     pub fn new(rom: Vec<u8>) -> Self {
         Bus {
-            rom,
+            cartridge: Cartridge::new(rom),
             wram: [0; WRAM_SIZE],
             hram: [0; HRAM_SIZE],
             ie: 0,
@@ -32,15 +33,12 @@ impl Bus {
     pub fn read_byte(&self, addr: u16) -> u8 {
         match addr {
             // $0000 - $7FFF: ROM
-            0x0000..=0x7FFF => {
-                if (addr as usize) < self.rom.len() {
-                    self.rom[addr as usize]
-                } else {
-                    0xFF
-                }
-            }
+            0x0000..=0x7FFF => self.cartridge.read(addr),
+            // $A000 - $BFFF External RAM
+            0xA000..=0xBFFF => self.cartridge.read(addr),
             // $C000 - $DFFF: Work RAM
             0xC000..=0xDFFF => self.wram[(addr - 0xC000) as usize],
+            0xE000..=0xFDFF => self.wram[(addr - 0xE000) as usize], // Echo RAM
             0xFF01 => self.serial_data,
             0xFF04 => (self.timer.div >> 8) as u8,
             0xFF05 => self.timer.tima,
@@ -57,9 +55,11 @@ impl Bus {
 
     pub fn write_byte(&mut self, addr: u16, val: u8) {
         match addr {
-            0x0000..=0x7FFF => {} // ROM is read-only
+            0x0000..=0x7FFF => self.cartridge.write(addr, val),
             0x8000..=0x9FFF => {} // TODO: vram
+            0xA000..=0xBFFF => self.cartridge.write(addr, val),
             0xC000..=0xDFFF => self.wram[(addr - 0xC000) as usize] = val,
+            0xE000..=0xFDFF => self.wram[(addr - 0xE000) as usize] = val, // Echo RAM
             0xFF01 => self.serial_data = val,
             0xFF02 => {
                 if val == 0x81 {

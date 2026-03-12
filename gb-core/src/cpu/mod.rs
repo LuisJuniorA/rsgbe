@@ -18,7 +18,7 @@ impl Cpu {
         Cpu {
             registers: Registers::new(),
             pc: 0x100,
-            sp: 0xFFE,
+            sp: 0xFFFE,
             ime: false,
             ime_delay: false,
             halted: false,
