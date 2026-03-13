@@ -192,7 +192,7 @@ impl Ppu {
     }
 
     fn render_window(&mut self, vram: &[u8]) {
-        if (self.lcdc & 0x01) == 0 && (self.lcdc & 0x20) == 0 && self.ly < self.wy {
+        if (self.lcdc & 0x01) == 0 || (self.lcdc & 0x20) == 0 || self.ly < self.wy {
             return;
         }
         let win_y = self.ly.wrapping_sub(self.wy);
