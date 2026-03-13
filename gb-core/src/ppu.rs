@@ -217,7 +217,7 @@ impl Ppu {
             let color_id = self.get_color_from_bytes(
                 vram[addr as usize],
                 vram[(addr + 1) as usize],
-                (win_x % 8) as u8,
+                (win_x & 7) as u8,
             );
 
             self.bg_priority_buffer[x] = color_id;
@@ -323,7 +323,7 @@ impl Ppu {
 
     fn calculate_mode3_duration(&self, oam: &[u8]) -> u32 {
         let mut duration = 172;
-        duration += (self.scx % 8) as u32;
+        duration += (self.scx & 7) as u32;
 
         let sprite_height = if (self.lcdc & 0x04) != 0 { 16 } else { 8 };
         let mut sprites_on_line = 0;
