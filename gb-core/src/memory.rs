@@ -1,4 +1,5 @@
 use crate::cartridge::Cartridge;
+use crate::joypad::Joypad;
 use crate::ppu::Ppu;
 use crate::timer::Timer;
 
@@ -17,6 +18,7 @@ pub struct Bus {
     pub if_reg: u8,
     pub timer: Timer,
     pub ppu: Ppu,
+    pub joypad: Joypad,
     serial_data: u8,
     pub serial_output: String,
 }
@@ -33,6 +35,7 @@ impl Bus {
             if_reg: 0,
             timer: Timer::new(),
             ppu: Ppu::new(),
+            joypad: Joypad::new(),
             serial_data: 0,
             serial_output: String::new(),
         }
@@ -49,6 +52,9 @@ impl Bus {
             0xE000..=0xFDFF => self.wram[(addr - 0xE000) as usize], // Echo RAM
             // $8000 - $97FF: Video RAM
             0x8000..=0x97FF => self.vram[(addr - 0x8000) as usize],
+
+            // Joypad
+            0xFF00 => self.joypad.read(),
             0xFF01 => self.serial_data,
             0xFF04 => (self.timer.div >> 8) as u8,
             0xFF05 => self.timer.tima,
@@ -84,6 +90,8 @@ impl Bus {
             0xA000..=0xBFFF => self.cartridge.write(addr, val),
             0xC000..=0xDFFF => self.wram[(addr - 0xC000) as usize] = val,
             0xE000..=0xFDFF => self.wram[(addr - 0xE000) as usize] = val, // Echo RAM
+
+            0xFF00 => self.joypad.write(val),
             0xFF01 => self.serial_data = val,
             0xFF02 => {
                 if val == 0x81 {
