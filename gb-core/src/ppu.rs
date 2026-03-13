@@ -71,6 +71,12 @@ impl Ppu {
     }
 
     pub fn step(&mut self, cycles: u8, vram: &[u8], oam: &[u8]) -> u8 {
+        if (self.lcdc & 0x80) == 0 {
+            self.cycles = 0;
+            self.ly = 0;
+            self.set_mode(PpuMode::HBlank);
+            return 0;
+        }
         let mut interrupt_flag = 0;
         self.cycles += cycles as u32;
 
@@ -186,10 +192,10 @@ impl Ppu {
     }
 
     fn render_window(&mut self, vram: &[u8]) {
-        if (self.lcdc & 0x20 != 0) && self.ly < self.wy {
+        if (self.lcdc & 0x01) == 0 && (self.lcdc & 0x20) == 0 && self.ly < self.wy {
             return;
         }
-        let win_y = self.ly - self.wy;
+        let win_y = self.ly.wrapping_sub(self.wy);
         let tile_row = (win_y / 8) as u16;
         let map_base = if (self.lcdc & 0x40) != 0 {
             0x1C00
@@ -199,7 +205,7 @@ impl Ppu {
         let data_unsigned = (self.lcdc & 0x10) != 0;
 
         for x in 0..160 {
-            let win_x = x as i16 - (self.wx as i16 - 7);
+            let win_x = x as i16 - (self.wx.saturating_sub(7) as i16);
             if win_x < 0 {
                 continue;
             }

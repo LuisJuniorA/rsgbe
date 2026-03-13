@@ -73,10 +73,6 @@ impl Cpu {
             self.ime = true;
         }
 
-        if bus.timer.step(cycles) {
-            bus.if_reg |= 0x04;
-        }
-
         cycles
     }
 

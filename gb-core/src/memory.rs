@@ -60,7 +60,7 @@ impl Bus {
             0xFF05 => self.timer.tima,
             0xFF06 => self.timer.tma,
             0xFF07 => self.timer.tac,
-            0xFF0F => self.if_reg,
+            0xFF0F => self.if_reg | 0xE0,
 
             0xFF40 => self.ppu.lcdc,
             0xFF41 => self.ppu.stat,
