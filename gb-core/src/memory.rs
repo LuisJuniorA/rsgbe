@@ -105,7 +105,8 @@ impl Bus {
                 }
             }
             0xFF40 => self.ppu.lcdc = val,
-            0xFF41 => self.ppu.stat = val,
+            // 0xFF41: LCD Status Register. 0x78 for Read/Write bits. 0x07 for Read only. 0x80 Because last bit is always 1
+            0xFF41 => self.ppu.stat = (val & 0x78) | (self.ppu.stat & 0x07) | 0x80,
             0xFF42 => self.ppu.scy = val,
             0xFF43 => self.ppu.scx = val,
             0xFF44 => self.ppu.ly = val,
@@ -128,7 +129,7 @@ impl Bus {
             0xFF06 => self.timer.tma = val,
             0xFF07 => self.timer.tac = val,
 
-            0xFF0F => self.if_reg = val,
+            0xFF0F => self.if_reg = val | 0xE0,
             0xFF80..=0xFFFE => self.hram[(addr - 0xFF80) as usize] = val,
             0xFFFF => self.ie = val,
             _ => {}
@@ -136,7 +137,9 @@ impl Bus {
     }
 
     pub fn tick(&mut self, cycles: u8) {
-        self.timer.step(cycles);
+        if self.timer.step(cycles) {
+            self.if_reg |= 0x04;
+        }
 
         let ppu_interrupts = self.ppu.step(cycles, &self.vram, &self.oam);
         self.if_reg |= ppu_interrupts;
