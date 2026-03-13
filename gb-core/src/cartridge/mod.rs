@@ -35,8 +35,8 @@ impl Cartridge {
                 Box::new(MBC1::new(data, ram_size, is_mbc1m))
             }
             0x05 | 0x06 => Box::new(MBC2::new(data)),
-            0x0F | 0x10 => Box::new(MBC3::new(data, ram_size)),
-            0x10..=0x1E => Box::new(MBC5::new(data, ram_size)),
+            0x0F..=0x13 => Box::new(MBC3::new(data, ram_size)),
+            0x19..=0x1E => Box::new(MBC5::new(data, ram_size)),
             _ => panic!("Unknown MBC : {:#02X}", mbc_type),
         };
 

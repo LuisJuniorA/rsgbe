@@ -47,8 +47,9 @@ impl Bus {
             // $C000 - $DFFF: Work RAM
             0xC000..=0xDFFF => self.wram[(addr - 0xC000) as usize],
             0xE000..=0xFDFF => self.wram[(addr - 0xE000) as usize], // Echo RAM
-            // $8000 - $97FF: Video RAM
-            0x8000..=0x97FF => self.vram[(addr - 0x8000) as usize],
+            // $8000 - $9FFF: Video RAM
+            0x8000..=0x9FFF => self.vram[(addr - 0x8000) as usize],
+            0xFE00..=0xFE9F => self.oam[(addr - 0xFE00) as usize],
             0xFF01 => self.serial_data,
             0xFF04 => (self.timer.div >> 8) as u8,
             0xFF05 => self.timer.tima,
@@ -84,6 +85,7 @@ impl Bus {
             0xA000..=0xBFFF => self.cartridge.write(addr, val),
             0xC000..=0xDFFF => self.wram[(addr - 0xC000) as usize] = val,
             0xE000..=0xFDFF => self.wram[(addr - 0xE000) as usize] = val, // Echo RAM
+            0xFE00..=0xFE9F => self.oam[(addr - 0xFE00) as usize] = val,
             0xFF01 => self.serial_data = val,
             0xFF02 => {
                 if val == 0x81 {
