@@ -4,17 +4,19 @@ use crate::timer::Timer;
 
 const WRAM_SIZE: usize = 1 << 13; // 8192 bytes
 const HRAM_SIZE: usize = (1 << 7) - 1; // 127 bytes
-const VRAM_SIZE: usize = 0x97FF - 0x8000;
+const VRAM_SIZE: usize = 0x2000; // 8192 bytes;
+const OAM_SIZE: usize = 0xA0; // 160 bytes
 
 pub struct Bus {
     cartridge: Cartridge,
     wram: [u8; WRAM_SIZE],
     hram: [u8; HRAM_SIZE],
     vram: [u8; VRAM_SIZE],
+    oam: [u8; OAM_SIZE],
     pub ie: u8,
     pub if_reg: u8,
     pub timer: Timer,
-    pub ppu: ppu,
+    pub ppu: Ppu,
     serial_data: u8,
     pub serial_output: String,
 }
@@ -26,6 +28,7 @@ impl Bus {
             wram: [0; WRAM_SIZE],
             hram: [0; HRAM_SIZE],
             vram: [0; VRAM_SIZE],
+            oam: [0; OAM_SIZE],
             ie: 0,
             if_reg: 0,
             timer: Timer::new(),
@@ -77,7 +80,7 @@ impl Bus {
     pub fn write_byte(&mut self, addr: u16, val: u8) {
         match addr {
             0x0000..=0x7FFF => self.cartridge.write(addr, val),
-            0x8000..=0x9FFF => {} // TODO: vram
+            0x8000..=0x9FFF => self.vram[(addr - 0x8000) as usize] = val,
             0xA000..=0xBFFF => self.cartridge.write(addr, val),
             0xC000..=0xDFFF => self.wram[(addr - 0xC000) as usize] = val,
             0xE000..=0xFDFF => self.wram[(addr - 0xE000) as usize] = val, // Echo RAM
@@ -98,6 +101,14 @@ impl Bus {
             0xFF43 => self.ppu.scx = val,
             0xFF44 => self.ppu.ly = val,
             0xFF45 => self.ppu.lyc = val,
+            // DAM
+            0xFF46 => {
+                for i in 0..160 {
+                    let src_addr = ((val as u16) << 8) + i as u16;
+                    let data = self.read_byte(src_addr);
+                    self.oam[i as usize] = data;
+                }
+            }
             0xFF47 => self.ppu.bgp = val,
             0xFF48 => self.ppu.obp0 = val,
             0xFF49 => self.ppu.obp1 = val,
@@ -113,5 +124,12 @@ impl Bus {
             0xFFFF => self.ie = val,
             _ => {}
         }
+    }
+
+    pub fn tick(&mut self, cycles: u8) {
+        self.timer.step(cycles);
+
+        let ppu_interrupts = self.ppu.step(cycles, &self.vram, &self.oam);
+        self.if_reg |= ppu_interrupts;
     }
 }
