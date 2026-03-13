@@ -1,6 +1,6 @@
 # RSGBE
 
-**RSGBE** (Rust Game Boy Emulator) is a high-performance, lightweight Game Boy (DMG) emulation stack written in Rust.
+**RSGBE** (Relatively Simple Game Boy Emulator) is a high-performance, lightweight Game Boy (DMG) emulation stack written in Rust.
 
 The project is architected with a strict separation between its core logic and frontend implementations. At its heart lies `rsgbe-core`, a headless engine responsible for CPU cycles, PPU rendering, and memory management, making it easily embeddable into various platforms—from native desktop applications to web-based environments via WebAssembly (WASM).
 
