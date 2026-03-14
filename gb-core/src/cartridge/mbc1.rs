@@ -13,7 +13,7 @@ pub struct MBC1 {
 }
 
 impl MBC1 {
-    pub fn new(rom: Vec<u8>, ram_size: usize, is_mbc1m: bool) -> Self {
+    pub fn new(rom: Vec<u8>, save: Option<Vec<u8>>, ram_size: usize, is_mbc1m: bool) -> Self {
         let rom_num_banks = rom.len() / 0x4000;
         let rom_bank_mask = if rom_num_banks > 0 {
             (rom_num_banks.next_power_of_two() - 1) as u8
@@ -26,7 +26,7 @@ impl MBC1 {
 
         MBC1 {
             rom,
-            ram: vec![0; ram_size],
+            ram: save.unwrap_or(vec![0; ram_size]),
             rom_bank: 1,
             ram_bank: 0,
             mode: 0,
@@ -125,6 +125,14 @@ impl MBC for MBC1 {
                 }
             }
             _ => {}
+        }
+    }
+
+    fn get_save_data(&self) -> Option<&[u8]> {
+        if self.ram.is_empty() {
+            None
+        } else {
+            Some(&self.ram[..])
         }
     }
 }

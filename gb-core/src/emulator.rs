@@ -7,10 +7,10 @@ pub struct Emulator {
 }
 
 impl Emulator {
-    pub fn new(rom: Vec<u8>) -> Self {
+    pub fn new(rom: Vec<u8>, save: Option<Vec<u8>>) -> Self {
         Self {
             cpu: Cpu::new(),
-            bus: Bus::new(rom),
+            bus: Bus::new(rom, save),
         }
     }
 
@@ -19,5 +19,9 @@ impl Emulator {
         self.bus.tick(cycles);
 
         cycles
+    }
+
+    pub fn get_save_data(&self) -> Option<&[u8]> {
+        self.bus.get_save_data()
     }
 }

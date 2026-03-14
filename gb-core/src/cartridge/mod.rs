@@ -17,7 +17,7 @@ pub struct Cartridge {
 }
 
 impl Cartridge {
-    pub fn new(mut data: Vec<u8>) -> Self {
+    pub fn new(mut data: Vec<u8>, save: Option<Vec<u8>>) -> Self {
         let min_size = 0x8000;
         let power_of_two_size = data.len().next_power_of_two().max(min_size);
 
@@ -32,11 +32,11 @@ impl Cartridge {
             0x00 | 0xFF => Box::new(NoMBC::new(data)),
             0x01..=0x03 => {
                 let is_mbc1m = Self::is_mbc1m(&data);
-                Box::new(MBC1::new(data, ram_size, is_mbc1m))
+                Box::new(MBC1::new(data, save, ram_size, is_mbc1m))
             }
-            0x05 | 0x06 => Box::new(MBC2::new(data)),
-            0x0F..=0x13 => Box::new(MBC3::new(data, ram_size)),
-            0x19..=0x1E => Box::new(MBC5::new(data, ram_size)),
+            0x05 | 0x06 => Box::new(MBC2::new(data, save)),
+            0x0F..=0x13 => Box::new(MBC3::new(data, save, ram_size)),
+            0x19..=0x1E => Box::new(MBC5::new(data, save, ram_size)),
             _ => panic!("Unknown MBC : {:#02X}", mbc_type),
         };
 
@@ -82,5 +82,9 @@ impl Cartridge {
         }
 
         matches > 0
+    }
+
+    pub fn get_save_data(&self) -> Option<&[u8]> {
+        self.mbc.get_save_data()
     }
 }

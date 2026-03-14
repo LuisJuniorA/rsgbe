@@ -24,9 +24,9 @@ pub struct Bus {
 }
 
 impl Bus {
-    pub fn new(rom: Vec<u8>) -> Self {
+    pub fn new(rom: Vec<u8>, save: Option<Vec<u8>>) -> Self {
         Bus {
-            cartridge: Cartridge::new(rom),
+            cartridge: Cartridge::new(rom, save),
             wram: [0; WRAM_SIZE],
             hram: [0; HRAM_SIZE],
             vram: [0; VRAM_SIZE],
@@ -143,5 +143,9 @@ impl Bus {
 
         let ppu_interrupts = self.ppu.step(cycles, &self.vram, &self.oam);
         self.if_reg |= ppu_interrupts;
+    }
+
+    pub fn get_save_data(&self) -> Option<&[u8]> {
+        self.cartridge.get_save_data()
     }
 }

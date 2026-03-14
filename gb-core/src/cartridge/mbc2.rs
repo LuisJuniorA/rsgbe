@@ -9,17 +9,22 @@ pub struct MBC2 {
 }
 
 impl MBC2 {
-    pub fn new(rom: Vec<u8>) -> Self {
+    pub fn new(rom: Vec<u8>, save: Option<Vec<u8>>) -> Self {
         let rom_num_banks = rom.len() / 0x4000;
         let rom_bank_mask = if rom_num_banks > 0 {
             (rom_num_banks.next_power_of_two() - 1) as u8
         } else {
             0
         };
+        let mut ram = [0; 512];
+        if let Some(s) = save {
+            let len = s.len().min(512);
+            ram[..len].copy_from_slice(&s[..len]);
+        }
 
         MBC2 {
             rom,
-            ram: [0; 512],
+            ram: ram,
             rom_bank: 1,
             rom_bank_mask,
             ram_enabled: false,
@@ -69,5 +74,9 @@ impl MBC for MBC2 {
             }
             _ => {}
         }
+    }
+
+    fn get_save_data(&self) -> Option<&[u8]> {
+        Some(&self.ram[..])
     }
 }
