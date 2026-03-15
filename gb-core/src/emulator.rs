@@ -21,7 +21,7 @@ impl Emulator {
         cycles
     }
 
-    pub fn get_save_data(&self) -> Option<&[u8]> {
+    pub fn get_save_data(&self) -> Option<Vec<u8>> {
         self.bus.get_save_data()
     }
 }

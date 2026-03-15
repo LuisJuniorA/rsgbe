@@ -76,7 +76,11 @@ impl MBC for MBC2 {
         }
     }
 
-    fn get_save_data(&self) -> Option<&[u8]> {
-        Some(&self.ram[..])
+    fn get_save_data(&self) -> Option<Vec<u8>> {
+        if self.ram.is_empty() {
+            None
+        } else {
+            Some(self.ram.to_vec())
+        }
     }
 }

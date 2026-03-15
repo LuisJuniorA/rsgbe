@@ -7,7 +7,7 @@ macro_rules! setup_test {
     ($data:expr) => {{
         let mut rom = vec![0x00; 0x0100];
         rom.extend_from_slice($data);
-        let bus = Bus::new(rom);
+        let bus = Bus::new(rom, None);
         let mut cpu = Cpu::new();
         cpu.pc = 0x0100;
         cpu.registers.a = 0;

@@ -145,7 +145,7 @@ impl Bus {
         self.if_reg |= ppu_interrupts;
     }
 
-    pub fn get_save_data(&self) -> Option<&[u8]> {
+    pub fn get_save_data(&self) -> Option<Vec<u8>> {
         self.cartridge.get_save_data()
     }
 }

@@ -96,11 +96,11 @@ impl MBC for MBC5 {
         }
     }
 
-    fn get_save_data(&self) -> Option<&[u8]> {
+    fn get_save_data(&self) -> Option<Vec<u8>> {
         if self.ram.is_empty() {
             None
         } else {
-            Some(&self.ram[..])
+            Some(self.ram.clone())
         }
     }
 }

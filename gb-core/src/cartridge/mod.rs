@@ -84,7 +84,7 @@ impl Cartridge {
         matches > 0
     }
 
-    pub fn get_save_data(&self) -> Option<&[u8]> {
+    pub fn get_save_data(&self) -> Option<Vec<u8>> {
         self.mbc.get_save_data()
     }
 }
