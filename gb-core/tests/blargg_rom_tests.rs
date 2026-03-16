@@ -15,14 +15,16 @@ fn run_blargg_test(rom_name: &str) {
         }
     };
 
-    let mut bus = Bus::new(rom);
+    let mut bus = Bus::new(rom, None);
     let mut cpu = Cpu::new();
 
     let mut cycles = 0;
     let max_cycles = 250_000_000;
 
     while cycles < max_cycles {
-        cycles += cpu.step(&mut bus) as u64;
+        let step_cycles = cpu.step(&mut bus);
+        bus.tick(step_cycles);
+        cycles += step_cycles as u64;
 
         if bus.serial_output.contains("Passed") {
             println!("Test {} output:\n{}", rom_name, bus.serial_output);

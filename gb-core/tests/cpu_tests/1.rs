@@ -6,11 +6,16 @@ fn test_0x10_stop_n8() {
 
     bus.timer.div = 0x1234;
 
-    cpu.step(&mut bus);
+    let t1 = cpu.step(&mut bus);
+    bus.tick(t1);
+    
     assert!(cpu.halted, "STOP should halt the CPU");
     assert_eq!(cpu.pc, 0x0102, "STOP is a 2-byte instruction");
     let old_div = bus.timer.div;
-    cpu.step(&mut bus);
+    
+    let t2 = cpu.step(&mut bus);
+    bus.tick(t2);
+    
     assert_eq!(
         bus.timer.div,
         old_div + 4,
