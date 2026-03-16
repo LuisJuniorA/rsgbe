@@ -10,11 +10,15 @@ pub struct WasmEmulator {
 #[wasm_bindgen]
 impl WasmEmulator {
     #[wasm_bindgen(constructor)]
-    pub fn new(rom: &[u8]) -> Self {
+    pub fn new(rom: &[u8], save_data: Option<Vec<u8>>) -> Self {
         console_error_panic_hook::set_once();
         Self {
-            emu: Emulator::new(rom.to_vec()),
+            emu: Emulator::new(rom.to_vec(), save_data),
         }
+    }
+
+    pub fn get_save_data(&self) -> Option<Vec<u8>> {
+        self.emu.get_save_data()
     }
 
     pub fn clock_frame(&mut self) {
