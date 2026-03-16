@@ -1,5 +1,5 @@
 use crate::cartridge::mbc::MBC;
-use std::time::{SystemTime, UNIX_EPOCH};
+use web_time::{SystemTime, UNIX_EPOCH};
 
 #[derive(Default, Clone, Copy)]
 struct RtcClock {
