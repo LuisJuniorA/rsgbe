@@ -1,3 +1,4 @@
+use crate::apu::Apu;
 use crate::cartridge::Cartridge;
 use crate::joypad::Joypad;
 use crate::ppu::Ppu;
@@ -18,6 +19,7 @@ pub struct Bus {
     pub if_reg: u8,
     pub timer: Timer,
     pub ppu: Ppu,
+    pub apu: Apu,
     pub joypad: Joypad,
     serial_data: u8,
     pub serial_output: String,
@@ -35,6 +37,7 @@ impl Bus {
             if_reg: 0,
             timer: Timer::new(),
             ppu: Ppu::new(),
+            apu: Apu::new(),
             joypad: Joypad::new(),
             serial_data: 0,
             serial_output: String::new(),
@@ -61,6 +64,8 @@ impl Bus {
             0xFF06 => self.timer.tma,
             0xFF07 => self.timer.tac,
             0xFF0F => self.if_reg | 0xE0,
+            0xFF10..=0xFF26 => self.apu.read_byte(addr),
+            0xFF30..=0xFF3F => self.apu.read_byte(addr),
 
             0xFF40 => self.ppu.lcdc,
             0xFF41 => self.ppu.stat,
@@ -128,6 +133,8 @@ impl Bus {
             0xFF05 => self.timer.tima = val,
             0xFF06 => self.timer.tma = val,
             0xFF07 => self.timer.tac = val,
+            0xFF10..=0xFF26 => self.apu.write_byte(addr, val),
+            0xFF30..=0xFF3F => self.apu.write_byte(addr, val),
 
             0xFF0F => self.if_reg = val | 0xE0,
             0xFF80..=0xFFFE => self.hram[(addr - 0xFF80) as usize] = val,
