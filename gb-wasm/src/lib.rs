@@ -21,6 +21,10 @@ impl WasmEmulator {
         self.emu.get_save_data()
     }
 
+    pub fn get_audio_buffer(&mut self) -> Vec<f32> {
+        self.emu.get_audio_buffer()
+    }
+
     pub fn clock_frame(&mut self) {
         let mut cycles_count: u32 = 0;
         while cycles_count < 70224 {

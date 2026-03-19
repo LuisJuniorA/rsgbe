@@ -150,6 +150,8 @@ impl Bus {
 
         let ppu_interrupts = self.ppu.step(cycles, &self.vram, &self.oam);
         self.if_reg |= ppu_interrupts;
+
+        self.apu.tick(cycles);
     }
 
     pub fn get_save_data(&self) -> Option<Vec<u8>> {

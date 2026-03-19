@@ -48,10 +48,10 @@ cargo build --release
 
 * [x] Base CPU instruction set (WIP)
 * [x] Memory mapping (ROM, WRAM, HRAM)
-* [x] PPU / Graphics Rendering
+* [ ] PPU / Graphics Rendering
 * [ ] Audio (APU) support
-* [x] MBC (Memory Bank Controller) support
-* [x] WASM Frontend wrapper
+* [ ] MBC (Memory Bank Controller) support
+* [ ] WASM Frontend wrapper
 
 ---
 

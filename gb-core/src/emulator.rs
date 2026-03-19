@@ -24,4 +24,8 @@ impl Emulator {
     pub fn get_save_data(&self) -> Option<Vec<u8>> {
         self.bus.get_save_data()
     }
+
+    pub fn get_audio_buffer(&mut self) -> Vec<f32> {
+        std::mem::take(&mut self.bus.apu.audio_buffer)
+    }
 }
