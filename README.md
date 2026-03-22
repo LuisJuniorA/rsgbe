@@ -1,4 +1,4 @@
-# RSGBE — Rust Game Boy Emulator
+# RSGBE — Relatively Simple Game Boy Emulator
 
 **RSGBE** is a modular Game Boy (DMG) emulation stack built with Rust. It is designed with a strict separation between its core logic and its frontend, making it highly portable.
 
